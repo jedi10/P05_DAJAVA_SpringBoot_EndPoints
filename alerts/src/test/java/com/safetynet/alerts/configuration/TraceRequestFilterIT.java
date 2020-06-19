@@ -54,9 +54,9 @@ class TraceRequestFilterIT {
         //******************
         String content = result.getBody();
         //String expectedString = "{\"traces\":[]}";
-        String expectedJson = "{traces:[]}";
+        String expectedJson = "{traces:[null]}";
         //assertEquals(expectedString, content);
-        JSONAssert.assertEquals(expectedJson, content, true);
+        JSONAssert.assertEquals(expectedJson, content, false);
 
     }
 }
