@@ -1,7 +1,7 @@
 package com.safetynet.alerts.configuration;
 
+import com.safetynet.alerts.utils.CustomTraceRepository;
 import org.springframework.boot.actuate.trace.http.HttpTraceRepository;
-import org.springframework.boot.actuate.trace.http.InMemoryHttpTraceRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -11,20 +11,14 @@ import org.springframework.context.annotation.Primary;
  * Configuration to make available actuator/httptrace
  * httptrace endpoint needs a HttpTraceRepository bean
  */
-//@Configuration
+@Configuration
 public class HttpTraceActuatorConfiguration {
-
-    /**Useless to create a second bean
-    @Bean
-    public HttpTraceRepository httpTraceRepository() {
-        return new InMemoryHttpTraceRepository();
-    }
 
     @Bean
     @Primary
-    public HttpTraceRepository httpTraceRepositoryCustom() {
-        return new InMemoryHttpTraceRepository();
-    }**/
+    public HttpTraceRepository httpTraceRepository() {
+        return new CustomTraceRepository();
+    }
 }
 
 //https://www.baeldung.com/spring-primary
