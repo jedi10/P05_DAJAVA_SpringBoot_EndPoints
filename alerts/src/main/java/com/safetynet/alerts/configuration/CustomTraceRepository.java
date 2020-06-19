@@ -1,5 +1,7 @@
 package com.safetynet.alerts.configuration;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.actuate.trace.http.HttpTrace;
 import org.springframework.boot.actuate.trace.http.HttpTraceRepository;
 import org.springframework.context.annotation.Primary;
@@ -17,6 +19,8 @@ import java.util.concurrent.atomic.AtomicReference;
 @Primary
 public class CustomTraceRepository implements HttpTraceRepository {
 
+    private final Logger logger = LoggerFactory.getLogger(CustomTraceRepository.class);
+
     AtomicReference<HttpTrace> lastTrace = new AtomicReference<>();
 
     @Override
@@ -29,7 +33,15 @@ public class CustomTraceRepository implements HttpTraceRepository {
 
         if ("GET".equals(trace.getRequest().getMethod())) {
             lastTrace.set(trace);
-            System.out.println("Trace Added");
+            if (200 == lastTrace.get().getResponse().getStatus()){
+                logger.info("Actuator HttpTrace Added: URL: {} : RESPONSE STATUS: {}",
+                        lastTrace.get().getRequest().getUri(),
+                        lastTrace.get().getResponse().getStatus());
+            } else {
+                logger.warn("Actuator HttpTrace Added: URL: {} : RESPONSE STATUS: {}",
+                        lastTrace.get().getRequest().getUri(),
+                        lastTrace.get().getResponse().getStatus());
+            }
         }
     }
 
