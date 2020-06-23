@@ -8,6 +8,8 @@ out/
 !**/src/main/**
 !**/src/test/**
 
+**/alerts-app.log
+
 # IntelliJ
 .idea
 *.iml

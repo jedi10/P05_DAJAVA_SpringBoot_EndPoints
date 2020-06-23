@@ -1,5 +1,6 @@
-package com.safetynet.alerts.configuration;
+package com.safetynet.alerts.utils;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.actuate.trace.http.HttpTrace;
 import org.springframework.boot.actuate.trace.http.HttpTraceRepository;
 import org.springframework.context.annotation.Primary;
@@ -11,10 +12,10 @@ import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Customizing HttpTraceRepository
- * A Way to have a hand on Traces with code
+ * Allow to Log HttpTrace
  */
+@Slf4j
 @Repository
-@Primary
 public class CustomTraceRepository implements HttpTraceRepository {
 
     AtomicReference<HttpTrace> lastTrace = new AtomicReference<>();
@@ -29,11 +30,19 @@ public class CustomTraceRepository implements HttpTraceRepository {
 
         if ("GET".equals(trace.getRequest().getMethod())) {
             lastTrace.set(trace);
-            System.out.println("Trace Added");
+            if (200 == lastTrace.get().getResponse().getStatus()){
+                log.info("Actuator HttpTrace Added: URL: {} : RESPONSE STATUS: {}",
+                        lastTrace.get().getRequest().getUri(),
+                        lastTrace.get().getResponse().getStatus());
+            } else {
+                log.warn("Actuator HttpTrace Added: URL: {} : RESPONSE STATUS: {}",
+                        lastTrace.get().getRequest().getUri(),
+                        lastTrace.get().getResponse().getStatus());
+            }
         }
     }
-
 }
 
 
 //https://www.baeldung.com/spring-boot-actuator-http
+//https://howtodoinjava.com/spring-boot2/logging/logging-with-lombok/
