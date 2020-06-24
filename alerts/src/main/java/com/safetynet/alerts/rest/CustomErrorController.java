@@ -3,7 +3,9 @@ package com.safetynet.alerts.rest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.RequestDispatcher;
@@ -11,11 +13,12 @@ import javax.servlet.http.HttpServletRequest;
 
 @Slf4j
 @RestController
+@RequestMapping("/")
 public class CustomErrorController implements ErrorController {
 
     public CustomErrorController() {}
 
-    @GetMapping(value = "/error", produces = {"text/html"} )
+    @GetMapping(value = "error", produces = {"text/html"} )
     public String handleError(HttpServletRequest request) {
         Object status = request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);
         log.error("Error with status code " + status + " happened.");
@@ -45,3 +48,4 @@ public class CustomErrorController implements ErrorController {
 
 
 //https://www.baeldung.com/spring-boot-custom-error-page
+//https://spring.io/blog/2013/11/01/exception-handling-in-spring-mvc
