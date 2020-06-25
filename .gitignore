@@ -9,6 +9,7 @@ out/
 !**/src/test/**
 
 **/alerts-app.log
+**/alerts-app.log.*
 
 # IntelliJ
 .idea
