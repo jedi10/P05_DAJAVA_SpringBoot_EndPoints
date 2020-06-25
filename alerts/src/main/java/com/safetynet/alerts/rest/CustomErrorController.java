@@ -12,13 +12,13 @@ import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
 
 @Slf4j
-@RestController
+@Controller
 @RequestMapping("/")
 public class CustomErrorController implements ErrorController {
 
     public CustomErrorController() {}
 
-    @GetMapping(value = "error", produces = {"text/html"} )
+    @GetMapping(value = "error", produces = {"text/html"})
     public String handleError(HttpServletRequest request) {
         Object status = request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);
         log.error("Error with status code " + status + " happened.");
@@ -26,16 +26,13 @@ public class CustomErrorController implements ErrorController {
             Integer statusCode = Integer.valueOf(status.toString());
 
             if(statusCode == HttpStatus.NOT_FOUND.value()) {
-                return "Error 404: resource doesn't exist";
+                return "error404";
             }
             else if(statusCode == HttpStatus.INTERNAL_SERVER_ERROR.value()) {
-                return "Error 500: internal Server Error ";
-            }
-            else {
-                return "Error"+ status;
+                return "error500";
             }
         }
-        return "Undefined Error";
+        return "error";
     }
 
     @Override
