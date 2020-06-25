@@ -1,7 +1,6 @@
-package com.safetynet.alerts;
+package com.safetynet.alerts.rest;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -11,7 +10,9 @@ import org.springframework.http.ResponseEntity;
 import java.net.URL;
 import static org.assertj.core.api.Assertions.assertThat;
 
+@Disabled
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class HelloControllerIT {
 
     @LocalServerPort
@@ -22,9 +23,9 @@ public class HelloControllerIT {
     @Autowired
     private TestRestTemplate template;
 
-    @BeforeEach
+    @BeforeAll
     public void setUp() throws Exception {
-        this.base = new URL("http://localhost:" + port + "/");
+        this.base = new URL("http://localhost:" + port + "/test/helloSpring");
     }
 
     @Test

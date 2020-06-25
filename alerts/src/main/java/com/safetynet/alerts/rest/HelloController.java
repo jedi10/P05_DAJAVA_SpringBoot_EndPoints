@@ -1,4 +1,4 @@
-package com.safetynet.alerts;
+package com.safetynet.alerts.rest;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class HelloController {
 
-    @RequestMapping("/")
+    @RequestMapping("/test/helloSpring")
     public String index(){
         return "Greetings from Spring Boot!";
     }

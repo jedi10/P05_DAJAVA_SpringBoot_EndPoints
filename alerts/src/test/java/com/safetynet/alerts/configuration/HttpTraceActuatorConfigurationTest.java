@@ -1,8 +1,10 @@
 package com.safetynet.alerts.configuration;
 
 import org.json.JSONObject;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.trace.http.HttpTraceRepository;
@@ -22,6 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class HttpTraceActuatorConfigurationTest {
 
     @Autowired
@@ -30,10 +33,10 @@ class HttpTraceActuatorConfigurationTest {
     @Autowired
     private ApplicationContext appContext;
 
-    @BeforeEach
+    @BeforeAll
     private void setUp() throws Exception {
         //Go to Hello Word Page
-        mockMvc.perform(MockMvcRequestBuilders.get("/")
+        mockMvc.perform(MockMvcRequestBuilders.get("/test/helloSpring")
                 .accept(MediaType.TEXT_PLAIN_VALUE));
     }
 

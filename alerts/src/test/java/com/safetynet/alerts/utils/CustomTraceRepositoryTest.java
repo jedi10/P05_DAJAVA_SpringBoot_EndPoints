@@ -1,8 +1,10 @@
 package com.safetynet.alerts.utils;
 
 import com.safetynet.alerts.utils.CustomTraceRepository;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.trace.http.HttpTrace;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -18,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class CustomTraceRepositoryTest {
 
     @Autowired
@@ -26,10 +29,10 @@ class CustomTraceRepositoryTest {
     @Autowired
     private ApplicationContext appContext;
 
-    @BeforeEach
+    @BeforeAll
     private void setUp() throws Exception {
         //Go to Hello Word Page
-        mockMvc.perform(MockMvcRequestBuilders.get("/")
+        mockMvc.perform(MockMvcRequestBuilders.get("/test/helloSpring")
                 .accept(MediaType.TEXT_PLAIN_VALUE));
     }
 
@@ -48,7 +51,7 @@ class CustomTraceRepositoryTest {
         AtomicReference<HttpTrace> lastTrace =  customTraceRepo.lastTrace;
         assertNotNull(lastTrace, "LastTrace can't be null and should have a content");
         String urlRecorded = lastTrace.get().getRequest().getUri().getPath();
-        assertEquals("/", urlRecorded);
+        assertEquals("/test/helloSpring", urlRecorded);
     }
 
 }
