@@ -18,6 +18,12 @@ public class HTMLHomeController {
         return "index";
     }
 
+    @RequestMapping(value = "html/home/error", method = RequestMethod.GET)
+    public String htmlError(HttpServletResponse httpResponse) throws Exception {
+
+        return "404";
+    }
+
     @RequestMapping(method = RequestMethod.GET)
     public void redirectHome(HttpServletResponse httpResponse) throws Exception {
 
