@@ -10,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import java.net.URL;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Disabled
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class HelloControllerIT {
