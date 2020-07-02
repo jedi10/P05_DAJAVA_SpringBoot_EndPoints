@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","url":"allpackages-index.html"},{"l":"com.safetynet.alerts"},{"l":"com.safetynet.alerts.configuration"},{"l":"com.safetynet.alerts.models"},{"l":"com.safetynet.alerts.rest"},{"l":"com.safetynet.alerts.utils"}]

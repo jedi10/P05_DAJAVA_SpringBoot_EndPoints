@@ -1,0 +1,5 @@
+com.safetynet.alerts
+com.safetynet.alerts.configuration
+com.safetynet.alerts.models
+com.safetynet.alerts.rest
+com.safetynet.alerts.utils
