@@ -9,7 +9,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * HttpTrace doesn't deal any more with actuator URL's
+ * <b>HttpTrace doesn't deal any more with actuator URL's</b>
  */
 @Component
 public class TraceRequestFilter extends HttpTraceFilter {

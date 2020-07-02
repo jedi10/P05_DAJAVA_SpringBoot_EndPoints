@@ -6,7 +6,8 @@ import lombok.Setter;
 import java.util.Map;
 
 /**
- * Model used for custom error view
+ * <b>Model used for custom error view</b>
+ * @see com.safetynet.alerts.rest.CustomErrorController
  */
 public class CustomErrorResponse {
 

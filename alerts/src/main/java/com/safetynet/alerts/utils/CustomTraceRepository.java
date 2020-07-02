@@ -11,8 +11,8 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * Customizing HttpTraceRepository
- * Allow to Log HttpTrace
+ * <b>Customizing HttpTraceRepository</b>
+ * <p>Allow to Log HttpTrace</p>
  */
 @Slf4j
 @Repository

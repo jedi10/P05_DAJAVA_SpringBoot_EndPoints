@@ -8,9 +8,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * HTML static home page
- * description of alerts application
- * can be used to discovered application on a first start
+ * <b>Makes available HTML static home page</b>
+ * <p>description of alerts application</p>
+ * <p>can be used to discovered application on a first start</p>
  */
 @Slf4j
 @Controller

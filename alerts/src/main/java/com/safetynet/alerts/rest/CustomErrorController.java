@@ -17,7 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
 /**
- * Custom Error Controller With JSON Response
+ * <b>Custom Error Controller With JSON Response</b>
  *
  * @author Jedi10
  * @since 25.06.2020
