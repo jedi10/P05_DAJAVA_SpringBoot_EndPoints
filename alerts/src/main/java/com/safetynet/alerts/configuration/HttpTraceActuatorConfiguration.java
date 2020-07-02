@@ -7,9 +7,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 
 /**
- * Useless Since we use a CustomTraceRepository which create a Bean
  * Configuration to make available actuator/httptrace
- * httptrace endpoint needs a HttpTraceRepository bean
+ * httptrace endpoint needs a HttpTraceRepository bean since Spring Boot 2.2
+ *
+ * See also CustomTraceRepository which intercept HttpTrace to Log them
+ * @see CustomTraceRepository
  */
 @Configuration
 public class HttpTraceActuatorConfiguration {

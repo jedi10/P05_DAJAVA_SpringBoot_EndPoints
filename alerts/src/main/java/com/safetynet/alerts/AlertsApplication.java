@@ -8,6 +8,9 @@ import org.springframework.context.annotation.Bean;
 
 import java.util.Arrays;
 
+/**
+ * Root of Alerts Application *
+ */
 @SpringBootApplication
 public class AlertsApplication {
 
@@ -15,6 +18,11 @@ public class AlertsApplication {
 		SpringApplication.run(AlertsApplication.class, args);
 	}
 
+	/**
+	 * on console, give a list of all spring Boot Beans
+	 * @param ctx application context
+	 * @return commandLineRunner functional interface
+	 */
 	@Bean
 	public CommandLineRunner commandLineRunner(ApplicationContext ctx) {
 		return args -> {

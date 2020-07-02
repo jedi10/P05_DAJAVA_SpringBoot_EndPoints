@@ -7,6 +7,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.http.HttpServletResponse;
 
+/**
+ * HTML static home page
+ * description of alerts application
+ * can be used to discovered application on a first start
+ */
 @Slf4j
 @Controller
 @RequestMapping("/")
