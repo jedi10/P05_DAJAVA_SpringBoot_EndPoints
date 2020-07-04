@@ -31,6 +31,11 @@ public class CustomErrorResponse {
     @Setter
     private String trace;
 
+    /**
+     * Constructor CustomErrorResponse
+     * @param status Integer
+     * @param errorAttributes Map
+     */
     public CustomErrorResponse(Integer status, Map<String, Object> errorAttributes) {
         this.status = status;
         this.setPath((String) errorAttributes.get("path"));
