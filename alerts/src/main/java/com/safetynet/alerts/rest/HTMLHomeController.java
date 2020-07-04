@@ -30,13 +30,13 @@ public class HTMLHomeController {
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    public void redirectHome(HttpServletResponse httpResponse) throws Exception {
+    public void redirectHome2(HttpServletResponse httpResponse) throws Exception {
 
         httpResponse.sendRedirect("/html/home");
     }
 
     @RequestMapping(value = "/html", method = RequestMethod.GET)
-    public void redirectHome2(HttpServletResponse httpResponse) throws Exception {
+    public void redirectHome(HttpServletResponse httpResponse) throws Exception {
 
         httpResponse.sendRedirect("/html/home");
     }
