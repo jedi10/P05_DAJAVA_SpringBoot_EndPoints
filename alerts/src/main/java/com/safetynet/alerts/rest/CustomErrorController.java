@@ -6,7 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.boot.web.servlet.error.ErrorController;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
@@ -30,14 +32,15 @@ public class CustomErrorController implements ErrorController {
     public CustomErrorController() {}
 
     @Autowired
-    private ErrorAttributes errorAttributes ;
+    ErrorAttributes errorAttributes ;
 
     @GetMapping(value = "error", produces = {MediaType.APPLICATION_JSON_VALUE})
-    public CustomErrorResponse handleError(HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<CustomErrorResponse> handleError(HttpServletRequest request, HttpServletResponse response) {
         Object status = request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);
         log.error("Error with status code " + status + " happened. ");
+        CustomErrorResponse customErrorResponse = new CustomErrorResponse(response.getStatus(), getErrorAttributes(request));
 
-        return new CustomErrorResponse(response.getStatus(), getErrorAttributes(request));
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(customErrorResponse);
     }
 
     @Override
