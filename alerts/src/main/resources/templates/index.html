@@ -14,7 +14,118 @@
     <div class="jumbotron my-auto">
         <h3 class="display-4">Alerts Home Page</h3>
 
-        <p class="alert alert-info">discovered all end-points provided by application</p>
+        <p class="alert alert-info">discover all end-points provided by application</p>
+
+        <div class="card text-center" style="width: 30rem;">
+            <div class="card-body">
+                <h5 class="card-title bg-info text-white">http://localhost:8080/firestation?stationNumber=</h5>
+                <p class="card-subtitle mb-2 text-secondary">Get Operation</p>
+                <p class="card-text">
+                    <strong>Get</strong> list of person under the responsibility of the Firestation given
+                </p>
+                <a href="http://localhost:8080/firestation?stationNumber=1" class="btn btn-primary">Go !</a>
+            </div>
+        </div>
+        <div class="card text-center" style="width: 30rem;">
+            <div class="card-body">
+                <h5 class="card-title bg-info text-white">http://localhost:8080/childAlert?address=</h5>
+                <p class="card-subtitle mb-2 text-secondary">Get Operation</p>
+                <p class="card-text">
+                    <strong>Get</strong> list of child staying at the address given + other people staying at the same address
+                </p>
+                <a href="http://localhost:8080/childAlert?address=" class="btn btn-primary">Go !</a>
+            </div>
+        </div>
+        <div class="card text-center" style="width: 30rem;">
+            <div class="card-body">
+                <h5 class="card-title bg-info text-white">http://localhost:8080/phoneAlert?firestation=</h5>
+                <p class="card-subtitle mb-2 text-secondary">Get Operation</p>
+                <p class="card-text">
+                    <strong>Get</strong> list of telephone number of the person under the responsibility of the Firestation given
+                </p>
+                <a href="http://localhost:8080/phoneAlert?firestation=1" class="btn btn-primary">Go !</a>
+            </div>
+        </div>
+        <div class="card text-center" style="width: 30rem;">
+            <div class="card-body">
+                <h5 class="card-title bg-info text-white">http://localhost:8080/fire?address=</h5>
+                <p class="card-subtitle mb-2 text-secondary">Get Operation</p>
+                <p class="card-text">
+                    <strong>Get</strong> list of person living to the address given + firestation in charge for this address
+                </p>
+                <a href="http://localhost:8080/fire?address=" class="btn btn-primary">Go !</a>
+            </div>
+        </div>
+        <div class="card text-center" style="width: 30rem;">
+            <div class="card-body">
+                <h5 class="card-title bg-info text-white">http://localhost:8080/flood/stations?stations=</h5>
+                <p class="card-subtitle mb-2 text-secondary">Get Operation</p>
+                <p class="card-text">
+                    <strong>Get</strong> list of Address with all persons under the responsibility of Firestation. Several Firestations are given.
+                </p>
+                <a href="http://localhost:8080/flood/stations?stations=" class="btn btn-primary">Go !</a>
+            </div>
+        </div>
+        <div class="card text-center" style="width: 30rem;">
+            <div class="card-body">
+                <h5 class="card-title bg-info text-white">http://localhost:8080/personInfo?firstName=&lastname=</h5>
+                <p class="card-subtitle mb-2 text-secondary">Get Operation</p>
+                <p class="card-text">
+                    <strong>Get</strong> person with all its informations (firstname, lastname, age, mail, medications, allergies)
+                </p>
+                <a href="http://localhost:8080/personInfo?firstName=&lastName=" class="btn btn-primary">Go !</a>
+            </div>
+        </div>
+        <div class="card text-center" style="width: 30rem;">
+            <div class="card-body">
+                <h5 class="card-title bg-info text-white">http://localhost:8080/communityEmail?city=</h5>
+                <p class="card-subtitle mb-2 text-secondary">Get Operation</p>
+                <p class="card-text">
+                    <strong>Get</strong> list of mail of all inhabitants of the city given
+                </p>
+                <a href="http://localhost:8080/communityEmail?city=" class="btn btn-primary">Go !</a>
+            </div>
+        </div>
+
+        <div class="card card-inverse text-center bg-warning" style="width: 30rem;">
+            <div class="card-body">
+                <h5 class="card-title bg-info text-white">http://localhost:8080/person</h5>
+                <p class="card-subtitle mb-2 text-secondary">Administration Crud Operations</p>
+                <p class="card-text text-muted"></p>
+                <ul class = "navbar-nav mr-auto">
+                    <li class = "nav-item"><strong>Add</strong> person</li>
+                    <li class = "nav-item"><strong>Update</strong> person properties except first and last name</li>
+                    <li class = "nav-item"><strong>Delete</strong> person with first and last name for identification</li>
+                </ul>
+                <a href="http://localhost:8080/person" class="btn btn-primary">Go !</a>
+            </div>
+        </div>
+        <div class="card card-inverse text-center bg-warning" style="width: 30rem;">
+            <div class="card-body">
+                <h5 class="card-title bg-info text-white">http://localhost:8080/firestation</h5>
+                <p class="card-subtitle mb-2 text-secondary">Administration Crud Operations</p>
+                <p class="card-text  text-muted"></p>
+                <ul class = "navbar-nav mr-auto">
+                    <li class = "nav-item"><strong>Add</strong> firestation</li>
+                    <li class = "nav-item"><strong>Update</strong> firestation Station number</li>
+                    <li class = "nav-item"><strong>Delete</strong> firestation</li>
+                </ul>
+                <a href="http://localhost:8080/person" class="btn btn-primary">Go !</a>
+            </div>
+        </div>
+        <div class="card card-inverse text-center bg-warning" style="width: 30rem;">
+            <div class="card-body">
+                <h5 class="card-title bg-info text-white">http://localhost:8080/medicalRecord</h5>
+                <p class="card-subtitle mb-2 text-secondary">Administration Crud Operations</p>
+                <p class="card-text  text-muted"></p>
+                <ul class = "navbar-nav mr-auto">
+                    <li class = "nav-item"><strong>Add</strong> medical Record</li>
+                    <li class = "nav-item"><strong>Update</strong> medical record properties except first and last name</li>
+                    <li class = "nav-item"><strong>Delete</strong> medical with first and last name for identification</li>
+                </ul>
+                <a href="http://localhost:8080/person" class="btn btn-primary">Go !</a>
+            </div>
+        </div>
 
         <div class = "navbar-collapse" id = "navbarSupportedContent">
             <ul class = "navbar-nav mr-auto">
