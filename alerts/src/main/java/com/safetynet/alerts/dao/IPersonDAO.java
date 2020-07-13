@@ -4,7 +4,7 @@ import com.safetynet.alerts.models.Person;
 
 import java.util.List;
 
-public interface PersonDAO {
+public interface IPersonDAO {
     public List<Person> findAll();
     public Person findByName(String firstName, String lastName);
     public Person save(Person person);

@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Repository
-public class PersonDaoImpl implements PersonDAO {
+public class PersonDaoImpl implements IPersonDAO {
 
     public static List<Person> personList = new ArrayList<>();
 
