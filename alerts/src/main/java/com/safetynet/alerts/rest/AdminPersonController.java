@@ -10,6 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 @Slf4j
@@ -33,5 +34,27 @@ public class AdminPersonController {
             return new ResponseEntity(HttpStatus.NO_CONTENT);
         }
         return new ResponseEntity<List<Person>>(persons, HttpStatus.OK);
+    }
+
+
+    @RequestMapping(value = "/{firstName}&{lastName}", method = RequestMethod.GET)
+    public ResponseEntity<?> getPerson(@PathVariable("firstName") String firstName, @PathVariable("lastName") String lastName ) {
+        log.info("Fetching Person with first Name {} and lastName {}", firstName, lastName );
+
+        Person person = IPersonDAO.findByName(firstName, lastName);
+
+        return new ResponseEntity<Person>(person, HttpStatus.OK);
+    }
+
+    /**
+     * redirection
+     * @param httpResponse response
+     * @throws Exception
+     */
+    @RequestMapping(value = "/personinfo/{firstName}&{lastName}", method = RequestMethod.GET)
+    public void redirectGetPerson(@PathVariable("firstName") String firstName, @PathVariable("lastName") String lastName,
+                             HttpServletResponse httpResponse) throws Exception {
+
+        httpResponse.sendRedirect("/person/"+firstName+"&"+lastName);
     }
 }
