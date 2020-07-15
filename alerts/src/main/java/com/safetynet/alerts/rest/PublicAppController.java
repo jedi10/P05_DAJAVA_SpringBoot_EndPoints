@@ -15,9 +15,10 @@ public class PublicAppController {
 
 
     /**
-     * redirection to getPerson Controller
+     * redirection to getPerson EndPoint Controller
+     * @see AdminPersonController#getPerson(String, String)
      * @param httpResponse response
-     * @throws Exception
+     * @throws Exception exception
      */
     @RequestMapping(value = "/personinfo/{firstName}&{lastName}", method = RequestMethod.GET)
     public void redirectGetPerson(@PathVariable("firstName") String firstName, @PathVariable("lastName") String lastName,
