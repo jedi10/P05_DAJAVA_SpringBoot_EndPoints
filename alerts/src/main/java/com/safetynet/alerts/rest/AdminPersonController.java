@@ -68,5 +68,15 @@ public class AdminPersonController {
         return new ResponseEntity<Person>(person, HttpStatus.OK);
     }
 
+    @RequestMapping(value = "/{firstName}&{lastName}", method = RequestMethod.DELETE)
+    public ResponseEntity<?> deletePerson(@PathVariable("firstName") String firstName, @PathVariable("lastName") String lastName) {
+        log.info("Fetching & Deleting User with first Name {} and lastName {}", firstName, lastName );
+        boolean result = false;
 
+        Person person = personDAO.findByName(firstName, lastName);
+        if(person != null){
+            result = personDAO.delete(person);
+        }
+        return new ResponseEntity<Person>(HttpStatus.NO_CONTENT);
+    }
 }

@@ -61,9 +61,11 @@ class AdminPersonControllerTest {
         //          Mockito
         when(personDAO.findAll()).thenReturn(List.of(person, person2));
         when(personDAO.findByName("julia", "werner")).thenReturn(person);
+        when(personDAO.findByName("jack", "mortimer")).thenReturn(personUpdated);
         //Person personMock = mock(Person.class);
         when(personDAO.save(personCreated)).thenReturn(personCreated);//Mockito.any(Person.class)
         when(personDAO.update(personUpdated)).thenReturn(personUpdated);
+        when(personDAO.delete(personUpdated)).thenReturn(true);
         this.adminPersonController.personDAO = personDAO;
     }
 
@@ -204,9 +206,25 @@ class AdminPersonControllerTest {
     }
 
     @Test
-    void deletePerson() {
-    }
+    void deletePerson() throws Exception {
+        //***********GIVEN*************
+        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.delete("/person/jack&mortimer");
 
+        //***********************************************************
+        //**************CHECK MOCK INVOCATION at start***************
+        //***********************************************************
+        verify(personDAO, Mockito.times(0)).findByName("jack","mortimer");
+        verify(personDAO, Mockito.times(0)).delete(personUpdated);
+
+        //**************WHEN-THEN****************************
+        mockMvc.perform(builder)//.andDo(print());
+                .andExpect(status().isNoContent());
+        //*********************************************************
+        //**************CHECK MOCK INVOCATION at end***************
+        //*********************************************************
+        verify(personDAO, Mockito.times(1)).findByName("jack","mortimer");
+        verify(personDAO, Mockito.times(1)).delete(ArgumentMatchers.refEq(personUpdated));
+    }
 }
 
 
