@@ -58,5 +58,15 @@ public class AdminPersonController {
         return new ResponseEntity<String>(headers, HttpStatus.CREATED);
     }
 
+    @RequestMapping(value = "/{firstName}&{lastName}", method = RequestMethod.PUT)
+    public ResponseEntity<?> updatePerson(@PathVariable("firstName") String firstName, @PathVariable("lastName") String lastName,
+                                          @RequestBody Person person) {
+        log.info("Updating Person with first Name {} and lastName {}", firstName, lastName );
+
+        Person result = personDAO.update(person);
+
+        return new ResponseEntity<Person>(person, HttpStatus.OK);
+    }
+
 
 }

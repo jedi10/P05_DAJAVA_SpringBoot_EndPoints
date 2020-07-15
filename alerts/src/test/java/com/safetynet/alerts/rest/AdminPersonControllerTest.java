@@ -47,7 +47,8 @@ class AdminPersonControllerTest {
     private Person person = new Person("julia", "werner", "rue du colisee", "Rome", 45, "06-12-23-34-45", "wermer@mail.it");
     private Person person2 = new Person("judy", "holmes", "rue de la pensee", "Londre", 89, "06-25-74-90-12", "holmes@mail.en");
     private Person personCreated = new Person("jack", "mortimer", "rue du stade", "Rome", 45, "06-25-50-90-12", "mortimer@mail.it");
-    
+    private Person personUpdated = new Person("jack", "mortimer", "rue du colisee", "Rome", 45, "06-25-23-99-00", "mortimer@mail.it");
+
 
     @BeforeAll
     void setUp() {
@@ -62,6 +63,7 @@ class AdminPersonControllerTest {
         when(personDAO.findByName("julia", "werner")).thenReturn(person);
         //Person personMock = mock(Person.class);
         when(personDAO.save(personCreated)).thenReturn(personCreated);//Mockito.any(Person.class)
+        when(personDAO.update(personUpdated)).thenReturn(personUpdated);
         this.adminPersonController.personDAO = personDAO;
     }
 
@@ -163,7 +165,42 @@ class AdminPersonControllerTest {
     }
 
     @Test
-    void updatePerson() {
+    void updatePerson() throws Exception {
+        //***********GIVEN*************
+        String jsonGiven = feedWithJava(personUpdated);
+        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.put("/person/jack&mortimer")
+                .characterEncoding("UTF-8")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(jsonGiven)
+                .accept(MediaType.APPLICATION_JSON_VALUE);
+        //***********************************************************
+        //**************CHECK MOCK INVOCATION at start***************
+        //***********************************************************
+        verify(personDAO, Mockito.times(0)).update(personUpdated);
+
+        //**************WHEN-THEN****************************
+        MvcResult mvcResult = mockMvc.perform(builder)//.andDo(print());
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(content().string(containsString("mortimer@mail.it")))
+                .andExpect(jsonPath("$.firstName").value(personUpdated.getFirstName()))
+                .andExpect(jsonPath("$.address").value(personUpdated.getAddress()))
+                .andReturn();
+        //*********************************************************
+        //**************CHECK MOCK INVOCATION at end***************
+        //*********************************************************
+        verify(personDAO, Mockito.times(1)).update(ArgumentMatchers.refEq(personUpdated));//.save(any());
+
+        //*********************************************************
+        //**************CHECK RESPONSE CONTENT*********************
+        //*********************************************************
+        //*****************Check with JSON*************************
+        String expectedJson = null;
+        expectedJson = feedWithJava(personUpdated);
+        JSONAssert.assertEquals(expectedJson, mvcResult.getResponse().getContentAsString(), true);
+        //*****************Check with JAVA*************************
+        Person resultJavaObject = parseResponse(mvcResult, Person.class);
+        assertThat(personUpdated).isEqualToComparingFieldByField(resultJavaObject);
     }
 
     @Test
