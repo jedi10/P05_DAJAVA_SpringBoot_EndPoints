@@ -2,8 +2,8 @@ package com.safetynet.alerts.rest;
 
 import com.safetynet.alerts.dao.IPersonDAO;
 import com.safetynet.alerts.models.Person;
-import com.safetynet.alerts.utils.JsonConvertForTest;
 import org.junit.jupiter.api.*;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.skyscreamer.jsonassert.JSONAssert;
@@ -20,13 +20,12 @@ import java.util.List;
 
 
 import static com.safetynet.alerts.utils.JsonConvert.feedWithJava;
-import static com.safetynet.alerts.utils.JsonConvertForTest.*;
+import static com.safetynet.alerts.utils.JsonConvertForTest.parseResponse;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.internal.bytebuddy.matcher.ElementMatchers.is;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -47,6 +46,8 @@ class AdminPersonControllerTest {
 
     private Person person = new Person("julia", "werner", "rue du colisee", "Rome", 45, "06-12-23-34-45", "wermer@mail.it");
     private Person person2 = new Person("judy", "holmes", "rue de la pensee", "Londre", 89, "06-25-74-90-12", "holmes@mail.en");
+    private Person personCreated = new Person("jack", "mortimer", "rue du stade", "Rome", 45, "06-25-50-90-12", "mortimer@mail.it");
+    
 
     @BeforeAll
     void setUp() {
@@ -59,7 +60,9 @@ class AdminPersonControllerTest {
         //          Mockito
         when(personDAO.findAll()).thenReturn(List.of(person, person2));
         when(personDAO.findByName("julia", "werner")).thenReturn(person);
-        this.adminPersonController.IPersonDAO = personDAO;
+        //Person personMock = mock(Person.class);
+        when(personDAO.save(personCreated)).thenReturn(personCreated);//Mockito.any(Person.class)
+        this.adminPersonController.personDAO = personDAO;
     }
 
     @AfterEach
@@ -117,7 +120,7 @@ class AdminPersonControllerTest {
         //*********************************************************
         //**************CHECK MOCK INVOCATION at end***************
         //*********************************************************
-        verify(personDAO, Mockito.times(1)).findByName("julia","werner");;
+        verify(personDAO, Mockito.times(1)).findByName("julia","werner");
 
 
         //*********************************************************
@@ -133,7 +136,30 @@ class AdminPersonControllerTest {
     }
 
     @Test
-    void createPerson() {
+    void createPerson() throws Exception {
+        //***********GIVEN*************
+        String jsonGiven = feedWithJava(personCreated);
+        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.post("/person/")
+                .characterEncoding("UTF-8")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(jsonGiven)
+                .accept(MediaType.APPLICATION_JSON_VALUE);
+        //***********************************************************
+        //**************CHECK MOCK INVOCATION at start***************
+        //***********************************************************
+        verify(personDAO, Mockito.times(0)).save(personCreated);
+
+        //**************WHEN-THEN****************************
+        MvcResult mvcResult = mockMvc.perform(builder)//.andDo(print());
+                .andExpect(status().isCreated())
+                .andExpect(redirectedUrl("http://localhost/person/jack&mortimer"))
+                .andReturn();
+        //*********************************************************
+        //**************CHECK MOCK INVOCATION at end***************
+        //*********************************************************
+        verify(personDAO, Mockito.times(1)).save(ArgumentMatchers.refEq(personCreated));//.save(any());
+        //https://stackoverflow.com/questions/57690810/how-to-fix-arguments-are-different-wanted-error-in-junit-and-mockito
+        //https://www.softwaretestinghelp.com/mockito-matchers/
     }
 
     @Test
