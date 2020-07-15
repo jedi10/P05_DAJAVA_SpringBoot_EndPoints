@@ -16,6 +16,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -48,7 +49,7 @@ class AdminPersonControllerTest {
     private Person person2 = new Person("judy", "holmes", "rue de la pensee", "Londre", 89, "06-25-74-90-12", "holmes@mail.en");
     private Person personCreated = new Person("jack", "mortimer", "rue du stade", "Rome", 45, "06-25-50-90-12", "mortimer@mail.it");
     private Person personUpdated = new Person("jack", "mortimer", "rue du colisee", "Rome", 45, "06-25-23-99-00", "mortimer@mail.it");
-
+    private Person unknownPerson = new Person("grrr","trex","teodor","citeor", 3455, "123467555","mail");
 
     @BeforeAll
     void setUp() {
@@ -62,9 +63,12 @@ class AdminPersonControllerTest {
         when(personDAO.findAll()).thenReturn(List.of(person, person2));
         when(personDAO.findByName("julia", "werner")).thenReturn(person);
         when(personDAO.findByName("jack", "mortimer")).thenReturn(personUpdated);
+        when(personDAO.findByName("grrr", "trex")).thenReturn(null);
         //Person personMock = mock(Person.class);
         when(personDAO.save(personCreated)).thenReturn(personCreated);//Mockito.any(Person.class)
+        when(personDAO.save(person)).thenReturn(null);
         when(personDAO.update(personUpdated)).thenReturn(personUpdated);
+        when(personDAO.update(unknownPerson)).thenReturn(null);
         when(personDAO.delete(personUpdated)).thenReturn(true);
         this.adminPersonController.personDAO = personDAO;
     }
@@ -105,6 +109,27 @@ class AdminPersonControllerTest {
     }
 
     @Test
+    void getAllPersonsVoid() throws Exception {
+        //***********GIVEN*************
+        when(personDAO.findAll()).thenReturn(new ArrayList<Person>());
+        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get("/person/");
+
+        //***********************************************************
+        //**************CHECK MOCK INVOCATION at start***************
+        //***********************************************************
+        verify(personDAO, Mockito.times(0)).findAll();
+
+        //**************WHEN-THEN****************************
+        mockMvc.perform(builder)//.andDo(print());
+                .andExpect(status().isNoContent());
+
+        //*********************************************************
+        //**************CHECK MOCK INVOCATION at end***************
+        //*********************************************************
+        verify(personDAO, Mockito.times(1)).findAll();//.save(any());
+    }
+
+    @Test
     void getPerson() throws Exception {
         //***********GIVEN*************
         MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get("/person/julia&werner")
@@ -140,6 +165,26 @@ class AdminPersonControllerTest {
     }
 
     @Test
+    void getUnknownPerson() throws Exception {
+        //***********GIVEN*************
+        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get("/person/grrr&trex");
+
+        //***********************************************************
+        //**************CHECK MOCK INVOCATION at start***************
+        //***********************************************************
+        verify(personDAO, Mockito.times(0)).findByName("grrr","trex");
+
+        //**************WHEN-THEN****************************
+        mockMvc.perform(builder)//.andDo(print());
+                .andExpect(status().isNotFound());
+
+        //*********************************************************
+        //**************CHECK MOCK INVOCATION at end***************
+        //*********************************************************
+        verify(personDAO, Mockito.times(1)).findByName("grrr","trex");//.save(any());
+    }
+
+    @Test
     void createPerson() throws Exception {
         //***********GIVEN*************
         String jsonGiven = feedWithJava(personCreated);
@@ -167,6 +212,30 @@ class AdminPersonControllerTest {
     }
 
     @Test
+    void createPersonAlreadyThere() throws Exception {
+        //***********GIVEN*************
+        String jsonGiven = feedWithJava(person);
+        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.post("/person/")
+                .characterEncoding("UTF-8")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(jsonGiven)
+                .accept(MediaType.APPLICATION_JSON_VALUE);
+        //***********************************************************
+        //**************CHECK MOCK INVOCATION at start***************
+        //***********************************************************
+        verify(personDAO, Mockito.times(0)).save(person);
+
+        //**************WHEN-THEN****************************
+        mockMvc.perform(builder)//.andDo(print());
+                .andExpect(status().isNoContent());
+
+        //*********************************************************
+        //**************CHECK MOCK INVOCATION at end***************
+        //*********************************************************
+        verify(personDAO, Mockito.times(1)).save(ArgumentMatchers.refEq(person));//.save(any());
+    }
+
+        @Test
     void updatePerson() throws Exception {
         //***********GIVEN*************
         String jsonGiven = feedWithJava(personUpdated);
@@ -206,6 +275,29 @@ class AdminPersonControllerTest {
     }
 
     @Test
+    void updateUnknownPerson() throws Exception {
+        //***********GIVEN*************
+        String jsonGiven = feedWithJava(unknownPerson);
+        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.put("/person/grrr&trex")
+                .characterEncoding("UTF-8")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(jsonGiven);
+        //***********************************************************
+        //**************CHECK MOCK INVOCATION at start***************
+        //***********************************************************
+        verify(personDAO, Mockito.times(0)).update(unknownPerson);
+
+        //**************WHEN-THEN****************************
+        mockMvc.perform(builder)//.andDo(print());
+                .andExpect(status().isNotFound());
+
+        //*********************************************************
+        //**************CHECK MOCK INVOCATION at end***************
+        //*********************************************************
+        verify(personDAO, Mockito.times(1)).update(ArgumentMatchers.refEq(unknownPerson));//.save(any());
+    }
+
+    @Test
     void deletePerson() throws Exception {
         //***********GIVEN*************
         MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.delete("/person/jack&mortimer");
@@ -224,6 +316,27 @@ class AdminPersonControllerTest {
         //*********************************************************
         verify(personDAO, Mockito.times(1)).findByName("jack","mortimer");
         verify(personDAO, Mockito.times(1)).delete(ArgumentMatchers.refEq(personUpdated));
+    }
+
+    @Test
+    void deleteUnknownPerson() throws Exception {
+        //***********GIVEN*************
+        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.delete("/person/grrr&trex");
+
+        //***********************************************************
+        //**************CHECK MOCK INVOCATION at start***************
+        //***********************************************************
+        verify(personDAO, Mockito.times(0)).delete(unknownPerson);
+
+        //**************WHEN-THEN****************************
+        mockMvc.perform(builder)//.andDo(print());
+                .andExpect(status().isNotFound());
+
+        //*********************************************************
+        //**************CHECK MOCK INVOCATION at end***************
+        //*********************************************************
+        verify(personDAO, Mockito.times(1)).findByName("grrr","trex");//.save(any());
+        verify(personDAO, Mockito.times(0)).delete(ArgumentMatchers.refEq(unknownPerson));//.save(any());
     }
 }
 

@@ -10,8 +10,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 @Slf4j
@@ -31,7 +33,9 @@ public class AdminPersonController {
             produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<List<Person>> getAllPersons() {
         List<Person> persons = personDAO.findAll();
+        log.info("Fetching Person List");
         if (persons.isEmpty()) {
+            log.warn("Person List is empty");
             return new ResponseEntity(HttpStatus.NO_CONTENT);
         }
         return new ResponseEntity<List<Person>>(persons, HttpStatus.OK);
@@ -43,19 +47,35 @@ public class AdminPersonController {
         log.info("Fetching Person with first Name {} and lastName {}", firstName, lastName );
 
         Person person = personDAO.findByName(firstName, lastName);
+        if(person == null){
+            log.warn("Fetching Person Aborted: {} {} not found", firstName, lastName);
+            return ResponseEntity.notFound().build();
+        }
 
         return new ResponseEntity<Person>(person, HttpStatus.OK);
     }
 
     @PostMapping(value = "/", produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<?> createPerson(@RequestBody Person person, UriComponentsBuilder ucBuilder) {
+    public ResponseEntity<?> createPerson(@RequestBody Person person) {
         log.info("Creating Person : {}", person);
 
         Person result = personDAO.save(person);
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(ucBuilder.path("/person/{firstName}&{lastName}").buildAndExpand(person.getFirstName(), person.getLastName()).toUri());
-        return new ResponseEntity<String>(headers, HttpStatus.CREATED);
+        if (result == null){
+            log.warn("Creating Person Aborted: {} {} already exist", person.getFirstName(), person.getLastName());
+            return ResponseEntity.noContent().build();
+        }
+
+        //HttpHeaders headers = new HttpHeaders();
+        //injection in param : UriComponentsBuilder ucBuilder
+        //headers.setLocation(ucBuilder.path("/person/{firstName}&{lastName}").buildAndExpand(person.getFirstName(), person.getLastName()).toUri());
+        //return new ResponseEntity<String>(headers, HttpStatus.CREATED);
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{firstName}&{lastName}")
+                .buildAndExpand(person.getFirstName(), person.getLastName())
+                .toUri();
+        return ResponseEntity.created(location).build();
     }
 
     @RequestMapping(value = "/{firstName}&{lastName}", method = RequestMethod.PUT)
@@ -65,18 +85,24 @@ public class AdminPersonController {
 
         Person result = personDAO.update(person);
 
+        if (result == null){
+            log.warn("Updating Person Aborted: {} {} not found", person.getFirstName(), person.getLastName());
+            return ResponseEntity.notFound().build();
+        }
+
         return new ResponseEntity<Person>(person, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/{firstName}&{lastName}", method = RequestMethod.DELETE)
     public ResponseEntity<?> deletePerson(@PathVariable("firstName") String firstName, @PathVariable("lastName") String lastName) {
         log.info("Fetching & Deleting User with first Name {} and lastName {}", firstName, lastName );
-        boolean result = false;
 
         Person person = personDAO.findByName(firstName, lastName);
-        if(person != null){
-            result = personDAO.delete(person);
+        if(person == null){
+            log.warn("Deleting Person Aborted: {} {} not found", firstName, lastName);
+            return ResponseEntity.notFound().build();
         }
+        personDAO.delete(person);
         return new ResponseEntity<Person>(HttpStatus.NO_CONTENT);
     }
 }
