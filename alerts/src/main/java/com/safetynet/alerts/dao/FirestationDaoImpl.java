@@ -2,11 +2,13 @@ package com.safetynet.alerts.dao;
 
 import com.safetynet.alerts.models.Firestation;
 import com.safetynet.alerts.models.Person;
+import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class FirestationImpl implements IFirestationDAO {
+@Repository
+public class FirestationDaoImpl implements IFirestationDAO {
 
     public static List<Firestation> firestationList = new ArrayList<>();
 
