@@ -11,9 +11,9 @@ public class FirestationImpl implements IFirestationDAO {
     public static List<Firestation> firestationList = new ArrayList<>();
 
     static {
-        Firestation firestation1 = new Firestation("1509 Culver St",3);
-        Firestation firestation2 = new Firestation("29 15th St", 2);
-        Firestation firestationCreated = new Firestation("834 Binoc Ave", 3);
+        Firestation firestation1 = new Firestation("1509 Culver St","3");
+        Firestation firestation2 = new Firestation("29 15th St", "2");
+        Firestation firestationCreated = new Firestation("834 Binoc Ave", "3");
         firestationList.add(firestation1);
         firestationList.add(firestation2);
     }

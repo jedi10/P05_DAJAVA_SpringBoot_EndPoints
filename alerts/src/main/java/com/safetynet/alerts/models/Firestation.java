@@ -11,14 +11,14 @@ public class Firestation {
 
     @Getter
     @Setter
-    private Integer station;
+    private String station;
 
     /**
      * Constructor
      * @param address address
-     * @param station station number
+     * @param station station number (String)
      */
-    public Firestation(String address, Integer station) {
+    public Firestation(String address, String station) {
         this.address = address;
         this.station = station;
     }
