@@ -26,7 +26,7 @@ public class FirestationDaoImpl implements IFirestationDAO {
     }
 
     @Override
-    public Firestation findByName(String address) {
+    public Firestation findByAddress(String address) {
         return firestationList.stream()
                 .filter( x -> {
                     return address.equals(x.getAddress());
