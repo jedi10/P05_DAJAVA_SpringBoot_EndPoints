@@ -22,8 +22,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.safetynet.alerts.utils.JsonConvert.feedWithJava;
+import static com.safetynet.alerts.utils.JsonConvertForTest.parseResponse;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -50,6 +51,8 @@ class AdminFirestationControllerTest {
         //***********GIVEN*************
         //          Mockito
         when(firestationDAO.findAll()).thenReturn(List.of(firestation1, firestation2));
+        when(firestationDAO.findByAddress("1509 Culver St")).thenReturn(firestation1);
+        when(firestationDAO.findByAddress("7 downing Street")).thenReturn(null);
         this.adminFirestationController.firestationDAO = firestationDAO;
     }
 
@@ -106,5 +109,60 @@ class AdminFirestationControllerTest {
         //**************CHECK MOCK INVOCATION at end***************
         //*********************************************************
         verify(firestationDAO, Mockito.times(1)).findAll();//.save(any());
+    }
+
+    @Test
+    void getFirestation() throws Exception {
+        //***********GIVEN*************
+        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get("/firestation/1509 Culver St")
+                .accept(MediaType.APPLICATION_JSON_VALUE);
+        //***********************************************************
+        //**************CHECK MOCK INVOCATION at start***************
+        //***********************************************************
+        verify(firestationDAO, Mockito.times(0)).findByAddress("1509 Culver St");
+
+        //**************WHEN-THEN****************************
+        MvcResult mvcResult = mockMvc.perform(builder)//.andDo(print());
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(content().string(containsString("3")))
+                .andExpect(jsonPath("$.address").value(firestation1.getAddress()))
+                .andReturn();
+        //*********************************************************
+        //**************CHECK MOCK INVOCATION at end***************
+        //*********************************************************
+        verify(firestationDAO, Mockito.times(1)).findByAddress("1509 Culver St");
+
+
+        //*********************************************************
+        //**************CHECK RESPONSE CONTENT*********************
+        //*********************************************************
+        //*****************Check with JSON*************************
+        String expectedJson = null;
+        expectedJson = feedWithJava(firestation1);
+        JSONAssert.assertEquals(expectedJson, mvcResult.getResponse().getContentAsString(), true);
+        //*****************Check with JAVA*************************
+        Firestation resultJavaObject = parseResponse(mvcResult, Firestation.class);
+        assertThat(firestation1).isEqualToComparingFieldByField(resultJavaObject);
+    }
+
+    @Test
+    void getUnknownFirestation() throws Exception {
+        //***********GIVEN*************
+        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get("/firestation/7 downing Street");
+
+        //***********************************************************
+        //**************CHECK MOCK INVOCATION at start***************
+        //***********************************************************
+        verify(firestationDAO, Mockito.times(0)).findByAddress("7 downing Street");
+
+        //**************WHEN-THEN****************************
+        mockMvc.perform(builder)//.andDo(print());
+                .andExpect(status().isNotFound());
+
+        //*********************************************************
+        //**************CHECK MOCK INVOCATION at end***************
+        //*********************************************************
+        verify(firestationDAO, Mockito.times(1)).findByAddress("7 downing Street");//.save(any());
     }
 }

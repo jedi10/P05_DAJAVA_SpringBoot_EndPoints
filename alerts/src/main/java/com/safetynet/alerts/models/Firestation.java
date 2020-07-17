@@ -22,4 +22,9 @@ public class Firestation {
         this.address = address;
         this.station = station;
     }
+
+    /**
+     * Constructor
+     */
+    public Firestation(){}
 }
