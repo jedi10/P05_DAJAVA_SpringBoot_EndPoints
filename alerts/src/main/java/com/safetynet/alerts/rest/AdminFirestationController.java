@@ -7,11 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 @Slf4j
@@ -21,9 +20,6 @@ public class AdminFirestationController {
 
     @Autowired
     IFirestationDAO firestationDAO;
-
-    private Firestation firestation1 = new Firestation("1509 Culver St","3");
-    private Firestation firestation2 = new Firestation("29 15th St", "2");
 
     /**
      * List of Persons
@@ -52,6 +48,25 @@ public class AdminFirestationController {
             return ResponseEntity.notFound().build();
         }
         return new ResponseEntity<Firestation>(firestation, HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/", produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<?> createFirestation(@RequestBody Firestation firestation) {
+        log.info("Creating Firestation : {}", firestation);
+
+        Firestation result = firestationDAO.save(firestation);
+
+        if (result == null){
+            log.warn("Creating Firestation Aborted: {} already exist", firestation.getAddress());
+            return ResponseEntity.noContent().build();
+        }
+
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{address}")
+                .buildAndExpand(firestation.getAddress())
+                .toUri();
+        return ResponseEntity.created(location).build();
     }
 
 }

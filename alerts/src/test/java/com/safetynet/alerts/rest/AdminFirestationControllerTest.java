@@ -2,10 +2,10 @@ package com.safetynet.alerts.rest;
 
 import com.safetynet.alerts.dao.IFirestationDAO;
 import com.safetynet.alerts.models.Firestation;
-import com.safetynet.alerts.models.Person;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.skyscreamer.jsonassert.JSONAssert;
@@ -17,6 +17,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.web.util.UriUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,6 +46,7 @@ class AdminFirestationControllerTest {
 
     private Firestation firestation1 = new Firestation("1509 Culver St","3");
     private Firestation firestation2 = new Firestation("29 15th St", "2");
+    private Firestation firestationCreated = new Firestation("210 Jump Street", "3");
 
     @BeforeEach
     void setUp() {
@@ -53,6 +55,8 @@ class AdminFirestationControllerTest {
         when(firestationDAO.findAll()).thenReturn(List.of(firestation1, firestation2));
         when(firestationDAO.findByAddress("1509 Culver St")).thenReturn(firestation1);
         when(firestationDAO.findByAddress("7 downing Street")).thenReturn(null);
+        when(firestationDAO.save(firestationCreated)).thenReturn(firestationCreated);
+        when(firestationDAO.save(firestation1)).thenReturn(null);
         this.adminFirestationController.firestationDAO = firestationDAO;
     }
 
@@ -164,5 +168,59 @@ class AdminFirestationControllerTest {
         //**************CHECK MOCK INVOCATION at end***************
         //*********************************************************
         verify(firestationDAO, Mockito.times(1)).findByAddress("7 downing Street");//.save(any());
+    }
+
+    @Test
+    void createFirestation() throws Exception {
+        //***********GIVEN*************
+        String jsonGiven = feedWithJava(firestationCreated);
+        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.post("/firestation/")
+                .characterEncoding("UTF-8")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(jsonGiven)
+                .accept(MediaType.APPLICATION_JSON_VALUE);
+        String urlDestination =  UriUtils.encode(firestationCreated.getAddress(), "UTF-8");
+        //***********************************************************
+        //**************CHECK MOCK INVOCATION at start***************
+        //***********************************************************
+        verify(firestationDAO, Mockito.times(0)).save(firestationCreated);
+
+        //**************WHEN-THEN****************************
+
+        MvcResult mvcResult = mockMvc.perform(builder)//.andDo(print());
+                .andExpect(status().isCreated())
+                .andExpect(redirectedUrl("http://localhost/firestation/"+ urlDestination))
+                //.andExpect(redirectedUrl("http://localhost/firestation/210%20Jump%20Street"))
+                .andReturn();
+        //*********************************************************
+        //**************CHECK MOCK INVOCATION at end***************
+        //*********************************************************
+        verify(firestationDAO, Mockito.times(1)).save(ArgumentMatchers.refEq(firestationCreated));//.save(any());
+        //https://stackoverflow.com/questions/57690810/how-to-fix-arguments-are-different-wanted-error-in-junit-and-mockito
+        //https://www.softwaretestinghelp.com/mockito-matchers/
+    }
+
+    @Test
+    void createFirestationAlreadyThere() throws Exception {
+        //***********GIVEN*************
+        String jsonGiven = feedWithJava(firestation1);
+        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.post("/firestation/")
+                .characterEncoding("UTF-8")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(jsonGiven)
+                .accept(MediaType.APPLICATION_JSON_VALUE);
+        //***********************************************************
+        //**************CHECK MOCK INVOCATION at start***************
+        //***********************************************************
+        verify(firestationDAO, Mockito.times(0)).save(firestation1);
+
+        //**************WHEN-THEN****************************
+        mockMvc.perform(builder)//.andDo(print());
+                .andExpect(status().isNoContent());//204
+
+        //*********************************************************
+        //**************CHECK MOCK INVOCATION at end***************
+        //*********************************************************
+        verify(firestationDAO, Mockito.times(1)).save(ArgumentMatchers.refEq(firestation1));//.save(any());
     }
 }
