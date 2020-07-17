@@ -19,7 +19,7 @@ class FirestationTest {
         //GIVEN
         firestation = new Firestation(
                 "1509 Culver St",
-                3);
+                "3");
     }
 
     @AfterAll
@@ -40,9 +40,9 @@ class FirestationTest {
     @Test
     void getStation() {
         //WHEN
-        Integer dataFromObject = firestation.getStation();
+        String dataFromObject = firestation.getStation();
         //THEN
-        assertEquals(3, dataFromObject);
+        assertEquals("3", dataFromObject);
     }
 
     @Order(3)
@@ -57,8 +57,8 @@ class FirestationTest {
 
     @Order(4)
     @ParameterizedTest
-    @ValueSource(ints = { 2 })
-    void setStation(Integer stationGiven) {
+    @ValueSource(strings = { "2" })
+    void setStation(String stationGiven) {
         //WHEN
         firestation.setStation(stationGiven);
         //THEN

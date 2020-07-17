@@ -45,7 +45,6 @@ public class PersonDaoImpl implements IPersonDAO {
     }
     @Override
     public Person save(Person person) {
-        Person result= null;
         if(!isPresent(person)) {
             personList.add(person);
         }
