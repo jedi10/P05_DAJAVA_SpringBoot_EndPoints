@@ -83,4 +83,17 @@ public class AdminFirestationController {
         return new ResponseEntity<Firestation>(firestation, HttpStatus.OK);
     }
 
+    @DeleteMapping(value = "/{address}")
+    public ResponseEntity<?> deletePerson(@PathVariable("address") String address) {
+        log.info("Fetching & Deleting Firestation with Address {}", address );
+
+        Firestation firestation = firestationDAO.findByAddress(address);
+        if(firestation == null){
+            log.warn("Deleting Firestation Aborted: Address << {} >> not found", address);
+            return ResponseEntity.notFound().build();
+        }
+        firestationDAO.delete(firestation);
+        return new ResponseEntity<Firestation>(HttpStatus.NO_CONTENT);
+    }
+
 }

@@ -57,10 +57,12 @@ class AdminFirestationControllerTest {
         when(firestationDAO.findAll()).thenReturn(List.of(firestation1, firestation2));
         when(firestationDAO.findByAddress("1509 Culver St")).thenReturn(firestation1);
         when(firestationDAO.findByAddress("7 downing Street")).thenReturn(null);
+        when(firestationDAO.findByAddress(firestationUpdated.getAddress())).thenReturn(firestationUpdated);
         when(firestationDAO.save(firestationCreated)).thenReturn(firestationCreated);
         when(firestationDAO.save(firestation1)).thenReturn(null);
         when(firestationDAO.update(firestationUpdated)).thenReturn(firestationUpdated);
         when(firestationDAO.update(unknownFirestation)).thenReturn(null);
+        when(firestationDAO.delete(firestationUpdated)).thenReturn(true);
         this.adminFirestationController.firestationDAO = firestationDAO;
     }
 
@@ -287,6 +289,47 @@ class AdminFirestationControllerTest {
         //**************CHECK MOCK INVOCATION at end***************
         //*********************************************************
         verify(firestationDAO, Mockito.times(1)).update(ArgumentMatchers.refEq(unknownFirestation));//.save(any());
+    }
+
+    @Test
+    void deleteFirestation() throws Exception {
+        //***********GIVEN*************
+        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.delete("/firestation/"+ firestationUpdated.getAddress());
+        //***********************************************************
+        //**************CHECK MOCK INVOCATION at start***************
+        //***********************************************************
+        verify(firestationDAO, Mockito.times(0)).findByAddress(firestationUpdated.getAddress());
+        verify(firestationDAO, Mockito.times(0)).delete(firestationUpdated);
+
+        //**************WHEN-THEN****************************
+        mockMvc.perform(builder)//.andDo(print());
+                .andExpect(status().isNoContent());
+        //*********************************************************
+        //**************CHECK MOCK INVOCATION at end***************
+        //*********************************************************
+        verify(firestationDAO, Mockito.times(1)).findByAddress(firestationUpdated.getAddress());
+        verify(firestationDAO, Mockito.times(1)).delete(ArgumentMatchers.refEq(firestationUpdated));
+    }
+
+    @Test
+    void deleteUnknownFirestation() throws Exception {
+        //***********GIVEN*************
+        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.delete("/firestation/"+ unknownFirestation.getAddress());
+
+        //***********************************************************
+        //**************CHECK MOCK INVOCATION at start***************
+        //***********************************************************
+        verify(firestationDAO, Mockito.times(0)).delete(unknownFirestation);
+
+        //**************WHEN-THEN****************************
+        mockMvc.perform(builder)//.andDo(print());
+                .andExpect(status().isNotFound());
+
+        //*********************************************************
+        //**************CHECK MOCK INVOCATION at end***************
+        //*********************************************************
+        verify(firestationDAO, Mockito.times(1)).findByAddress(unknownFirestation.getAddress());//.save(any());
+        verify(firestationDAO, Mockito.times(0)).delete(ArgumentMatchers.refEq(unknownFirestation));//.save(any());
     }
 
 }
