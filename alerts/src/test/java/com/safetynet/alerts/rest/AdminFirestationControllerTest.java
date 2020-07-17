@@ -229,7 +229,7 @@ class AdminFirestationControllerTest {
     }
 
     @Test
-    void updatePerson() throws Exception {
+    void updateFirestation() throws Exception {
         //***********GIVEN*************
         String jsonGiven = feedWithJava(firestationUpdated);
         MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.put("/firestation/210 jump street")
@@ -267,7 +267,7 @@ class AdminFirestationControllerTest {
     }
 
     @Test
-    void updateUnknownPerson() throws Exception {
+    void updateUnknownFirestation() throws Exception {
         //***********GIVEN*************
         String jsonGiven = feedWithJava(unknownFirestation);
         MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.put("/firestation/"+ unknownFirestation.getAddress())
@@ -288,4 +288,5 @@ class AdminFirestationControllerTest {
         //*********************************************************
         verify(firestationDAO, Mockito.times(1)).update(ArgumentMatchers.refEq(unknownFirestation));//.save(any());
     }
+
 }
