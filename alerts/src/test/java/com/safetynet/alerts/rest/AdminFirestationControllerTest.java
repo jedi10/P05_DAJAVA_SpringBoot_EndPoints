@@ -47,6 +47,8 @@ class AdminFirestationControllerTest {
     private Firestation firestation1 = new Firestation("1509 Culver St","3");
     private Firestation firestation2 = new Firestation("29 15th St", "2");
     private Firestation firestationCreated = new Firestation("210 Jump Street", "3");
+    private Firestation firestationUpdated = new Firestation("210 Jump Street", "5");
+    private Firestation unknownFirestation = new Firestation("xxxxxx", "5");
 
     @BeforeEach
     void setUp() {
@@ -57,6 +59,8 @@ class AdminFirestationControllerTest {
         when(firestationDAO.findByAddress("7 downing Street")).thenReturn(null);
         when(firestationDAO.save(firestationCreated)).thenReturn(firestationCreated);
         when(firestationDAO.save(firestation1)).thenReturn(null);
+        when(firestationDAO.update(firestationUpdated)).thenReturn(firestationUpdated);
+        when(firestationDAO.update(unknownFirestation)).thenReturn(null);
         this.adminFirestationController.firestationDAO = firestationDAO;
     }
 
@@ -222,5 +226,66 @@ class AdminFirestationControllerTest {
         //**************CHECK MOCK INVOCATION at end***************
         //*********************************************************
         verify(firestationDAO, Mockito.times(1)).save(ArgumentMatchers.refEq(firestation1));//.save(any());
+    }
+
+    @Test
+    void updatePerson() throws Exception {
+        //***********GIVEN*************
+        String jsonGiven = feedWithJava(firestationUpdated);
+        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.put("/firestation/210 jump street")
+                .characterEncoding("UTF-8")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(jsonGiven)
+                .accept(MediaType.APPLICATION_JSON_VALUE);
+        //***********************************************************
+        //**************CHECK MOCK INVOCATION at start***************
+        //***********************************************************
+        verify(firestationDAO, Mockito.times(0)).update(firestationUpdated);
+
+        //**************WHEN-THEN****************************
+        MvcResult mvcResult = mockMvc.perform(builder)//.andDo(print());
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(content().string(containsString("5")))
+                .andExpect(jsonPath("$.address").value(firestationUpdated.getAddress()))
+                .andReturn();
+        //*********************************************************
+        //**************CHECK MOCK INVOCATION at end***************
+        //*********************************************************
+        verify(firestationDAO, Mockito.times(1)).update(ArgumentMatchers.refEq(firestationUpdated));//.save(any());
+
+        //*********************************************************
+        //**************CHECK RESPONSE CONTENT*********************
+        //*********************************************************
+        //*****************Check with JSON*************************
+        String expectedJson = null;
+        expectedJson = feedWithJava(firestationUpdated);
+        JSONAssert.assertEquals(expectedJson, mvcResult.getResponse().getContentAsString(), true);
+        //*****************Check with JAVA*************************
+        Firestation resultJavaObject = parseResponse(mvcResult, Firestation.class);
+        assertThat(firestationUpdated).isEqualToComparingFieldByField(resultJavaObject);
+    }
+
+    @Test
+    void updateUnknownPerson() throws Exception {
+        //***********GIVEN*************
+        String jsonGiven = feedWithJava(unknownFirestation);
+        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.put("/firestation/"+ unknownFirestation.getAddress())
+                .characterEncoding("UTF-8")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(jsonGiven);
+        //***********************************************************
+        //**************CHECK MOCK INVOCATION at start***************
+        //***********************************************************
+        verify(firestationDAO, Mockito.times(0)).update(unknownFirestation);
+
+        //**************WHEN-THEN****************************
+        mockMvc.perform(builder)//.andDo(print());
+                .andExpect(status().isNotFound());
+
+        //*********************************************************
+        //**************CHECK MOCK INVOCATION at end***************
+        //*********************************************************
+        verify(firestationDAO, Mockito.times(1)).update(ArgumentMatchers.refEq(unknownFirestation));//.save(any());
     }
 }

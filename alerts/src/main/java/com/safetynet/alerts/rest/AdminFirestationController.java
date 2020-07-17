@@ -69,4 +69,18 @@ public class AdminFirestationController {
         return ResponseEntity.created(location).build();
     }
 
+    @PutMapping(value = "/{address}")
+    public ResponseEntity<?> updateFirestation(@PathVariable("address") String address,
+                                               @RequestBody Firestation firestation) {
+        log.info("Updating Firestation with Address: {}", address );
+
+        Firestation result = firestationDAO.update(firestation);
+
+        if (result == null){
+            log.warn("Updating Firestation Aborted: Address {} not found", firestation.getAddress());
+            return ResponseEntity.notFound().build();
+        }
+        return new ResponseEntity<Firestation>(firestation, HttpStatus.OK);
+    }
+
 }
