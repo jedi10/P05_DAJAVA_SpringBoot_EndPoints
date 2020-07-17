@@ -44,11 +44,13 @@ class AdminFirestationControllerTest {
     @Mock
     private IFirestationDAO firestationDAO;
 
+    private final String rootURL = "/firestation/";
+
     private Firestation firestation1 = new Firestation("1509 Culver St","3");
     private Firestation firestation2 = new Firestation("29 15th St", "2");
     private Firestation firestationCreated = new Firestation("210 Jump Street", "3");
     private Firestation firestationUpdated = new Firestation("210 Jump Street", "5");
-    private Firestation unknownFirestation = new Firestation("xxxxxx", "5");
+    private Firestation unknownFirestation = new Firestation("7 downing Street", "5");
 
     @BeforeEach
     void setUp() {
@@ -73,7 +75,7 @@ class AdminFirestationControllerTest {
     @Test
     void getAllPFirestations() throws Exception {
         //***********GIVEN*************
-        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get("/firestation/")
+        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get(rootURL)
                 .accept(MediaType.APPLICATION_JSON_VALUE);
         //***********************************************************
         //**************CHECK MOCK INVOCATION at start***************
@@ -104,7 +106,7 @@ class AdminFirestationControllerTest {
     void getAllFirestationsVoid() throws Exception {
         //***********GIVEN*************
         when(firestationDAO.findAll()).thenReturn(new ArrayList<Firestation>());
-        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get("/firestation/");
+        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get(rootURL);
 
         //***********************************************************
         //**************CHECK MOCK INVOCATION at start***************
@@ -124,12 +126,12 @@ class AdminFirestationControllerTest {
     @Test
     void getFirestation() throws Exception {
         //***********GIVEN*************
-        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get("/firestation/1509 Culver St")
+        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get(rootURL+ firestation1.getAddress())
                 .accept(MediaType.APPLICATION_JSON_VALUE);
         //***********************************************************
         //**************CHECK MOCK INVOCATION at start***************
         //***********************************************************
-        verify(firestationDAO, Mockito.times(0)).findByAddress("1509 Culver St");
+        verify(firestationDAO, Mockito.times(0)).findByAddress(firestation1.getAddress());
 
         //**************WHEN-THEN****************************
         MvcResult mvcResult = mockMvc.perform(builder)//.andDo(print());
@@ -141,7 +143,7 @@ class AdminFirestationControllerTest {
         //*********************************************************
         //**************CHECK MOCK INVOCATION at end***************
         //*********************************************************
-        verify(firestationDAO, Mockito.times(1)).findByAddress("1509 Culver St");
+        verify(firestationDAO, Mockito.times(1)).findByAddress(firestation1.getAddress());
 
 
         //*********************************************************
@@ -159,12 +161,12 @@ class AdminFirestationControllerTest {
     @Test
     void getUnknownFirestation() throws Exception {
         //***********GIVEN*************
-        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get("/firestation/7 downing Street");
+        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get(rootURL + unknownFirestation.getAddress());
 
         //***********************************************************
         //**************CHECK MOCK INVOCATION at start***************
         //***********************************************************
-        verify(firestationDAO, Mockito.times(0)).findByAddress("7 downing Street");
+        verify(firestationDAO, Mockito.times(0)).findByAddress(unknownFirestation.getAddress());
 
         //**************WHEN-THEN****************************
         mockMvc.perform(builder)//.andDo(print());
@@ -173,14 +175,14 @@ class AdminFirestationControllerTest {
         //*********************************************************
         //**************CHECK MOCK INVOCATION at end***************
         //*********************************************************
-        verify(firestationDAO, Mockito.times(1)).findByAddress("7 downing Street");//.save(any());
+        verify(firestationDAO, Mockito.times(1)).findByAddress(unknownFirestation.getAddress());//.save(any());
     }
 
     @Test
     void createFirestation() throws Exception {
         //***********GIVEN*************
         String jsonGiven = feedWithJava(firestationCreated);
-        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.post("/firestation/")
+        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.post(rootURL)
                 .characterEncoding("UTF-8")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(jsonGiven)
@@ -195,7 +197,7 @@ class AdminFirestationControllerTest {
 
         MvcResult mvcResult = mockMvc.perform(builder)//.andDo(print());
                 .andExpect(status().isCreated())
-                .andExpect(redirectedUrl("http://localhost/firestation/"+ urlDestination))
+                .andExpect(redirectedUrl("http://localhost"+ rootURL + urlDestination))
                 //.andExpect(redirectedUrl("http://localhost/firestation/210%20Jump%20Street"))
                 .andReturn();
         //*********************************************************
@@ -210,7 +212,7 @@ class AdminFirestationControllerTest {
     void createFirestationAlreadyThere() throws Exception {
         //***********GIVEN*************
         String jsonGiven = feedWithJava(firestation1);
-        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.post("/firestation/")
+        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.post(rootURL)
                 .characterEncoding("UTF-8")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(jsonGiven)
@@ -234,7 +236,7 @@ class AdminFirestationControllerTest {
     void updateFirestation() throws Exception {
         //***********GIVEN*************
         String jsonGiven = feedWithJava(firestationUpdated);
-        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.put("/firestation/210 jump street")
+        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.put(rootURL)
                 .characterEncoding("UTF-8")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(jsonGiven)
@@ -272,7 +274,7 @@ class AdminFirestationControllerTest {
     void updateUnknownFirestation() throws Exception {
         //***********GIVEN*************
         String jsonGiven = feedWithJava(unknownFirestation);
-        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.put("/firestation/"+ unknownFirestation.getAddress())
+        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.put(rootURL)
                 .characterEncoding("UTF-8")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(jsonGiven);
@@ -294,7 +296,7 @@ class AdminFirestationControllerTest {
     @Test
     void deleteFirestation() throws Exception {
         //***********GIVEN*************
-        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.delete("/firestation/"+ firestationUpdated.getAddress());
+        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.delete(rootURL + firestationUpdated.getAddress());
         //***********************************************************
         //**************CHECK MOCK INVOCATION at start***************
         //***********************************************************
@@ -314,7 +316,7 @@ class AdminFirestationControllerTest {
     @Test
     void deleteUnknownFirestation() throws Exception {
         //***********GIVEN*************
-        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.delete("/firestation/"+ unknownFirestation.getAddress());
+        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.delete(rootURL + unknownFirestation.getAddress());
 
         //***********************************************************
         //**************CHECK MOCK INVOCATION at start***************

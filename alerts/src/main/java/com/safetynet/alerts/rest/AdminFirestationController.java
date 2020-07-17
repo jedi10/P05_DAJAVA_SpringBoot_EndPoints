@@ -38,7 +38,7 @@ public class AdminFirestationController {
         return new ResponseEntity<List<Firestation>>(firestations, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/{address}", method = RequestMethod.GET)
+    @GetMapping(value = "/{address}")
     public ResponseEntity<?> getFirestation(@PathVariable("address") String address ) {
         log.info("Fetching Firestation with address  {} ", address);
 
@@ -50,7 +50,7 @@ public class AdminFirestationController {
         return new ResponseEntity<Firestation>(firestation, HttpStatus.OK);
     }
 
-    @PostMapping(value = "/", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @PostMapping(value = "/")
     public ResponseEntity<?> createFirestation(@RequestBody Firestation firestation) {
         log.info("Creating Firestation : {}", firestation);
 
@@ -61,6 +61,11 @@ public class AdminFirestationController {
             return ResponseEntity.noContent().build();
         }
 
+        /**
+        HttpHeaders headers = new HttpHeaders();
+         //injection via param method: UriComponentsBuilder ucBuilder
+        headers.setLocation(ucBuilder.path("/firestation/address").buildAndExpand(firestation.getAddress()).toUri());
+        return new ResponseEntity<String>(headers, HttpStatus.CREATED);**/
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{address}")
@@ -69,10 +74,9 @@ public class AdminFirestationController {
         return ResponseEntity.created(location).build();
     }
 
-    @PutMapping(value = "/{address}")
-    public ResponseEntity<?> updateFirestation(@PathVariable("address") String address,
-                                               @RequestBody Firestation firestation) {
-        log.info("Updating Firestation with Address: {}", address );
+    @PutMapping(value = "/")
+    public ResponseEntity<?> updateFirestation(@RequestBody Firestation firestation) {
+        log.info("Updating Firestation with Address: {}", firestation.getAddress() );
 
         Firestation result = firestationDAO.update(firestation);
 
