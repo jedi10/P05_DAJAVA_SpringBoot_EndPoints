@@ -42,7 +42,7 @@ public class AdminPersonController {
     }
 
 
-    @RequestMapping(value = "/{firstName}&{lastName}", method = RequestMethod.GET)
+    @GetMapping(value = "/{firstName}&{lastName}")
     public ResponseEntity<?> getPerson(@PathVariable("firstName") String firstName, @PathVariable("lastName") String lastName ) {
         log.info("Fetching Person with first Name {} and lastName {}", firstName, lastName );
 
@@ -55,7 +55,7 @@ public class AdminPersonController {
         return new ResponseEntity<Person>(person, HttpStatus.OK);
     }
 
-    @PostMapping(value = "/", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @PostMapping(value = "/")
     public ResponseEntity<?> createPerson(@RequestBody Person person) {
         log.info("Creating Person : {}", person);
 
@@ -78,10 +78,9 @@ public class AdminPersonController {
         return ResponseEntity.created(location).build();
     }
 
-    @RequestMapping(value = "/{firstName}&{lastName}", method = RequestMethod.PUT)
-    public ResponseEntity<?> updatePerson(@PathVariable("firstName") String firstName, @PathVariable("lastName") String lastName,
-                                          @RequestBody Person person) {
-        log.info("Updating Person with first Name {} and lastName {}", firstName, lastName );
+    @PutMapping(value = "/")
+    public ResponseEntity<?> updatePerson(@RequestBody Person person) {
+        log.info("Updating Person with first Name {} and lastName {}", person.getFirstName(), person.getLastName());
 
         Person result = personDAO.update(person);
 
@@ -93,7 +92,7 @@ public class AdminPersonController {
         return new ResponseEntity<Person>(person, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/{firstName}&{lastName}", method = RequestMethod.DELETE)
+    @DeleteMapping(value = "/{firstName}&{lastName}")
     public ResponseEntity<?> deletePerson(@PathVariable("firstName") String firstName, @PathVariable("lastName") String lastName) {
         log.info("Fetching & Deleting User with first Name {} and lastName {}", firstName, lastName );
 

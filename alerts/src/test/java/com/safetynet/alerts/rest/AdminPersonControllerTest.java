@@ -45,7 +45,9 @@ class AdminPersonControllerTest {
     @Mock
     private IPersonDAO personDAO;
 
-    private Person person = new Person("julia", "werner", "rue du colisee", "Rome", 45, "06-12-23-34-45", "wermer@mail.it");
+    private final String rootURL = "/person/";
+
+    private Person person1 = new Person("julia", "werner", "rue du colisee", "Rome", 45, "06-12-23-34-45", "wermer@mail.it");
     private Person person2 = new Person("judy", "holmes", "rue de la pensee", "Londre", 89, "06-25-74-90-12", "holmes@mail.en");
     private Person personCreated = new Person("jack", "mortimer", "rue du stade", "Rome", 45, "06-25-50-90-12", "mortimer@mail.it");
     private Person personUpdated = new Person("jack", "mortimer", "rue du colisee", "Rome", 45, "06-25-23-99-00", "mortimer@mail.it");
@@ -60,13 +62,13 @@ class AdminPersonControllerTest {
     void setUpEach() {
         //***********GIVEN*************
         //          Mockito
-        when(personDAO.findAll()).thenReturn(List.of(person, person2));
-        when(personDAO.findByName("julia", "werner")).thenReturn(person);
+        when(personDAO.findAll()).thenReturn(List.of(person1, person2));
+        when(personDAO.findByName("julia", "werner")).thenReturn(person1);
         when(personDAO.findByName("jack", "mortimer")).thenReturn(personUpdated);
         when(personDAO.findByName("grrr", "trex")).thenReturn(null);
         //Person personMock = mock(Person.class);
         when(personDAO.save(personCreated)).thenReturn(personCreated);//Mockito.any(Person.class)
-        when(personDAO.save(person)).thenReturn(null);
+        when(personDAO.save(person1)).thenReturn(null);
         when(personDAO.update(personUpdated)).thenReturn(personUpdated);
         when(personDAO.update(unknownPerson)).thenReturn(null);
         when(personDAO.delete(personUpdated)).thenReturn(true);
@@ -80,7 +82,7 @@ class AdminPersonControllerTest {
     @Test
     void getAllPersons() throws Exception {
         //***********GIVEN*************
-        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get("/person/")
+        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get(rootURL)
                 .accept(MediaType.APPLICATION_JSON_VALUE);
         //***********************************************************
         //**************CHECK MOCK INVOCATION at start***************
@@ -91,8 +93,8 @@ class AdminPersonControllerTest {
         MvcResult mvcResult = mockMvc.perform(builder)//.andDo(print());
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(content().string(containsString("wermer@mail.it")))
-                .andExpect(jsonPath("$[0].firstName").value(person.getFirstName()))
+                .andExpect(content().string(containsString(person1.getEmail())))
+                .andExpect(jsonPath("$[0].firstName").value(person1.getFirstName()))
                 .andReturn();
         //*********************************************************
         //**************CHECK MOCK INVOCATION at end***************
@@ -104,7 +106,7 @@ class AdminPersonControllerTest {
         //**************CHECK RESPONSE CONTENT*********************
         //*********************************************************
         String expectedJson = null;
-        expectedJson = feedWithJava(List.of(person, person2));
+        expectedJson = feedWithJava(List.of(person1, person2));
         JSONAssert.assertEquals(expectedJson, mvcResult.getResponse().getContentAsString(), true);
     }
 
@@ -112,7 +114,7 @@ class AdminPersonControllerTest {
     void getAllPersonsVoid() throws Exception {
         //***********GIVEN*************
         when(personDAO.findAll()).thenReturn(new ArrayList<Person>());
-        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get("/person/");
+        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get(rootURL);
 
         //***********************************************************
         //**************CHECK MOCK INVOCATION at start***************
@@ -132,7 +134,11 @@ class AdminPersonControllerTest {
     @Test
     void getPerson() throws Exception {
         //***********GIVEN*************
-        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get("/person/julia&werner")
+        String urlTemplate = String.format("%s%s&%s",
+                rootURL,
+                person1.getFirstName(),
+                person1.getLastName());//"julia&werner"
+        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get(urlTemplate)
                 .accept(MediaType.APPLICATION_JSON_VALUE);
         //***********************************************************
         //**************CHECK MOCK INVOCATION at start***************
@@ -143,8 +149,8 @@ class AdminPersonControllerTest {
         MvcResult mvcResult = mockMvc.perform(builder)//.andDo(print());
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(content().string(containsString("wermer@mail.it")))
-                .andExpect(jsonPath("$.firstName").value(person.getFirstName()))
+                .andExpect(content().string(containsString(person1.getEmail())))
+                .andExpect(jsonPath("$.firstName").value(person1.getFirstName()))
                 .andReturn();
         //*********************************************************
         //**************CHECK MOCK INVOCATION at end***************
@@ -157,17 +163,21 @@ class AdminPersonControllerTest {
         //*********************************************************
         //*****************Check with JSON*************************
         String expectedJson = null;
-        expectedJson = feedWithJava(person);
+        expectedJson = feedWithJava(person1);
         JSONAssert.assertEquals(expectedJson, mvcResult.getResponse().getContentAsString(), true);
         //*****************Check with JAVA*************************
         Person resultJavaObject = parseResponse(mvcResult, Person.class);
-        assertThat(person).isEqualToComparingFieldByField(resultJavaObject);
+        assertThat(person1).isEqualToComparingFieldByField(resultJavaObject);
     }
 
     @Test
     void getUnknownPerson() throws Exception {
         //***********GIVEN*************
-        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get("/person/grrr&trex");
+        String urlTemplate = String.format("%s%s&%s",
+                rootURL,
+                unknownPerson.getFirstName(),
+                unknownPerson.getLastName());//"grrr&trex"
+        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get(urlTemplate);
 
         //***********************************************************
         //**************CHECK MOCK INVOCATION at start***************
@@ -188,7 +198,7 @@ class AdminPersonControllerTest {
     void createPerson() throws Exception {
         //***********GIVEN*************
         String jsonGiven = feedWithJava(personCreated);
-        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.post("/person/")
+        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.post(rootURL)
                 .characterEncoding("UTF-8")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(jsonGiven)
@@ -214,8 +224,8 @@ class AdminPersonControllerTest {
     @Test
     void createPersonAlreadyThere() throws Exception {
         //***********GIVEN*************
-        String jsonGiven = feedWithJava(person);
-        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.post("/person/")
+        String jsonGiven = feedWithJava(person1);
+        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.post(rootURL)
                 .characterEncoding("UTF-8")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(jsonGiven)
@@ -223,7 +233,7 @@ class AdminPersonControllerTest {
         //***********************************************************
         //**************CHECK MOCK INVOCATION at start***************
         //***********************************************************
-        verify(personDAO, Mockito.times(0)).save(person);
+        verify(personDAO, Mockito.times(0)).save(person1);
 
         //**************WHEN-THEN****************************
         mockMvc.perform(builder)//.andDo(print());
@@ -232,14 +242,14 @@ class AdminPersonControllerTest {
         //*********************************************************
         //**************CHECK MOCK INVOCATION at end***************
         //*********************************************************
-        verify(personDAO, Mockito.times(1)).save(ArgumentMatchers.refEq(person));//.save(any());
+        verify(personDAO, Mockito.times(1)).save(ArgumentMatchers.refEq(person1));//.save(any());
     }
 
     @Test
     void updatePerson() throws Exception {
         //***********GIVEN*************
         String jsonGiven = feedWithJava(personUpdated);
-        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.put("/person/jack&mortimer")
+        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.put(rootURL)
                 .characterEncoding("UTF-8")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(jsonGiven)
@@ -253,7 +263,7 @@ class AdminPersonControllerTest {
         MvcResult mvcResult = mockMvc.perform(builder)//.andDo(print());
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(content().string(containsString("mortimer@mail.it")))
+                .andExpect(content().string(containsString(personUpdated.getEmail())))
                 .andExpect(jsonPath("$.firstName").value(personUpdated.getFirstName()))
                 .andExpect(jsonPath("$.address").value(personUpdated.getAddress()))
                 .andReturn();
@@ -278,7 +288,7 @@ class AdminPersonControllerTest {
     void updateUnknownPerson() throws Exception {
         //***********GIVEN*************
         String jsonGiven = feedWithJava(unknownPerson);
-        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.put("/person/grrr&trex")
+        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.put(rootURL)
                 .characterEncoding("UTF-8")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(jsonGiven);
@@ -300,7 +310,11 @@ class AdminPersonControllerTest {
     @Test
     void deletePerson() throws Exception {
         //***********GIVEN*************
-        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.delete("/person/jack&mortimer");
+        String urlTemplate = String.format("%s%s&%s",
+                rootURL,
+                personUpdated.getFirstName(),
+                personUpdated.getLastName());//jack&mortimer");
+        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.delete(urlTemplate);
 
         //***********************************************************
         //**************CHECK MOCK INVOCATION at start***************
@@ -321,7 +335,11 @@ class AdminPersonControllerTest {
     @Test
     void deleteUnknownPerson() throws Exception {
         //***********GIVEN*************
-        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.delete("/person/grrr&trex");
+        String urlTemplate = String.format("%s%s&%s",
+                rootURL,
+                unknownPerson.getFirstName(),
+                unknownPerson.getLastName());//"grrr&trex"
+        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.delete(urlTemplate);
 
         //***********************************************************
         //**************CHECK MOCK INVOCATION at start***************

@@ -126,7 +126,10 @@ class AdminFirestationControllerTest {
     @Test
     void getFirestation() throws Exception {
         //***********GIVEN*************
-        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get(rootURL+ firestation1.getAddress())
+        String urlTemplate = String.format("%s%s",
+                rootURL,
+                firestation1.getAddress());
+        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get(urlTemplate)
                 .accept(MediaType.APPLICATION_JSON_VALUE);
         //***********************************************************
         //**************CHECK MOCK INVOCATION at start***************
@@ -161,7 +164,10 @@ class AdminFirestationControllerTest {
     @Test
     void getUnknownFirestation() throws Exception {
         //***********GIVEN*************
-        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get(rootURL + unknownFirestation.getAddress());
+        String urlTemplate = String.format("%s%s",
+                rootURL,
+                unknownFirestation.getAddress());
+        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get(urlTemplate);
 
         //***********************************************************
         //**************CHECK MOCK INVOCATION at start***************
@@ -296,7 +302,10 @@ class AdminFirestationControllerTest {
     @Test
     void deleteFirestation() throws Exception {
         //***********GIVEN*************
-        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.delete(rootURL + firestationUpdated.getAddress());
+        String urlTemplate = String.format("%s%s",
+                rootURL,
+                firestationUpdated.getAddress());
+        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.delete(urlTemplate);
         //***********************************************************
         //**************CHECK MOCK INVOCATION at start***************
         //***********************************************************
@@ -316,7 +325,10 @@ class AdminFirestationControllerTest {
     @Test
     void deleteUnknownFirestation() throws Exception {
         //***********GIVEN*************
-        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.delete(rootURL + unknownFirestation.getAddress());
+        String urlTemplate = String.format("%s%s",
+                rootURL,
+                unknownFirestation.getAddress());
+        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.delete(urlTemplate);
 
         //***********************************************************
         //**************CHECK MOCK INVOCATION at start***************
