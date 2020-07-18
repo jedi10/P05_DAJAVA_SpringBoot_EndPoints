@@ -1,5 +1,6 @@
 package com.safetynet.alerts.models;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -20,6 +21,7 @@ public class MedicalRecord {
 
     @Getter
     @Setter
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM-dd-yyyy")
     private LocalDate birthday;
 
     @Getter
@@ -85,9 +87,26 @@ public class MedicalRecord {
         this.medications = new ArrayList<String>();
         this.allergies = new ArrayList<String>();
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        MedicalRecord that = (MedicalRecord) o;
+        return firstName.equals(that.firstName) &&
+                lastName.equals(that.lastName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(firstName, lastName);
+    }
+
 }
 
 
+
+//https://stackoverflow.com/questions/28802544/java-8-localdate-jackson-format
 
 //https://www.baeldung.com/java-optional
 //https://jmdoudoux.fr/java/dej/chap-lambdas.htm
