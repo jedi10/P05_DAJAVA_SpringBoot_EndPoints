@@ -8,7 +8,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 @Slf4j
@@ -46,6 +48,26 @@ public class AdminMedicalRecordController {
             return ResponseEntity.notFound().build();
         }
         return new ResponseEntity<MedicalRecord>(medicalRecord, HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/")
+    public ResponseEntity<?> createMedicalRecord(@RequestBody MedicalRecord medicalRecord) {
+        log.info("Creating Medical Record : {}", medicalRecord);
+
+        MedicalRecord result = medicalRecordDAO.save(medicalRecord);
+
+        if (result == null){
+            log.warn("Creating Medical Record Aborted: {} {} already exist",
+                    medicalRecord.getFirstName(), medicalRecord.getLastName());
+            return ResponseEntity.noContent().build();
+        }
+
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{firstName}&{lastName}")
+                .buildAndExpand(medicalRecord.getFirstName(), medicalRecord.getLastName())
+                .toUri();
+        return ResponseEntity.created(location).build();
     }
 
 }
