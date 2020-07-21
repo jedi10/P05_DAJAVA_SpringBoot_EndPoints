@@ -88,6 +88,11 @@ public class MedicalRecord {
         this.allergies = new ArrayList<String>();
     }
 
+    /**
+     * Constructor
+     */
+    public MedicalRecord(){};
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

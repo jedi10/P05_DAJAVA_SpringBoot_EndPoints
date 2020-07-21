@@ -7,9 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -36,6 +34,18 @@ public class AdminMedicalRecordController {
             return new ResponseEntity(HttpStatus.NO_CONTENT);
         }
         return new ResponseEntity<List<MedicalRecord>>(medicalRecords, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/{firstName}&{lastName}")
+    public ResponseEntity<?> getMedicalRecord(@PathVariable("firstName") String firstName, @PathVariable("lastName") String lastName ) {
+        log.info("Fetching Medical Record with first Name {} and lastName {}", firstName, lastName );
+
+        MedicalRecord medicalRecord = medicalRecordDAO.findByName(firstName, lastName);
+        if(medicalRecord == null){
+            log.warn("Fetching Medical Record Aborted: {} {} not found", firstName, lastName);
+            return ResponseEntity.notFound().build();
+        }
+        return new ResponseEntity<MedicalRecord>(medicalRecord, HttpStatus.OK);
     }
 
 }

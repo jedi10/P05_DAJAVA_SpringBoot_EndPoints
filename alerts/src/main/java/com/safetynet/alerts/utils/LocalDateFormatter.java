@@ -25,3 +25,5 @@ public class LocalDateFormatter {
 
 
 //4.2 https://www.baeldung.com/java-avoid-null-check
+//DTO
+//https://www.jworks.io/formatting-java-8-localdatetime-in-json-with-spring-boot/

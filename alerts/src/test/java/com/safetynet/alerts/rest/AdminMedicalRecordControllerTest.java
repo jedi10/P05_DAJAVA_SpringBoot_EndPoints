@@ -1,7 +1,6 @@
 package com.safetynet.alerts.rest;
 
 import com.safetynet.alerts.dao.IMedicalRecordDAO;
-import com.safetynet.alerts.models.Firestation;
 import com.safetynet.alerts.models.MedicalRecord;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,7 +22,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.safetynet.alerts.utils.JsonConvert.feedWithJava;
+import static com.safetynet.alerts.utils.JsonConvertForTest.parseResponse;
 import static com.safetynet.alerts.utils.LocalDateFormatter.convertToString;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
@@ -55,6 +56,10 @@ class AdminMedicalRecordControllerTest {
     private MedicalRecord medicalRecord2 = new MedicalRecord("jacob", "boyd",
             LocalDate.of(1989, 3, 6));
 
+    private MedicalRecord unknownMedicalRecord = new MedicalRecord("grrr","trex",
+            null);
+
+
     @BeforeEach
     void setUp() {
         medicationList.add("aznol:350mg"); medicationList.add("hydrapermazol:100mg");
@@ -66,6 +71,8 @@ class AdminMedicalRecordControllerTest {
         medicalRecord2.setMedications(medicationList);
 
         when(medicalRecordDAO.findAll()).thenReturn(List.of(medicalRecord1, medicalRecord2));
+        when(medicalRecordDAO.findByName("john", "boyd")).thenReturn(medicalRecord1);
+        when(medicalRecordDAO.findByName("grrr", "trex")).thenReturn(null);
         this.adminMedicalRecordController.medicalRecordDAO = medicalRecordDAO;
     }
 
@@ -125,4 +132,71 @@ class AdminMedicalRecordControllerTest {
         //*********************************************************
         verify(medicalRecordDAO, Mockito.times(1)).findAll();//.save(any());
     }
+
+    @Test
+    void getMedicalRecord() throws Exception {
+        //***********GIVEN*************
+        String urlTemplate = String.format("%s%s&%s",
+                rootURL,
+                medicalRecord1.getFirstName(),
+                medicalRecord1.getLastName());
+        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get(urlTemplate)
+                .accept(MediaType.APPLICATION_JSON_VALUE);
+        //***********************************************************
+        //**************CHECK MOCK INVOCATION at start***************
+        //***********************************************************
+        verify(medicalRecordDAO, Mockito.times(0)).findByName(
+                medicalRecord1.getFirstName(),
+                medicalRecord1.getLastName());
+
+        //**************WHEN-THEN****************************
+        MvcResult mvcResult = mockMvc.perform(builder)//.andDo(print());
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(content().string(containsString("aznol:350mg")))
+                .andExpect(jsonPath("$.medications").value(medicalRecord1.getMedications()))
+                .andReturn();
+        //*********************************************************
+        //**************CHECK MOCK INVOCATION at end***************
+        //*********************************************************
+        verify(medicalRecordDAO, Mockito.times(1)).findByName(
+                medicalRecord1.getFirstName(),
+                medicalRecord1.getLastName());
+
+        //*********************************************************
+        //**************CHECK RESPONSE CONTENT*********************
+        //*********************************************************
+        //*****************Check with JSON*************************
+        String expectedJson = null;
+        expectedJson = feedWithJava(medicalRecord1);
+        JSONAssert.assertEquals(expectedJson, mvcResult.getResponse().getContentAsString(), true);
+        //*****************Check with JAVA*************************
+        MedicalRecord resultJavaObject = parseResponse(mvcResult, MedicalRecord.class);
+        assertThat(medicalRecord1).isEqualToComparingFieldByField(resultJavaObject);
+    }
+
+    @Test
+    void getUnknownMedicalRecord() throws Exception {
+        //***********GIVEN*************
+        String urlTemplate = String.format("%s%s&%s",
+                rootURL,
+                unknownMedicalRecord.getFirstName(),
+                unknownMedicalRecord.getLastName());//"grrr&trex"
+        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get(urlTemplate);
+
+        //***********************************************************
+        //**************CHECK MOCK INVOCATION at start***************
+        //***********************************************************
+        verify(medicalRecordDAO, Mockito.times(0)).findByName("grrr","trex");
+
+        //**************WHEN-THEN****************************
+        mockMvc.perform(builder)//.andDo(print());
+                .andExpect(status().isNotFound());
+
+        //*********************************************************
+        //**************CHECK MOCK INVOCATION at end***************
+        //*********************************************************
+        verify(medicalRecordDAO, Mockito.times(1)).findByName("grrr","trex");//.save(any());
+    }
+
 }
