@@ -41,7 +41,7 @@ public class AdminMedicalRecordController {
 
     @GetMapping(value = "/{firstName}&{lastName}")
     public ResponseEntity<?> getMedicalRecord(@PathVariable("firstName") String firstName, @PathVariable("lastName") String lastName ) {
-        log.info("Fetching Medical Record with first Name {} and lastName {}", firstName, lastName );
+        log.info("Fetching Medical Record with first Name '{}' and last Name '{}'", firstName, lastName );
 
         MedicalRecord medicalRecord = medicalRecordDAO.findByName(firstName, lastName);
         if(medicalRecord == null){
@@ -73,7 +73,7 @@ public class AdminMedicalRecordController {
 
     @PutMapping(value = "/")
     public ResponseEntity<?> updateMedicalRecord(@RequestBody MedicalRecord medicalRecord) {
-        log.info("Updating Medical Record with first Name {} and lastName {}",
+        log.info("Updating Medical Record with first Name '{}' and last Name '{}'",
                 medicalRecord.getFirstName(), medicalRecord.getLastName());
 
         MedicalRecord result = medicalRecordDAO.update(medicalRecord);
@@ -88,7 +88,7 @@ public class AdminMedicalRecordController {
 
     @DeleteMapping(value = "/{firstName}&{lastName}")
     public ResponseEntity<?> deleteMedicalRecord(@PathVariable("firstName") String firstName, @PathVariable("lastName") String lastName) {
-        log.info("Fetching & Deleting Medical Record with first Name {} and lastName {}", firstName, lastName );
+        log.info("Fetching & Deleting Medical Record with first Name '{}' and last Name '{}'", firstName, lastName );
 
         MedicalRecord medicalRecord = medicalRecordDAO.findByName(firstName, lastName);
         if(medicalRecord == null){
