@@ -85,11 +85,13 @@ class AdminMedicalRecordControllerTest {
 
         when(medicalRecordDAO.findAll()).thenReturn(List.of(medicalRecord1, medicalRecord2));
         when(medicalRecordDAO.findByName("john", "boyd")).thenReturn(medicalRecord1);
+        when(medicalRecordDAO.findByName("jack", "mortimer")).thenReturn(medicalRecordUpdated);
         when(medicalRecordDAO.findByName("grrr", "trex")).thenReturn(null);
         when(medicalRecordDAO.save(medicalRecordCreated)).thenReturn(medicalRecordCreated);
         when(medicalRecordDAO.save(medicalRecord1)).thenReturn(null);
         when(medicalRecordDAO.update(medicalRecordUpdated)).thenReturn(medicalRecordUpdated);
         when(medicalRecordDAO.update(unknownMedicalRecord)).thenReturn(null);
+        when(medicalRecordDAO.delete(medicalRecordUpdated)).thenReturn(true);
         this.adminMedicalRecordController.medicalRecordDAO = medicalRecordDAO;
     }
 
@@ -308,7 +310,7 @@ class AdminMedicalRecordControllerTest {
     }
 
     @Test
-    void updateUnknownPerson() throws Exception {
+    void updateUnknownMedicalRecord() throws Exception {
         //***********GIVEN*************
         String jsonGiven = convertJavaToJson(unknownMedicalRecord);
         MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.put(rootURL)
@@ -328,6 +330,57 @@ class AdminMedicalRecordControllerTest {
         //**************CHECK MOCK INVOCATION at end***************
         //*********************************************************
         verify(medicalRecordDAO, Mockito.times(1)).update(ArgumentMatchers.refEq(unknownMedicalRecord));//.save(any());
+    }
+
+    @Test
+    void deleteMedicalRecord() throws Exception {
+        //***********GIVEN*************
+        String urlTemplate = String.format("%s%s&%s",
+                rootURL,
+                medicalRecordUpdated.getFirstName(),
+                medicalRecordUpdated.getLastName());//jack&mortimer");
+        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.delete(urlTemplate);
+
+        //***********************************************************
+        //**************CHECK MOCK INVOCATION at start***************
+        //***********************************************************
+        verify(medicalRecordDAO, Mockito.times(0)).findByName("jack","mortimer");
+        verify(medicalRecordDAO, Mockito.times(0)).delete(medicalRecordUpdated);
+
+        //**************WHEN-THEN****************************
+        mockMvc.perform(builder)//.andDo(print());
+                .andExpect(status().isNoContent());
+        //*********************************************************
+        //**************CHECK MOCK INVOCATION at end***************
+        //*********************************************************
+        verify(medicalRecordDAO, Mockito.times(1)).findByName("jack","mortimer");
+        verify(medicalRecordDAO, Mockito.times(1)).delete(ArgumentMatchers.refEq(medicalRecordUpdated));
+    }
+
+    @Test
+    void deleteUnknownMedicalRecord() throws Exception {
+        //***********GIVEN*************
+        String urlTemplate = String.format("%s%s&%s",
+                rootURL,
+                unknownMedicalRecord.getFirstName(),
+                unknownMedicalRecord.getLastName());//"grrr&trex"
+        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.delete(urlTemplate);
+
+        //***********************************************************
+        //**************CHECK MOCK INVOCATION at start***************
+        //***********************************************************
+        verify(medicalRecordDAO, Mockito.times(0)).findByName("grrr","trex");
+        verify(medicalRecordDAO, Mockito.times(0)).delete(unknownMedicalRecord);
+
+        //**************WHEN-THEN****************************
+        mockMvc.perform(builder)//.andDo(print());
+                .andExpect(status().isNotFound());
+
+        //*********************************************************
+        //**************CHECK MOCK INVOCATION at end***************
+        //*********************************************************
+        verify(medicalRecordDAO, Mockito.times(1)).findByName("grrr","trex");//.save(any());
+        verify(medicalRecordDAO, Mockito.times(0)).delete(ArgumentMatchers.refEq(unknownMedicalRecord));//.save(any());
     }
 
 }

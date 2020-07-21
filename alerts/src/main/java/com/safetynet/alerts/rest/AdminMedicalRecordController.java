@@ -2,6 +2,7 @@ package com.safetynet.alerts.rest;
 
 import com.safetynet.alerts.dao.IMedicalRecordDAO;
 import com.safetynet.alerts.models.MedicalRecord;
+import com.safetynet.alerts.models.Person;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -83,6 +84,19 @@ public class AdminMedicalRecordController {
             return ResponseEntity.notFound().build();
         }
         return new ResponseEntity<MedicalRecord>(medicalRecord, HttpStatus.OK);
+    }
+
+    @DeleteMapping(value = "/{firstName}&{lastName}")
+    public ResponseEntity<?> deleteMedicalRecord(@PathVariable("firstName") String firstName, @PathVariable("lastName") String lastName) {
+        log.info("Fetching & Deleting Medical Record with first Name {} and lastName {}", firstName, lastName );
+
+        MedicalRecord medicalRecord = medicalRecordDAO.findByName(firstName, lastName);
+        if(medicalRecord == null){
+            log.warn("Deleting Medical Record Aborted: {} {} not found", firstName, lastName);
+            return ResponseEntity.notFound().build();
+        }
+        medicalRecordDAO.delete(medicalRecord);
+        return new ResponseEntity<MedicalRecord>(HttpStatus.NO_CONTENT);
     }
 
 }
