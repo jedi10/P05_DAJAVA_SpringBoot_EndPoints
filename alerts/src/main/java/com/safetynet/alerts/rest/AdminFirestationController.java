@@ -22,13 +22,13 @@ public class AdminFirestationController {
     IFirestationDAO firestationDAO;
 
     /**
-     * List of Persons
+     * List of Firestation
      * Not requested by client but useful to test
-     * @return list of persons
+     * @return list of firestations
      */
     @RequestMapping(value = "/", method = RequestMethod.GET,
             produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<List<Firestation>> getAllPFirestations() {
+    public ResponseEntity<List<Firestation>> getAllFirestations() {
         List<Firestation> firestations = firestationDAO.findAll();
         log.info("Fetching Firestation List");
         if (firestations.isEmpty()) {

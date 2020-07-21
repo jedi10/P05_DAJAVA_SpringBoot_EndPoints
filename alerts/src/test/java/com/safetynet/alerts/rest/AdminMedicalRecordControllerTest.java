@@ -1,8 +1,10 @@
 package com.safetynet.alerts.rest;
 
-import com.safetynet.alerts.dao.IPersonDAO;
-import com.safetynet.alerts.models.Person;
-import org.junit.jupiter.api.*;
+import com.safetynet.alerts.dao.IMedicalRecordDAO;
+import com.safetynet.alerts.models.MedicalRecord;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -16,63 +18,81 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-
 import static com.safetynet.alerts.utils.Jackson.convertJavaToJson;
+import static com.safetynet.alerts.utils.Jackson.deepCopy;
 import static com.safetynet.alerts.utils.JsonConvertForTest.parseResponse;
+import static com.safetynet.alerts.utils.LocalDateFormatter.convertToString;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.internal.bytebuddy.matcher.ElementMatchers.is;
 import static org.hamcrest.Matchers.containsString;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
-import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class AdminPersonControllerTest {
+class AdminMedicalRecordControllerTest {
 
     @Autowired
     public MockMvc mockMvc;
 
     @Autowired
-    private AdminPersonController adminPersonController;
+    private AdminMedicalRecordController adminMedicalRecordController;
 
     @Mock
-    private IPersonDAO personDAO;
+    IMedicalRecordDAO medicalRecordDAO;
 
-    private final String rootURL = "/person/";
+    private final String rootURL = "/medicalrecord/";
 
-    private Person person1 = new Person("julia", "werner", "rue du colisee", "Rome", 45, "06-12-23-34-45", "wermer@mail.it");
-    private Person person2 = new Person("judy", "holmes", "rue de la pensee", "Londre", 89, "06-25-74-90-12", "holmes@mail.en");
-    private Person personCreated = new Person("jack", "mortimer", "rue du stade", "Rome", 45, "06-25-50-90-12", "mortimer@mail.it");
-    private Person personUpdated = new Person("jack", "mortimer", "rue du colisee", "Rome", 45, "06-25-23-99-00", "mortimer@mail.it");
-    private Person unknownPerson = new Person("grrr","trex","teodor","citeor", 3455, "123467555","mail");
+    private List<String> medicationList = new ArrayList<>();
 
-    @BeforeAll
-    void setUp() {
+    private List<String> allergiesList = new ArrayList<>();
 
-    }
+    private MedicalRecord medicalRecord1 = new MedicalRecord("john", "boyd",
+            LocalDate.of(1984, 3, 6));
+
+    private MedicalRecord medicalRecord2 = new MedicalRecord("jacob", "boyd",
+            LocalDate.of(1989, 3, 6));
+
+    private MedicalRecord unknownMedicalRecord = new MedicalRecord("grrr","trex",
+            null);
+
+    private MedicalRecord medicalRecordCreated = new MedicalRecord("jack", "mortimer",
+            LocalDate.of(1961, 1, 25));
+
+    private MedicalRecord medicalRecordUpdated = deepCopy(medicalRecordCreated, MedicalRecord.class);
 
     @BeforeEach
-    void setUpEach() {
-        //***********GIVEN*************
-        //          Mockito
-        when(personDAO.findAll()).thenReturn(List.of(person1, person2));
-        when(personDAO.findByName("julia", "werner")).thenReturn(person1);
-        when(personDAO.findByName("jack", "mortimer")).thenReturn(personUpdated);
-        when(personDAO.findByName("grrr", "trex")).thenReturn(null);
-        //Person personMock = mock(Person.class);
-        when(personDAO.save(personCreated)).thenReturn(personCreated);//Mockito.any(Person.class)
-        when(personDAO.save(person1)).thenReturn(null);
-        when(personDAO.update(personUpdated)).thenReturn(personUpdated);
-        when(personDAO.update(unknownPerson)).thenReturn(null);
-        when(personDAO.delete(personUpdated)).thenReturn(true);
-        this.adminPersonController.personDAO = personDAO;
+    void setUp() {
+        medicationList.add("aznol:350mg"); medicationList.add("hydrapermazol:100mg");
+        allergiesList.add("nillacilan");
+        medicalRecord1.setMedications(medicationList);
+        medicalRecord1.setAllergies(allergiesList);
+        medicationList.clear();
+        medicationList.add("pharmacol:5000mg"); medicationList.add("terazine:10mg"); medicationList.add("noznazol:250mg");
+        medicalRecord2.setMedications(medicationList);
+        allergiesList.clear();
+        allergiesList.add("peanut");
+        medicalRecordCreated.setAllergies(allergiesList);
+        medicationList.clear();
+        medicationList.add("tetracyclaz:650mg");
+        medicalRecordUpdated.setMedications(medicationList);
+        medicalRecordUpdated.setAllergies(allergiesList);
+
+        when(medicalRecordDAO.findAll()).thenReturn(List.of(medicalRecord1, medicalRecord2));
+        when(medicalRecordDAO.findByName("john", "boyd")).thenReturn(medicalRecord1);
+        when(medicalRecordDAO.findByName("jack", "mortimer")).thenReturn(medicalRecordUpdated);
+        when(medicalRecordDAO.findByName("grrr", "trex")).thenReturn(null);
+        when(medicalRecordDAO.save(medicalRecordCreated)).thenReturn(medicalRecordCreated);
+        when(medicalRecordDAO.save(medicalRecord1)).thenReturn(null);
+        when(medicalRecordDAO.update(medicalRecordUpdated)).thenReturn(medicalRecordUpdated);
+        when(medicalRecordDAO.update(unknownMedicalRecord)).thenReturn(null);
+        when(medicalRecordDAO.delete(medicalRecordUpdated)).thenReturn(true);
+        this.adminMedicalRecordController.medicalRecordDAO = medicalRecordDAO;
     }
 
     @AfterEach
@@ -80,46 +100,47 @@ class AdminPersonControllerTest {
     }
 
     @Test
-    void getAllPersons() throws Exception {
+    void getAllMedicalRecord() throws Exception {
         //***********GIVEN*************
         MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get(rootURL)
                 .accept(MediaType.APPLICATION_JSON_VALUE);
         //***********************************************************
         //**************CHECK MOCK INVOCATION at start***************
         //***********************************************************
-        verify(personDAO, Mockito.times(0)).findAll();
+        verify(medicalRecordDAO, Mockito.times(0)).findAll();
 
         //**************WHEN-THEN****************************
         MvcResult mvcResult = mockMvc.perform(builder)//.andDo(print());
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(content().string(containsString(person1.getEmail())))
-                .andExpect(jsonPath("$[0].firstName").value(person1.getFirstName()))
+                .andExpect(content().string(containsString("1984")))
+                //.andExpect(content().json("{'birthday':'03-06-1984'}"))
+                .andExpect(jsonPath("$[0].birthday").value(convertToString(medicalRecord1.getBirthday(),null)))
+                .andExpect(jsonPath("$[0].firstName").value(medicalRecord1.getFirstName()))
                 .andReturn();
         //*********************************************************
         //**************CHECK MOCK INVOCATION at end***************
         //*********************************************************
-        verify(personDAO, Mockito.times(1)).findAll();
-
+        verify(medicalRecordDAO, Mockito.times(1)).findAll();
 
         //*********************************************************
         //**************CHECK RESPONSE CONTENT*********************
         //*********************************************************
         String expectedJson = null;
-        expectedJson = convertJavaToJson(List.of(person1, person2));
-        JSONAssert.assertEquals(expectedJson, mvcResult.getResponse().getContentAsString(), true);
+        expectedJson = convertJavaToJson(List.of(medicalRecord1, medicalRecord2));
+        JSONAssert.assertEquals(expectedJson, mvcResult.getResponse().getContentAsString(), false);
     }
 
     @Test
-    void getAllPersonsVoid() throws Exception {
+    void getAllMedicalRecordVoid() throws Exception {
         //***********GIVEN*************
-        when(personDAO.findAll()).thenReturn(new ArrayList<Person>());
+        when(medicalRecordDAO.findAll()).thenReturn(new ArrayList<MedicalRecord>());
         MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get(rootURL);
 
         //***********************************************************
         //**************CHECK MOCK INVOCATION at start***************
         //***********************************************************
-        verify(personDAO, Mockito.times(0)).findAll();
+        verify(medicalRecordDAO, Mockito.times(0)).findAll();
 
         //**************WHEN-THEN****************************
         mockMvc.perform(builder)//.andDo(print());
@@ -128,61 +149,64 @@ class AdminPersonControllerTest {
         //*********************************************************
         //**************CHECK MOCK INVOCATION at end***************
         //*********************************************************
-        verify(personDAO, Mockito.times(1)).findAll();//.save(any());
+        verify(medicalRecordDAO, Mockito.times(1)).findAll();//.save(any());
     }
 
     @Test
-    void getPerson() throws Exception {
+    void getMedicalRecord() throws Exception {
         //***********GIVEN*************
         String urlTemplate = String.format("%s%s&%s",
                 rootURL,
-                person1.getFirstName(),
-                person1.getLastName());//"julia&werner"
+                medicalRecord1.getFirstName(),
+                medicalRecord1.getLastName());
         MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get(urlTemplate)
                 .accept(MediaType.APPLICATION_JSON_VALUE);
         //***********************************************************
         //**************CHECK MOCK INVOCATION at start***************
         //***********************************************************
-        verify(personDAO, Mockito.times(0)).findByName("julia","werner");
+        verify(medicalRecordDAO, Mockito.times(0)).findByName(
+                medicalRecord1.getFirstName(),
+                medicalRecord1.getLastName());
 
         //**************WHEN-THEN****************************
         MvcResult mvcResult = mockMvc.perform(builder)//.andDo(print());
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(content().string(containsString(person1.getEmail())))
-                .andExpect(jsonPath("$.firstName").value(person1.getFirstName()))
+                .andExpect(content().string(containsString("aznol:350mg")))
+                .andExpect(jsonPath("$.medications").value(medicalRecord1.getMedications()))
                 .andReturn();
         //*********************************************************
         //**************CHECK MOCK INVOCATION at end***************
         //*********************************************************
-        verify(personDAO, Mockito.times(1)).findByName("julia","werner");
-
+        verify(medicalRecordDAO, Mockito.times(1)).findByName(
+                medicalRecord1.getFirstName(),
+                medicalRecord1.getLastName());
 
         //*********************************************************
         //**************CHECK RESPONSE CONTENT*********************
         //*********************************************************
         //*****************Check with JSON*************************
         String expectedJson = null;
-        expectedJson = convertJavaToJson(person1);
+        expectedJson = convertJavaToJson(medicalRecord1);
         JSONAssert.assertEquals(expectedJson, mvcResult.getResponse().getContentAsString(), true);
         //*****************Check with JAVA*************************
-        Person resultJavaObject = parseResponse(mvcResult, Person.class);
-        assertThat(person1).isEqualToComparingFieldByField(resultJavaObject);
+        MedicalRecord resultJavaObject = parseResponse(mvcResult, MedicalRecord.class);
+        assertThat(medicalRecord1).isEqualToComparingFieldByField(resultJavaObject);
     }
 
     @Test
-    void getUnknownPerson() throws Exception {
+    void getUnknownMedicalRecord() throws Exception {
         //***********GIVEN*************
         String urlTemplate = String.format("%s%s&%s",
                 rootURL,
-                unknownPerson.getFirstName(),
-                unknownPerson.getLastName());//"grrr&trex"
+                unknownMedicalRecord.getFirstName(),
+                unknownMedicalRecord.getLastName());//"grrr&trex"
         MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get(urlTemplate);
 
         //***********************************************************
         //**************CHECK MOCK INVOCATION at start***************
         //***********************************************************
-        verify(personDAO, Mockito.times(0)).findByName("grrr","trex");
+        verify(medicalRecordDAO, Mockito.times(0)).findByName("grrr","trex");
 
         //**************WHEN-THEN****************************
         mockMvc.perform(builder)//.andDo(print());
@@ -191,13 +215,13 @@ class AdminPersonControllerTest {
         //*********************************************************
         //**************CHECK MOCK INVOCATION at end***************
         //*********************************************************
-        verify(personDAO, Mockito.times(1)).findByName("grrr","trex");//.save(any());
+        verify(medicalRecordDAO, Mockito.times(1)).findByName("grrr","trex");//.save(any());
     }
 
     @Test
-    void createPerson() throws Exception {
+    void createMedicalRecord() throws Exception {
         //***********GIVEN*************
-        String jsonGiven = convertJavaToJson(personCreated);
+        String jsonGiven = convertJavaToJson(medicalRecordCreated);
         MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.post(rootURL)
                 .characterEncoding("UTF-8")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -206,25 +230,25 @@ class AdminPersonControllerTest {
         //***********************************************************
         //**************CHECK MOCK INVOCATION at start***************
         //***********************************************************
-        verify(personDAO, Mockito.times(0)).save(personCreated);
+        verify(medicalRecordDAO, Mockito.times(0)).save(medicalRecordCreated);
 
         //**************WHEN-THEN****************************
         MvcResult mvcResult = mockMvc.perform(builder)//.andDo(print());
                 .andExpect(status().isCreated())
-                .andExpect(redirectedUrl("http://localhost/person/jack&mortimer"))
+                .andExpect(redirectedUrl("http://localhost/medicalrecord/jack&mortimer"))
                 .andReturn();
         //*********************************************************
         //**************CHECK MOCK INVOCATION at end***************
         //*********************************************************
-        verify(personDAO, Mockito.times(1)).save(ArgumentMatchers.refEq(personCreated));//.save(any());
+        verify(medicalRecordDAO, Mockito.times(1)).save(ArgumentMatchers.refEq(medicalRecordCreated));//.save(any());
         //https://stackoverflow.com/questions/57690810/how-to-fix-arguments-are-different-wanted-error-in-junit-and-mockito
         //https://www.softwaretestinghelp.com/mockito-matchers/
     }
 
     @Test
-    void createPersonAlreadyThere() throws Exception {
+    void createMedicalRecordAlreadyThere() throws Exception {
         //***********GIVEN*************
-        String jsonGiven = convertJavaToJson(person1);
+        String jsonGiven = convertJavaToJson(medicalRecord1);
         MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.post(rootURL)
                 .characterEncoding("UTF-8")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -233,7 +257,7 @@ class AdminPersonControllerTest {
         //***********************************************************
         //**************CHECK MOCK INVOCATION at start***************
         //***********************************************************
-        verify(personDAO, Mockito.times(0)).save(person1);
+        verify(medicalRecordDAO, Mockito.times(0)).save(medicalRecord1);
 
         //**************WHEN-THEN****************************
         mockMvc.perform(builder)//.andDo(print());
@@ -242,13 +266,13 @@ class AdminPersonControllerTest {
         //*********************************************************
         //**************CHECK MOCK INVOCATION at end***************
         //*********************************************************
-        verify(personDAO, Mockito.times(1)).save(ArgumentMatchers.refEq(person1));//.save(any());
+        verify(medicalRecordDAO, Mockito.times(1)).save(ArgumentMatchers.refEq(medicalRecord1));//.save(any());
     }
 
     @Test
-    void updatePerson() throws Exception {
+    void updateMedicalRecord() throws Exception {
         //***********GIVEN*************
-        String jsonGiven = convertJavaToJson(personUpdated);
+        String jsonGiven = convertJavaToJson(medicalRecordUpdated);
         MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.put(rootURL)
                 .characterEncoding("UTF-8")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -257,37 +281,38 @@ class AdminPersonControllerTest {
         //***********************************************************
         //**************CHECK MOCK INVOCATION at start***************
         //***********************************************************
-        verify(personDAO, Mockito.times(0)).update(personUpdated);
+        verify(medicalRecordDAO, Mockito.times(0)).update(medicalRecordUpdated);
 
         //**************WHEN-THEN****************************
         MvcResult mvcResult = mockMvc.perform(builder)//.andDo(print());
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(content().string(containsString(personUpdated.getEmail())))
-                .andExpect(jsonPath("$.firstName").value(personUpdated.getFirstName()))
-                .andExpect(jsonPath("$.address").value(personUpdated.getAddress()))
+                .andExpect(content().string(containsString(medicalRecordUpdated.getFirstName())))
+                .andExpect(jsonPath("$.lastName").value(medicalRecordUpdated.getLastName()))
+                .andExpect(jsonPath("$.birthday").value(convertToString(medicalRecordUpdated.getBirthday(), null)))
+                .andExpect(jsonPath("$.medications").value(medicalRecordUpdated.getMedications()))
                 .andReturn();
         //*********************************************************
         //**************CHECK MOCK INVOCATION at end***************
         //*********************************************************
-        verify(personDAO, Mockito.times(1)).update(ArgumentMatchers.refEq(personUpdated));//.save(any());
+        verify(medicalRecordDAO, Mockito.times(1)).update(ArgumentMatchers.refEq(medicalRecordUpdated));//.save(any());
 
         //*********************************************************
         //**************CHECK RESPONSE CONTENT*********************
         //*********************************************************
         //*****************Check with JSON*************************
         String expectedJson = null;
-        expectedJson = convertJavaToJson(personUpdated);
+        expectedJson = convertJavaToJson(medicalRecordUpdated);
         JSONAssert.assertEquals(expectedJson, mvcResult.getResponse().getContentAsString(), true);
         //*****************Check with JAVA*************************
-        Person resultJavaObject = parseResponse(mvcResult, Person.class);
-        assertThat(personUpdated).isEqualToComparingFieldByField(resultJavaObject);
+        MedicalRecord resultJavaObject = parseResponse(mvcResult, MedicalRecord.class);
+        assertThat(medicalRecordUpdated).isEqualToComparingFieldByField(resultJavaObject);
     }
 
     @Test
-    void updateUnknownPerson() throws Exception {
+    void updateUnknownMedicalRecord() throws Exception {
         //***********GIVEN*************
-        String jsonGiven = convertJavaToJson(unknownPerson);
+        String jsonGiven = convertJavaToJson(unknownMedicalRecord);
         MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.put(rootURL)
                 .characterEncoding("UTF-8")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -295,7 +320,7 @@ class AdminPersonControllerTest {
         //***********************************************************
         //**************CHECK MOCK INVOCATION at start***************
         //***********************************************************
-        verify(personDAO, Mockito.times(0)).update(unknownPerson);
+        verify(medicalRecordDAO, Mockito.times(0)).update(unknownMedicalRecord);
 
         //**************WHEN-THEN****************************
         mockMvc.perform(builder)//.andDo(print());
@@ -304,23 +329,23 @@ class AdminPersonControllerTest {
         //*********************************************************
         //**************CHECK MOCK INVOCATION at end***************
         //*********************************************************
-        verify(personDAO, Mockito.times(1)).update(ArgumentMatchers.refEq(unknownPerson));//.save(any());
+        verify(medicalRecordDAO, Mockito.times(1)).update(ArgumentMatchers.refEq(unknownMedicalRecord));//.save(any());
     }
 
     @Test
-    void deletePerson() throws Exception {
+    void deleteMedicalRecord() throws Exception {
         //***********GIVEN*************
         String urlTemplate = String.format("%s%s&%s",
                 rootURL,
-                personUpdated.getFirstName(),
-                personUpdated.getLastName());//jack&mortimer");
+                medicalRecordUpdated.getFirstName(),
+                medicalRecordUpdated.getLastName());//jack&mortimer");
         MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.delete(urlTemplate);
 
         //***********************************************************
         //**************CHECK MOCK INVOCATION at start***************
         //***********************************************************
-        verify(personDAO, Mockito.times(0)).findByName("jack","mortimer");
-        verify(personDAO, Mockito.times(0)).delete(personUpdated);
+        verify(medicalRecordDAO, Mockito.times(0)).findByName("jack","mortimer");
+        verify(medicalRecordDAO, Mockito.times(0)).delete(medicalRecordUpdated);
 
         //**************WHEN-THEN****************************
         mockMvc.perform(builder)//.andDo(print());
@@ -328,23 +353,24 @@ class AdminPersonControllerTest {
         //*********************************************************
         //**************CHECK MOCK INVOCATION at end***************
         //*********************************************************
-        verify(personDAO, Mockito.times(1)).findByName("jack","mortimer");
-        verify(personDAO, Mockito.times(1)).delete(ArgumentMatchers.refEq(personUpdated));
+        verify(medicalRecordDAO, Mockito.times(1)).findByName("jack","mortimer");
+        verify(medicalRecordDAO, Mockito.times(1)).delete(ArgumentMatchers.refEq(medicalRecordUpdated));
     }
 
     @Test
-    void deleteUnknownPerson() throws Exception {
+    void deleteUnknownMedicalRecord() throws Exception {
         //***********GIVEN*************
         String urlTemplate = String.format("%s%s&%s",
                 rootURL,
-                unknownPerson.getFirstName(),
-                unknownPerson.getLastName());//"grrr&trex"
+                unknownMedicalRecord.getFirstName(),
+                unknownMedicalRecord.getLastName());//"grrr&trex"
         MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.delete(urlTemplate);
 
         //***********************************************************
         //**************CHECK MOCK INVOCATION at start***************
         //***********************************************************
-        verify(personDAO, Mockito.times(0)).delete(unknownPerson);
+        verify(medicalRecordDAO, Mockito.times(0)).findByName("grrr","trex");
+        verify(medicalRecordDAO, Mockito.times(0)).delete(unknownMedicalRecord);
 
         //**************WHEN-THEN****************************
         mockMvc.perform(builder)//.andDo(print());
@@ -353,12 +379,8 @@ class AdminPersonControllerTest {
         //*********************************************************
         //**************CHECK MOCK INVOCATION at end***************
         //*********************************************************
-        verify(personDAO, Mockito.times(1)).findByName("grrr","trex");//.save(any());
-        verify(personDAO, Mockito.times(0)).delete(ArgumentMatchers.refEq(unknownPerson));//.save(any());
+        verify(medicalRecordDAO, Mockito.times(1)).findByName("grrr","trex");//.save(any());
+        verify(medicalRecordDAO, Mockito.times(0)).delete(ArgumentMatchers.refEq(unknownMedicalRecord));//.save(any());
     }
+
 }
-
-
-
-//https://stackoverflow.com/questions/18336277/how-to-check-string-in-response-body-with-mockmvc
-//https://www.logicbig.com/tutorials/spring-framework/spring-web-mvc/json-message-object-conversion.html

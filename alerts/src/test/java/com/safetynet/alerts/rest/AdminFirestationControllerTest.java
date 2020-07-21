@@ -22,7 +22,7 @@ import org.springframework.web.util.UriUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.safetynet.alerts.utils.JsonConvert.feedWithJava;
+import static com.safetynet.alerts.utils.Jackson.convertJavaToJson;
 import static com.safetynet.alerts.utils.JsonConvertForTest.parseResponse;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
@@ -98,7 +98,7 @@ class AdminFirestationControllerTest {
         //**************CHECK RESPONSE CONTENT*********************
         //*********************************************************
         String expectedJson = null;
-        expectedJson = feedWithJava(List.of(firestation1, firestation2));
+        expectedJson = convertJavaToJson(List.of(firestation1, firestation2));
         JSONAssert.assertEquals(expectedJson, mvcResult.getResponse().getContentAsString(), true);
     }
 
@@ -154,7 +154,7 @@ class AdminFirestationControllerTest {
         //*********************************************************
         //*****************Check with JSON*************************
         String expectedJson = null;
-        expectedJson = feedWithJava(firestation1);
+        expectedJson = convertJavaToJson(firestation1);
         JSONAssert.assertEquals(expectedJson, mvcResult.getResponse().getContentAsString(), true);
         //*****************Check with JAVA*************************
         Firestation resultJavaObject = parseResponse(mvcResult, Firestation.class);
@@ -187,7 +187,7 @@ class AdminFirestationControllerTest {
     @Test
     void createFirestation() throws Exception {
         //***********GIVEN*************
-        String jsonGiven = feedWithJava(firestationCreated);
+        String jsonGiven = convertJavaToJson(firestationCreated);
         MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.post(rootURL)
                 .characterEncoding("UTF-8")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -217,7 +217,7 @@ class AdminFirestationControllerTest {
     @Test
     void createFirestationAlreadyThere() throws Exception {
         //***********GIVEN*************
-        String jsonGiven = feedWithJava(firestation1);
+        String jsonGiven = convertJavaToJson(firestation1);
         MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.post(rootURL)
                 .characterEncoding("UTF-8")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -241,7 +241,7 @@ class AdminFirestationControllerTest {
     @Test
     void updateFirestation() throws Exception {
         //***********GIVEN*************
-        String jsonGiven = feedWithJava(firestationUpdated);
+        String jsonGiven = convertJavaToJson(firestationUpdated);
         MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.put(rootURL)
                 .characterEncoding("UTF-8")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -269,7 +269,7 @@ class AdminFirestationControllerTest {
         //*********************************************************
         //*****************Check with JSON*************************
         String expectedJson = null;
-        expectedJson = feedWithJava(firestationUpdated);
+        expectedJson = convertJavaToJson(firestationUpdated);
         JSONAssert.assertEquals(expectedJson, mvcResult.getResponse().getContentAsString(), true);
         //*****************Check with JAVA*************************
         Firestation resultJavaObject = parseResponse(mvcResult, Firestation.class);
@@ -279,7 +279,7 @@ class AdminFirestationControllerTest {
     @Test
     void updateUnknownFirestation() throws Exception {
         //***********GIVEN*************
-        String jsonGiven = feedWithJava(unknownFirestation);
+        String jsonGiven = convertJavaToJson(unknownFirestation);
         MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.put(rootURL)
                 .characterEncoding("UTF-8")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
