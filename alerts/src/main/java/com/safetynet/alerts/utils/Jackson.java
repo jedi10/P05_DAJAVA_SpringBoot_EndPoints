@@ -6,9 +6,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.chrono.IsoChronology;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
@@ -17,11 +19,19 @@ import java.time.format.SignStyle;
 
 import static java.time.temporal.ChronoField.*;
 
-public class JsonConvert {
+public class Jackson {
 
     private static ObjectMapper mapper = new ObjectMapper()
             .registerModule(new SimpleModule().addSerializer(
                     new LocalDateSerializer(new DateTimeFormatterBuilder()
+                            .appendValue(MONTH_OF_YEAR, 2)
+                            .appendLiteral('-')
+                            .appendValue(DAY_OF_MONTH, 2)
+                            .appendLiteral('-')
+                            .appendValue(YEAR, 4, 10, SignStyle.EXCEEDS_PAD)
+                            .toFormatter())))
+            .registerModule(new SimpleModule().addDeserializer(LocalDate.class,
+                    new LocalDateDeserializer(new DateTimeFormatterBuilder()
                             .appendValue(MONTH_OF_YEAR, 2)
                             .appendLiteral('-')
                             .appendValue(DAY_OF_MONTH, 2)
@@ -34,7 +44,7 @@ public class JsonConvert {
      * @param javaObject java Object
      * @return JSON string
      */
-    public static String feedWithJava(Object javaObject){
+    public static String convertJavaToJson(Object javaObject){
         String expectedJson = null;
         try {
             expectedJson = mapper.writeValueAsString(javaObject);
@@ -46,6 +56,25 @@ public class JsonConvert {
                     e.printStackTrace();
         }
         return expectedJson;
+    }
+
+    /**
+     * <b>Make a deep copy of an object</b>
+     * <p>object have to implement default constructor</p>
+     * @param object object to copy
+     * @param responseClass name of response
+     * @param <T> Type of Class
+     * @return deep copy
+     */
+    public static <T> T deepCopy(Object object, Class<T> responseClass) {
+        T result = null;
+        try {
+            result = mapper.readValue(mapper.writeValueAsString(object), responseClass);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        return result;
+        //https://www.baeldung.com/java-deep-copy
     }
 
 }

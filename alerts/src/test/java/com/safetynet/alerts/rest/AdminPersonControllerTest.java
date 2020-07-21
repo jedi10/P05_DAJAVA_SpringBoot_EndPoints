@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-import static com.safetynet.alerts.utils.JsonConvert.feedWithJava;
+import static com.safetynet.alerts.utils.Jackson.convertJavaToJson;
 import static com.safetynet.alerts.utils.JsonConvertForTest.parseResponse;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.internal.bytebuddy.matcher.ElementMatchers.is;
@@ -106,7 +106,7 @@ class AdminPersonControllerTest {
         //**************CHECK RESPONSE CONTENT*********************
         //*********************************************************
         String expectedJson = null;
-        expectedJson = feedWithJava(List.of(person1, person2));
+        expectedJson = convertJavaToJson(List.of(person1, person2));
         JSONAssert.assertEquals(expectedJson, mvcResult.getResponse().getContentAsString(), true);
     }
 
@@ -163,7 +163,7 @@ class AdminPersonControllerTest {
         //*********************************************************
         //*****************Check with JSON*************************
         String expectedJson = null;
-        expectedJson = feedWithJava(person1);
+        expectedJson = convertJavaToJson(person1);
         JSONAssert.assertEquals(expectedJson, mvcResult.getResponse().getContentAsString(), true);
         //*****************Check with JAVA*************************
         Person resultJavaObject = parseResponse(mvcResult, Person.class);
@@ -197,7 +197,7 @@ class AdminPersonControllerTest {
     @Test
     void createPerson() throws Exception {
         //***********GIVEN*************
-        String jsonGiven = feedWithJava(personCreated);
+        String jsonGiven = convertJavaToJson(personCreated);
         MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.post(rootURL)
                 .characterEncoding("UTF-8")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -224,7 +224,7 @@ class AdminPersonControllerTest {
     @Test
     void createPersonAlreadyThere() throws Exception {
         //***********GIVEN*************
-        String jsonGiven = feedWithJava(person1);
+        String jsonGiven = convertJavaToJson(person1);
         MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.post(rootURL)
                 .characterEncoding("UTF-8")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -248,7 +248,7 @@ class AdminPersonControllerTest {
     @Test
     void updatePerson() throws Exception {
         //***********GIVEN*************
-        String jsonGiven = feedWithJava(personUpdated);
+        String jsonGiven = convertJavaToJson(personUpdated);
         MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.put(rootURL)
                 .characterEncoding("UTF-8")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -277,7 +277,7 @@ class AdminPersonControllerTest {
         //*********************************************************
         //*****************Check with JSON*************************
         String expectedJson = null;
-        expectedJson = feedWithJava(personUpdated);
+        expectedJson = convertJavaToJson(personUpdated);
         JSONAssert.assertEquals(expectedJson, mvcResult.getResponse().getContentAsString(), true);
         //*****************Check with JAVA*************************
         Person resultJavaObject = parseResponse(mvcResult, Person.class);
@@ -287,7 +287,7 @@ class AdminPersonControllerTest {
     @Test
     void updateUnknownPerson() throws Exception {
         //***********GIVEN*************
-        String jsonGiven = feedWithJava(unknownPerson);
+        String jsonGiven = convertJavaToJson(unknownPerson);
         MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.put(rootURL)
                 .characterEncoding("UTF-8")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
