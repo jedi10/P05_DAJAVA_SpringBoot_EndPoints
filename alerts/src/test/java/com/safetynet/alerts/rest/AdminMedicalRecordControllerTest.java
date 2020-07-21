@@ -22,14 +22,15 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.safetynet.alerts.utils.JsonConvert.feedWithJava;
+import static com.safetynet.alerts.utils.Jackson.convertJavaToJson;
+import static com.safetynet.alerts.utils.Jackson.deepCopy;
 import static com.safetynet.alerts.utils.JsonConvertForTest.parseResponse;
 import static com.safetynet.alerts.utils.LocalDateFormatter.convertToString;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
@@ -63,6 +64,7 @@ class AdminMedicalRecordControllerTest {
     private MedicalRecord medicalRecordCreated = new MedicalRecord("jack", "mortimer",
             LocalDate.of(1961, 1, 25));
 
+    private MedicalRecord medicalRecordUpdated = deepCopy(medicalRecordCreated, MedicalRecord.class);
 
     @BeforeEach
     void setUp() {
@@ -76,12 +78,18 @@ class AdminMedicalRecordControllerTest {
         allergiesList.clear();
         allergiesList.add("peanut");
         medicalRecordCreated.setAllergies(allergiesList);
+        medicationList.clear();
+        medicationList.add("tetracyclaz:650mg");
+        medicalRecordUpdated.setMedications(medicationList);
+        medicalRecordUpdated.setAllergies(allergiesList);
 
         when(medicalRecordDAO.findAll()).thenReturn(List.of(medicalRecord1, medicalRecord2));
         when(medicalRecordDAO.findByName("john", "boyd")).thenReturn(medicalRecord1);
         when(medicalRecordDAO.findByName("grrr", "trex")).thenReturn(null);
         when(medicalRecordDAO.save(medicalRecordCreated)).thenReturn(medicalRecordCreated);
         when(medicalRecordDAO.save(medicalRecord1)).thenReturn(null);
+        when(medicalRecordDAO.update(medicalRecordUpdated)).thenReturn(medicalRecordUpdated);
+        when(medicalRecordDAO.update(unknownMedicalRecord)).thenReturn(null);
         this.adminMedicalRecordController.medicalRecordDAO = medicalRecordDAO;
     }
 
@@ -117,7 +125,7 @@ class AdminMedicalRecordControllerTest {
         //**************CHECK RESPONSE CONTENT*********************
         //*********************************************************
         String expectedJson = null;
-        expectedJson = feedWithJava(List.of(medicalRecord1, medicalRecord2));
+        expectedJson = convertJavaToJson(List.of(medicalRecord1, medicalRecord2));
         JSONAssert.assertEquals(expectedJson, mvcResult.getResponse().getContentAsString(), false);
     }
 
@@ -177,7 +185,7 @@ class AdminMedicalRecordControllerTest {
         //*********************************************************
         //*****************Check with JSON*************************
         String expectedJson = null;
-        expectedJson = feedWithJava(medicalRecord1);
+        expectedJson = convertJavaToJson(medicalRecord1);
         JSONAssert.assertEquals(expectedJson, mvcResult.getResponse().getContentAsString(), true);
         //*****************Check with JAVA*************************
         MedicalRecord resultJavaObject = parseResponse(mvcResult, MedicalRecord.class);
@@ -211,7 +219,7 @@ class AdminMedicalRecordControllerTest {
     @Test
     void createMedicalRecord() throws Exception {
         //***********GIVEN*************
-        String jsonGiven = feedWithJava(medicalRecordCreated);
+        String jsonGiven = convertJavaToJson(medicalRecordCreated);
         MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.post(rootURL)
                 .characterEncoding("UTF-8")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -238,7 +246,7 @@ class AdminMedicalRecordControllerTest {
     @Test
     void createMedicalRecordAlreadyThere() throws Exception {
         //***********GIVEN*************
-        String jsonGiven = feedWithJava(medicalRecord1);
+        String jsonGiven = convertJavaToJson(medicalRecord1);
         MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.post(rootURL)
                 .characterEncoding("UTF-8")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -257,6 +265,69 @@ class AdminMedicalRecordControllerTest {
         //**************CHECK MOCK INVOCATION at end***************
         //*********************************************************
         verify(medicalRecordDAO, Mockito.times(1)).save(ArgumentMatchers.refEq(medicalRecord1));//.save(any());
+    }
+
+    @Test
+    void updateMedicalRecord() throws Exception {
+        //***********GIVEN*************
+        String jsonGiven = convertJavaToJson(medicalRecordUpdated);
+        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.put(rootURL)
+                .characterEncoding("UTF-8")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(jsonGiven)
+                .accept(MediaType.APPLICATION_JSON_VALUE);
+        //***********************************************************
+        //**************CHECK MOCK INVOCATION at start***************
+        //***********************************************************
+        verify(medicalRecordDAO, Mockito.times(0)).update(medicalRecordUpdated);
+
+        //**************WHEN-THEN****************************
+        MvcResult mvcResult = mockMvc.perform(builder)//.andDo(print());
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(content().string(containsString(medicalRecordUpdated.getFirstName())))
+                .andExpect(jsonPath("$.lastName").value(medicalRecordUpdated.getLastName()))
+                .andExpect(jsonPath("$.birthday").value(convertToString(medicalRecordUpdated.getBirthday(), null)))
+                .andExpect(jsonPath("$.medications").value(medicalRecordUpdated.getMedications()))
+                .andReturn();
+        //*********************************************************
+        //**************CHECK MOCK INVOCATION at end***************
+        //*********************************************************
+        verify(medicalRecordDAO, Mockito.times(1)).update(ArgumentMatchers.refEq(medicalRecordUpdated));//.save(any());
+
+        //*********************************************************
+        //**************CHECK RESPONSE CONTENT*********************
+        //*********************************************************
+        //*****************Check with JSON*************************
+        String expectedJson = null;
+        expectedJson = convertJavaToJson(medicalRecordUpdated);
+        JSONAssert.assertEquals(expectedJson, mvcResult.getResponse().getContentAsString(), true);
+        //*****************Check with JAVA*************************
+        MedicalRecord resultJavaObject = parseResponse(mvcResult, MedicalRecord.class);
+        assertThat(medicalRecordUpdated).isEqualToComparingFieldByField(resultJavaObject);
+    }
+
+    @Test
+    void updateUnknownPerson() throws Exception {
+        //***********GIVEN*************
+        String jsonGiven = convertJavaToJson(unknownMedicalRecord);
+        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.put(rootURL)
+                .characterEncoding("UTF-8")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(jsonGiven);
+        //***********************************************************
+        //**************CHECK MOCK INVOCATION at start***************
+        //***********************************************************
+        verify(medicalRecordDAO, Mockito.times(0)).update(unknownMedicalRecord);
+
+        //**************WHEN-THEN****************************
+        mockMvc.perform(builder)//.andDo(print());
+                .andExpect(status().isNotFound());
+
+        //*********************************************************
+        //**************CHECK MOCK INVOCATION at end***************
+        //*********************************************************
+        verify(medicalRecordDAO, Mockito.times(1)).update(ArgumentMatchers.refEq(unknownMedicalRecord));//.save(any());
     }
 
 }

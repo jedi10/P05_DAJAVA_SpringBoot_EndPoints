@@ -70,4 +70,19 @@ public class AdminMedicalRecordController {
         return ResponseEntity.created(location).build();
     }
 
+    @PutMapping(value = "/")
+    public ResponseEntity<?> updateMedicalRecord(@RequestBody MedicalRecord medicalRecord) {
+        log.info("Updating Medical Record with first Name {} and lastName {}",
+                medicalRecord.getFirstName(), medicalRecord.getLastName());
+
+        MedicalRecord result = medicalRecordDAO.update(medicalRecord);
+
+        if (result == null){
+            log.warn("Updating Medical Record Aborted: {} {} not found",
+                    medicalRecord.getFirstName(), medicalRecord.getLastName());
+            return ResponseEntity.notFound().build();
+        }
+        return new ResponseEntity<MedicalRecord>(medicalRecord, HttpStatus.OK);
+    }
+
 }
