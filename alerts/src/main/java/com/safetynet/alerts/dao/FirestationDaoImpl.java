@@ -46,10 +46,12 @@ public class FirestationDaoImpl implements IFirestationDAO {
 
     @Override
     public Firestation save(Firestation firestation) {
+        Firestation result = null;
         if(!isPresent(firestation)) {
             firestationList.add(firestation);
+            result = firestation;
         }
-        return firestation;
+        return result;
     }
 
     @Override

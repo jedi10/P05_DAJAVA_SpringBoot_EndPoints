@@ -61,10 +61,12 @@ public class MedicalRecordDaoImpl implements IMedicalRecordDAO {
 
     @Override
     public MedicalRecord save(MedicalRecord medicalRecord) {
+        MedicalRecord result = null;
         if(!isPresent(medicalRecord)) {
             medicalRecordList.add(medicalRecord);
+            result = medicalRecord;
         }
-        return medicalRecord;
+        return result;
     }
 
     @Override
