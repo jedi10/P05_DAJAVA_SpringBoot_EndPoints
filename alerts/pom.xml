@@ -47,7 +47,13 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-	</dependencies>
+		<!-- https://mvnrepository.com/artifact/org.jetbrains/annotations -->
+		<dependency>
+			<groupId>org.jetbrains</groupId>
+			<artifactId>annotations</artifactId>
+			<version>19.0.0</version>
+		</dependency>
+    </dependencies>
 
 	<build>
 		<plugins>
@@ -93,6 +99,7 @@
 								<rule>
 									<element>PACKAGE</element>
 									<excludes>
+										<exclude>com.safetynet.alerts.dao</exclude>
 										<exclude>com.safetynet.alerts.configuration</exclude>
 										<exclude>com.safetynet.alerts.utils</exclude>
 									</excludes>
