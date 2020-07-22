@@ -99,6 +99,7 @@
 								<rule>
 									<element>PACKAGE</element>
 									<excludes>
+										<exclude>com.safetynet.alerts.dao</exclude>
 										<exclude>com.safetynet.alerts.configuration</exclude>
 										<exclude>com.safetynet.alerts.utils</exclude>
 									</excludes>

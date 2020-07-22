@@ -19,6 +19,10 @@ import java.time.format.SignStyle;
 
 import static java.time.temporal.ChronoField.*;
 
+/**
+ * <b>Tools based on Jackson API</b>
+ * @author Jedy10
+ */
 public class Jackson {
 
     private static ObjectMapper mapper = new ObjectMapper()
