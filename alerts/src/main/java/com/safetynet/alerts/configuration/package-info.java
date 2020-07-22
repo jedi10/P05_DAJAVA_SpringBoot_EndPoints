@@ -1,4 +1,4 @@
 /**
- * All Application Configurations
+ * <b>All Application Configurations</b>
  */
 package com.safetynet.alerts.configuration;

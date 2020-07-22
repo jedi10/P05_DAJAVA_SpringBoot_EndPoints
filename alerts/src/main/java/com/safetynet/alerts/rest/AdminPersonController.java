@@ -16,6 +16,9 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.net.URI;
 import java.util.List;
 
+/**
+ * <b>CRUD ENDPOINTS for Person</b>
+ */
 @Slf4j
 @RestController
 @RequestMapping("/person")

@@ -6,10 +6,13 @@ import org.springframework.lang.Nullable;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
+/**
+ * <b>Convert a java LocalDate to String with a Pattern</b>
+ */
 public class LocalDateFormatter {
 
     /**
-     * Localdate to String with Pattern
+     * <p>Localdate to String with Pattern</p>
      * @param localdate localdate
      * @param pattern pattern like dd-mm-yyyy
      * @return String

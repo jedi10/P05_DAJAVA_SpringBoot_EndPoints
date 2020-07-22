@@ -13,6 +13,9 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.net.URI;
 import java.util.List;
 
+/**
+ * <b>CRUD ENDPOINTS for Firestation</b>
+ */
 @Slf4j
 @RestController
 @RequestMapping("/firestation")

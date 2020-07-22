@@ -1,5 +1,5 @@
 /**
- * All Application Rest Controllers
+ * <b>All Rest Controllers for Application</b>
  */
 package com.safetynet.alerts.rest;
 
