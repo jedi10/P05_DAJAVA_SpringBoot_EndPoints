@@ -115,7 +115,7 @@ class AdminFirestationControllerTest {
 
         //**************WHEN-THEN****************************
         mockMvc.perform(builder)//.andDo(print());
-                .andExpect(status().isNoContent());
+                .andExpect(status().isNoContent());//404
 
         //*********************************************************
         //**************CHECK MOCK INVOCATION at end***************
@@ -230,7 +230,7 @@ class AdminFirestationControllerTest {
 
         //**************WHEN-THEN****************************
         mockMvc.perform(builder)//.andDo(print());
-                .andExpect(status().isNoContent());//204
+                .andExpect(status().isConflict());//409
 
         //*********************************************************
         //**************CHECK MOCK INVOCATION at end***************
@@ -314,7 +314,7 @@ class AdminFirestationControllerTest {
 
         //**************WHEN-THEN****************************
         mockMvc.perform(builder)//.andDo(print());
-                .andExpect(status().isNoContent());
+                .andExpect(status().isOk());//200
         //*********************************************************
         //**************CHECK MOCK INVOCATION at end***************
         //*********************************************************

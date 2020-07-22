@@ -15,6 +15,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.web.util.UriUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -186,7 +187,7 @@ class AdminPersonControllerTest {
 
         //**************WHEN-THEN****************************
         mockMvc.perform(builder)//.andDo(print());
-                .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound());//404
 
         //*********************************************************
         //**************CHECK MOCK INVOCATION at end***************
@@ -203,6 +204,9 @@ class AdminPersonControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(jsonGiven)
                 .accept(MediaType.APPLICATION_JSON_VALUE);
+        String urlDestination = String.format("%s&%s",
+                UriUtils.encode(personCreated.getFirstName(), "UTF-8"),
+                UriUtils.encode(personCreated.getLastName(), "UTF-8"));
         //***********************************************************
         //**************CHECK MOCK INVOCATION at start***************
         //***********************************************************
@@ -211,7 +215,7 @@ class AdminPersonControllerTest {
         //**************WHEN-THEN****************************
         MvcResult mvcResult = mockMvc.perform(builder)//.andDo(print());
                 .andExpect(status().isCreated())
-                .andExpect(redirectedUrl("http://localhost/person/jack&mortimer"))
+                .andExpect(redirectedUrl("http://localhost" + rootURL + urlDestination))
                 .andReturn();
         //*********************************************************
         //**************CHECK MOCK INVOCATION at end***************
@@ -237,7 +241,7 @@ class AdminPersonControllerTest {
 
         //**************WHEN-THEN****************************
         mockMvc.perform(builder)//.andDo(print());
-                .andExpect(status().isNoContent());
+                .andExpect(status().isConflict());//409
 
         //*********************************************************
         //**************CHECK MOCK INVOCATION at end***************
@@ -324,7 +328,7 @@ class AdminPersonControllerTest {
 
         //**************WHEN-THEN****************************
         mockMvc.perform(builder)//.andDo(print());
-                .andExpect(status().isNoContent());
+                .andExpect(status().isOk());//200
         //*********************************************************
         //**************CHECK MOCK INVOCATION at end***************
         //*********************************************************

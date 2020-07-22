@@ -63,7 +63,7 @@ public class AdminPersonController {
 
         if (result == null){
             log.warn("Creating Person Aborted: {} {} already exist", person.getFirstName(), person.getLastName());
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
 
         //HttpHeaders headers = new HttpHeaders();
@@ -102,6 +102,6 @@ public class AdminPersonController {
             return ResponseEntity.notFound().build();
         }
         personDAO.delete(person);
-        return new ResponseEntity<Person>(HttpStatus.NO_CONTENT);
+        return new ResponseEntity<Person>(HttpStatus.OK);
     }
 }

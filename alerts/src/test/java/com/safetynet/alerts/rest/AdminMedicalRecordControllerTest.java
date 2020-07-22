@@ -17,6 +17,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.web.util.UriUtils;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -210,7 +211,7 @@ class AdminMedicalRecordControllerTest {
 
         //**************WHEN-THEN****************************
         mockMvc.perform(builder)//.andDo(print());
-                .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound());//404
 
         //*********************************************************
         //**************CHECK MOCK INVOCATION at end***************
@@ -227,6 +228,9 @@ class AdminMedicalRecordControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(jsonGiven)
                 .accept(MediaType.APPLICATION_JSON_VALUE);
+        String urlDestination = String.format("%s&%s",
+                UriUtils.encode(medicalRecordCreated.getFirstName(), "UTF-8"),
+                UriUtils.encode(medicalRecordCreated.getLastName(), "UTF-8"));
         //***********************************************************
         //**************CHECK MOCK INVOCATION at start***************
         //***********************************************************
@@ -235,7 +239,7 @@ class AdminMedicalRecordControllerTest {
         //**************WHEN-THEN****************************
         MvcResult mvcResult = mockMvc.perform(builder)//.andDo(print());
                 .andExpect(status().isCreated())
-                .andExpect(redirectedUrl("http://localhost/medicalrecord/jack&mortimer"))
+                .andExpect(redirectedUrl("http://localhost"+ rootURL + urlDestination))
                 .andReturn();
         //*********************************************************
         //**************CHECK MOCK INVOCATION at end***************
@@ -261,7 +265,7 @@ class AdminMedicalRecordControllerTest {
 
         //**************WHEN-THEN****************************
         mockMvc.perform(builder)//.andDo(print());
-                .andExpect(status().isNoContent());
+                .andExpect(status().isConflict());//409
 
         //*********************************************************
         //**************CHECK MOCK INVOCATION at end***************
@@ -349,7 +353,7 @@ class AdminMedicalRecordControllerTest {
 
         //**************WHEN-THEN****************************
         mockMvc.perform(builder)//.andDo(print());
-                .andExpect(status().isNoContent());
+                .andExpect(status().isOk());//200
         //*********************************************************
         //**************CHECK MOCK INVOCATION at end***************
         //*********************************************************

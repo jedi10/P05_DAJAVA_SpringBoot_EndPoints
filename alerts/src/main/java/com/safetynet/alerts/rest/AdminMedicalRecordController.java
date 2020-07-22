@@ -60,7 +60,7 @@ public class AdminMedicalRecordController {
         if (result == null){
             log.warn("Creating Medical Record Aborted: {} {} already exist",
                     medicalRecord.getFirstName(), medicalRecord.getLastName());
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
 
         URI location = ServletUriComponentsBuilder
@@ -96,7 +96,7 @@ public class AdminMedicalRecordController {
             return ResponseEntity.notFound().build();
         }
         medicalRecordDAO.delete(medicalRecord);
-        return new ResponseEntity<MedicalRecord>(HttpStatus.NO_CONTENT);
+        return new ResponseEntity<MedicalRecord>(HttpStatus.OK);
     }
 
 }

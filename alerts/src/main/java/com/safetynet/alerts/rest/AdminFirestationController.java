@@ -58,7 +58,7 @@ public class AdminFirestationController {
 
         if (result == null){
             log.warn("Creating Firestation Aborted: {} already exist", firestation.getAddress());
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
 
         /**
@@ -97,7 +97,7 @@ public class AdminFirestationController {
             return ResponseEntity.notFound().build();
         }
         firestationDAO.delete(firestation);
-        return new ResponseEntity<Firestation>(HttpStatus.NO_CONTENT);
+        return new ResponseEntity<Firestation>(HttpStatus.OK);
     }
 
 }
