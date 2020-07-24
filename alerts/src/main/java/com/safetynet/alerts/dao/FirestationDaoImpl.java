@@ -1,23 +1,33 @@
 package com.safetynet.alerts.dao;
 
+import com.safetynet.alerts.configuration.AlertsProperties;
 import com.safetynet.alerts.models.Firestation;
 import com.safetynet.alerts.models.Person;
+import com.safetynet.alerts.utils.Jackson;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Repository
-public class FirestationDaoImpl implements IFirestationDAO {
+public class FirestationDaoImpl extends DaoImpl implements IFirestationDAO {
 
-    public static List<Firestation> firestationList = new ArrayList<>();
+    public List<Firestation> firestationList;
 
+    /*
     static {
         Firestation firestation1 = new Firestation("1509 Culver St","3");
         Firestation firestation2 = new Firestation("29 15th St", "2");
         Firestation firestationCreated = new Firestation("834 Binoc Ave", "3");
         firestationList.add(firestation1);
-        firestationList.add(firestation2);
+       */
+
+    public FirestationDaoImpl(AlertsProperties alertsProperties){
+        super(alertsProperties);
+        this.firestationList = Jackson.convertJsonFileToJava(
+                this.getJsonFilePath(),
+                "firestations",
+                Firestation.class);
     }
 
     @Override

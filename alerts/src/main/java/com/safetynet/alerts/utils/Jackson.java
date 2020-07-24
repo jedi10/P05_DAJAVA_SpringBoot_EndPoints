@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
+import com.safetynet.alerts.configuration.AlertsProperties;
 import org.apache.tomcat.util.json.JSONParser;
 import org.apache.tomcat.util.json.ParseException;
 
@@ -32,8 +33,6 @@ import static java.time.temporal.ChronoField.*;
  * @author Jedy10
  */
 public class Jackson {
-
-    public static final String dataJsonFilePath = "src/main/resources/data.json";
 
     private static ObjectMapper mapper = new ObjectMapper()
             .registerModule(new SimpleModule().addSerializer(
@@ -62,19 +61,21 @@ public class Jackson {
      * @return
      */
 
-    public static <T> List<T> convertJsonFileToJava(String listWrapperName, Class<T> workingClass){
+    public static <T> List<T> convertJsonFileToJava(String jsonFilePath, String listWrapperName, Class<T> workingClass){
         List<T> expectedJavaObject = null;
 
         String staticJsonData = "{\"persons\": [  { \"firstName\":\"John\", \"lastName\":\"Boyd\", \"address\":\"1509 Culver St\", \"city\":\"Culver\", \"zip\":\"97451\", \"phone\":\"841-874-6512\", \"email\":\"jaboyd@email.com\" },{ \"firstName\":\"Jacob\", \"lastName\":\"Boyd\", \"address\":\"1509 Culver St\", \"city\":\"Culver\", \"zip\":\"97451\", \"phone\":\"841-874-6513\", \"email\":\"drk@email.com\" }]}";
 
         try {
             //read json file data to String
-            byte[] jsonData = Files.readAllBytes(Paths.get(dataJsonFilePath));
+            byte[] jsonData = Files.readAllBytes(Paths.get(jsonFilePath));
             JsonNode rootNode = mapper.readTree(jsonData);
             JsonNode personsNode = rootNode.path(listWrapperName);
             String listFromJson = personsNode.toString();
             expectedJavaObject = mapper.readValue(listFromJson, new TypeReference<List<T>>(){});
             System.out.println("expectedJavaObject = " + expectedJavaObject.toString());
+
+
 
         } catch (JsonProcessingException e ) {
             e.printStackTrace();

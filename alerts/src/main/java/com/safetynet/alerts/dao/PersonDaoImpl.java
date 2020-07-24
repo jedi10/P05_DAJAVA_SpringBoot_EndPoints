@@ -1,16 +1,18 @@
 package com.safetynet.alerts.dao;
 
+import com.safetynet.alerts.configuration.AlertsProperties;
 import com.safetynet.alerts.models.Person;
+import com.safetynet.alerts.utils.Jackson;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Repository
-public class PersonDaoImpl implements IPersonDAO {
+public class PersonDaoImpl extends DaoImpl implements IPersonDAO {
 
-    public static List<Person> personList = new ArrayList<>();
-
+    public List<Person> personList;
+    /*
     static {
         Person person = new Person("julia", "werner", "rue du colysée", "Rome", 45, "06-12-23-34-45", "wermer@mail.it");
         Person person2 = new Person("judy", "holmes", "rue de la pensee", "Londre", 89, "06-25-74-90-12", "holmes@mail.en");
@@ -18,6 +20,14 @@ public class PersonDaoImpl implements IPersonDAO {
         //personList = List.of(person, person2);//immutable
         personList.add(person);
         personList.add(person2);
+    }*/
+
+    public PersonDaoImpl(AlertsProperties alertsProperties){
+        super(alertsProperties);
+        this.personList = Jackson.convertJsonFileToJava(
+                this.getJsonFilePath(),
+                "persons",
+                Person.class);
     }
 
     @Override

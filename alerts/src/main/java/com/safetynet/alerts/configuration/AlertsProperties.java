@@ -11,7 +11,8 @@ public class AlertsProperties {
 
     /**
      * Json File Path
-     * App need the file to load all Datas at start
+     * App need a file to load all Data at start
+     * application.properties can overcome this value
      */
     @Setter
     @Getter
