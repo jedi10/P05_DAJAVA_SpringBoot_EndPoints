@@ -4,6 +4,8 @@ import com.safetynet.alerts.configuration.AlertsProperties;
 import com.safetynet.alerts.models.MedicalRecord;
 import com.safetynet.alerts.models.Person;
 import com.safetynet.alerts.utils.Jackson;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.stereotype.Repository;
 
 import java.lang.reflect.Array;
@@ -14,7 +16,9 @@ import java.util.List;
 @Repository
 public class MedicalRecordDaoImpl extends DaoImpl implements IMedicalRecordDAO {
 
-    public List<MedicalRecord> medicalRecordList;
+    @Getter
+    @Setter
+    private List<MedicalRecord> medicalRecordList;
     /*
     static {
         List<String> medicationList = new ArrayList<>();
@@ -36,12 +40,13 @@ public class MedicalRecordDaoImpl extends DaoImpl implements IMedicalRecordDAO {
         medicalRecordList.add(medicalRecord2);
     }*/
 
-    public MedicalRecordDaoImpl(AlertsProperties alertsProperties){
-        super(alertsProperties);
+    public MedicalRecordDaoImpl(RootFile rootFile){
+        super(rootFile);
+        /**this.setFileBytesWithPath(this.getJsonFilePath());
         this.medicalRecordList = Jackson.convertJsonFileToJava(
-                this.getJsonFilePath(),
+                this.getFileBytes(),
                 "medicalrecords",
-                MedicalRecord.class);
+                MedicalRecord.class);**/
     }
 
 

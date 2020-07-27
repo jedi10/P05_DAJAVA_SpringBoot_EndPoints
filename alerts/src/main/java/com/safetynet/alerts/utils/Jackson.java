@@ -11,6 +11,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.safetynet.alerts.configuration.AlertsProperties;
+import com.safetynet.alerts.dao.IDAO;
 import org.apache.tomcat.util.json.JSONParser;
 import org.apache.tomcat.util.json.ParseException;
 
@@ -55,30 +56,25 @@ public class Jackson {
     /**
      * <b>convert Json data to List of Object</b>
      * <p>Search in File the List of Object from the type given</p>
-     *@param listWrapperName name of list in json file
+     * @param fileByte byte of the file
+     * @param listWrapperName name of list in json file
      * @param workingClass name of argument
      * @param <T> Type of Object we are working on
-     * @return
+     * @return List of Object expected
      */
-
-    public static <T> List<T> convertJsonFileToJava(String jsonFilePath, String listWrapperName, Class<T> workingClass){
+    public static <T> List<T> convertJsonRootDataToJava(byte[] fileByte , String listWrapperName, Class<T> workingClass){
         List<T> expectedJavaObject = null;
-
-        String staticJsonData = "{\"persons\": [  { \"firstName\":\"John\", \"lastName\":\"Boyd\", \"address\":\"1509 Culver St\", \"city\":\"Culver\", \"zip\":\"97451\", \"phone\":\"841-874-6512\", \"email\":\"jaboyd@email.com\" },{ \"firstName\":\"Jacob\", \"lastName\":\"Boyd\", \"address\":\"1509 Culver St\", \"city\":\"Culver\", \"zip\":\"97451\", \"phone\":\"841-874-6513\", \"email\":\"drk@email.com\" }]}";
-
         try {
             //read json file data to String
-            byte[] jsonData = Files.readAllBytes(Paths.get(jsonFilePath));
-            JsonNode rootNode = mapper.readTree(jsonData);
+            //byte[] jsonData = Files.readAllBytes(Paths.get(jsonFilePath));
+            //Transform Json Data in JsonNode
+            JsonNode rootNode = mapper.readTree(fileByte);
+            //Get specific part of the data
             JsonNode personsNode = rootNode.path(listWrapperName);
             String listFromJson = personsNode.toString();
+            //Convert in Java Object
             expectedJavaObject = mapper.readValue(listFromJson, new TypeReference<List<T>>(){});
-            System.out.println("expectedJavaObject = " + expectedJavaObject.toString());
-
-
-
-        } catch (JsonProcessingException e ) {
-            e.printStackTrace();
+            //System.out.println("expectedJavaObject = " + expectedJavaObject.toString());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -90,6 +86,7 @@ public class Jackson {
         //https://mkyong.com/java/jackson-how-to-parse-json/
         //https://www.journaldev.com/2324/jackson-json-java-parser-api-example-tutorial
         //https://mkyong.com/java/how-to-check-if-a-file-exists-in-java/
+        //String staticJsonData = "{\"persons\": [  { \"firstName\":\"John\", \"lastName\":\"Boyd\", \"address\":\"1509 Culver St\", \"city\":\"Culver\", \"zip\":\"97451\", \"phone\":\"841-874-6512\", \"email\":\"jaboyd@email.com\" },{ \"firstName\":\"Jacob\", \"lastName\":\"Boyd\", \"address\":\"1509 Culver St\", \"city\":\"Culver\", \"zip\":\"97451\", \"phone\":\"841-874-6513\", \"email\":\"drk@email.com\" }]}";
     }
 
     /**

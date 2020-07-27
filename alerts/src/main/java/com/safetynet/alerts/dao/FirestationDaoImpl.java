@@ -4,6 +4,8 @@ import com.safetynet.alerts.configuration.AlertsProperties;
 import com.safetynet.alerts.models.Firestation;
 import com.safetynet.alerts.models.Person;
 import com.safetynet.alerts.utils.Jackson;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -12,7 +14,9 @@ import java.util.List;
 @Repository
 public class FirestationDaoImpl extends DaoImpl implements IFirestationDAO {
 
-    public List<Firestation> firestationList;
+    @Getter
+    @Setter
+    private List<Firestation> firestationList;
 
     /*
     static {
@@ -22,12 +26,12 @@ public class FirestationDaoImpl extends DaoImpl implements IFirestationDAO {
         firestationList.add(firestation1);
        */
 
-    public FirestationDaoImpl(AlertsProperties alertsProperties){
-        super(alertsProperties);
-        this.firestationList = Jackson.convertJsonFileToJava(
-                this.getJsonFilePath(),
+    public FirestationDaoImpl(RootFile rootFile) {
+        super(rootFile);
+        /**this.firestationList = Jackson.convertJsonFileToJava(
+                this.getFileBytes(),
                 "firestations",
-                Firestation.class);
+                Firestation.class);**/
     }
 
     @Override

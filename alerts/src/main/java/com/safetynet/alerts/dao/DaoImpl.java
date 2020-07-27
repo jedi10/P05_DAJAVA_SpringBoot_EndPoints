@@ -1,19 +1,16 @@
 package com.safetynet.alerts.dao;
 
-import com.safetynet.alerts.configuration.AlertsProperties;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.Getter;
+import lombok.Setter;
 
 public class DaoImpl implements IDAO {
 
-    public AlertsProperties alertsProperties;
+    @Getter
+    @Setter
+    private RootFile rootFile;
 
-
-    public DaoImpl(AlertsProperties alertsProperties) {
-        this.alertsProperties = alertsProperties;
+    public DaoImpl(RootFile rootFile) {
+        this.setRootFile(rootFile);
     }
 
-    @Override
-    public String getJsonFilePath() {
-        return alertsProperties.getJsonFilePath();
-    }
 }

@@ -4,5 +4,8 @@ import com.safetynet.alerts.configuration.AlertsProperties;
 
 public interface IDAO {
 
-    public String getJsonFilePath();
+    public RootFile getRootFile();
+
+    public void setRootFile(RootFile rootFile);
+
 }
