@@ -25,6 +25,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.ResolverStyle;
 import java.time.format.SignStyle;
+import java.util.ArrayList;
 import java.util.List;
 
 import static java.time.temporal.ChronoField.*;
@@ -54,9 +55,9 @@ public class Jackson {
                             .toFormatter())));
 
     /**
-     * <b>convert Json data to List of Object</b>
-     * <p>Search in File the List of Object from the type given</p>
-     * @param fileByte byte of the file
+     * <b>Convert Json data to ArrayList of Object</b>
+     * <p>Search in Bytes Array the List of Object from the given type</p>
+     * @param fileByte bytes of the file
      * @param listWrapperName name of list in json file
      * @param workingClass name of argument
      * @param <T> Type of Object we are working on
@@ -64,16 +65,23 @@ public class Jackson {
      */
     public static <T> List<T> convertJsonRootDataToJava(byte[] fileByte , String listWrapperName, Class<T> workingClass){
         List<T> expectedJavaObject = null;
+        //String className = workingClass.getSimpleName();
         try {
+            //Class<?> c = Class.forName("Person");
             //read json file data to String
             //byte[] jsonData = Files.readAllBytes(Paths.get(jsonFilePath));
+
+            //*******************************
             //Transform Json Data in JsonNode
             JsonNode rootNode = mapper.readTree(fileByte);
+            //*****************************
             //Get specific part of the data
             JsonNode personsNode = rootNode.path(listWrapperName);
             String listFromJson = personsNode.toString();
+            //**********************
             //Convert in Java Object
-            expectedJavaObject = mapper.readValue(listFromJson, new TypeReference<List<T>>(){});
+            expectedJavaObject = mapper.readValue(listFromJson, mapper.getTypeFactory().constructCollectionType(ArrayList.class, workingClass));
+            //expectedJavaObject = mapper.readValue(listFromJson, new TypeReference<ArrayList<T>>(){});// T is inoperative !!!
             //System.out.println("expectedJavaObject = " + expectedJavaObject.toString());
         } catch (IOException e) {
             e.printStackTrace();
