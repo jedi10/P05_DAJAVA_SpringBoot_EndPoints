@@ -63,7 +63,7 @@ public class Jackson {
      * @param <T> Type of Object we are working on
      * @return List of Object expected
      */
-    public static <T> List<T> convertJsonRootDataToJava(byte[] fileByte , String listWrapperName, Class<T> workingClass){
+    public static <T> List<T> convertJsonRootDataToJava(byte[] fileByte , String listWrapperName, Class<T> workingClass) throws IOException {
         List<T> expectedJavaObject = null;
         //String className = workingClass.getSimpleName();
         try {
@@ -84,7 +84,7 @@ public class Jackson {
             //expectedJavaObject = mapper.readValue(listFromJson, new TypeReference<ArrayList<T>>(){});// T is inoperative !!!
             //System.out.println("expectedJavaObject = " + expectedJavaObject.toString());
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new IOException("unexpected file data: check File associate with RootFile", e);
         }
         return expectedJavaObject;
         //https://stackoverflow.com/questions/44589381/how-to-convert-json-string-into-list-of-java-object

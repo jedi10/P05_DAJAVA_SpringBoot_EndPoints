@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.stereotype.Repository;
 
+import java.io.IOException;
 import java.util.List;
 
 @Repository
@@ -24,12 +25,16 @@ public class PersonDaoImpl extends DaoImpl implements IPersonDAO {
         personList.add(person2);
     }*/
 
-    public PersonDaoImpl(RootFile rootFile){
+    public PersonDaoImpl(RootFile rootFile) throws IOException {
         super(rootFile);
-        this.personList = Jackson.convertJsonRootDataToJava(
-                this.getRootFile().getBytes(),
-                "persons",
-                Person.class);
+        try {
+            this.personList = Jackson.convertJsonRootDataToJava(
+                    this.getRootFile().getBytes(),
+                    "persons",
+                    Person.class);
+        } catch (IOException e) {
+            throw new IOException(e);
+        }
     }
 
     @Override
