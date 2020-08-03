@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -82,33 +84,82 @@ class RootFileTest {
 
     @Order(5)
     @Test
-    void setBytesWithPath() {
+    void setBytesWithPath_alreadyDone() throws IOException {
+        //**************************************
+        //Byte has been define manually by setter
+        //Nothing should happen on Byte any more
+        //**************************************
         //GIVEN
         rootFile.setPath(pathRepository+rootFileName);
         rootFile.setBytes(byteStub);
         //WHEN
         rootFile.setBytesWithPath(false);
         //THEN
-        assertEquals(byteStub, rootFile.getBytes(), "byte array has been updated: it should not");
-        //assertEquals(expectedBytes.length, rootFile.getBytes().length);
+        assertEquals(byteStub, rootFile.getBytes(),
+                "byte array has been updated: it should not");
+    }
 
+    @Order(6)
+    @Test
+    void setBytesWithPath_normalCase() throws IOException {
+
+        //**************************
+        //Byte has never been define
+        //Setter should define it
+        //**************************
         //GIVEN
         rootFile.setBytes(null);
         //WHEN
         rootFile.setBytesWithPath(false);
         //THEN
-        assertNotNull(rootFile.getBytes(), "byte array has not been updated: it should" );
-
+        assertNotNull(rootFile.getBytes(),
+                "byte array has not been updated: it should" );
+    }
+    @Order(7)
+    @Test
+    void setBytesWithPath_alreadyDone2() throws IOException {
+        //**************************************
+        //Byte has been define once
+        //Nothing should happen on Byte any more
+        //**************************************
         //GIVEN
         byte[] byteFromObjectAtStart = rootFile.getBytes();
         //WHEN
         rootFile.setBytesWithPath(false);
         //THEN
-        assertEquals(byteFromObjectAtStart, rootFile.getBytes(), "byte array has been updated: it should not");
-
+        assertEquals(byteFromObjectAtStart, rootFile.getBytes(),
+                "byte array has been updated: it should not");
+    }
+    @Order(8)
+    @Test
+    void setBytesWithPath_force() throws IOException {
+        //**************************************
+        //Byte has been define once
+        //we force setter to changer it
+        //**************************************
+        //GIVEN
+        byte[] byteFromObjectAtStart = rootFile.getBytes();
         //WHEN
         rootFile.setBytesWithPath(true);
         //THEN
-        assertNotEquals(byteFromObjectAtStart, rootFile.getBytes(), "byte array has not been updated: it should");
+        assertNotEquals(byteFromObjectAtStart, rootFile.getBytes(),
+                "byte array has not been updated: it should");
+    }
+
+    @Order(9)
+    @Test
+    void setBytesWithWrongPath() {
+        //**************************************
+        //Byte has never been define
+        //Setter will use a wrong path: Error !
+        //**************************************
+        //GIVEN
+        rootFile.setPath("wrong/path"+rootFileName);
+        rootFile.setBytes(null);
+        //WHEN-THEN
+        Exception exception =  assertThrows(IOException.class, () -> {
+            rootFile.setBytesWithPath(false);
+        });
+        assertTrue(exception.getMessage().contains("File don't exist"));
     }
 }

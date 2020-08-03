@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -80,7 +81,7 @@ public class RootFileIT {
 
     @Order(3)
     @Test
-    void setBytesWithPath() {
+    void setBytesWithPath() throws IOException {
         //GIVEN
         assertNotNull(rootFile.getBytes());
         byte[] bytesAtStart = rootFile.getBytes();
@@ -89,5 +90,6 @@ public class RootFileIT {
         //THEN
         assertNotEquals(bytesAtStart, rootFile.getBytes());
         assertEquals(bytesAtStart.length, rootFile.getBytes().length);
+        assertArrayEquals(bytesAtStart, rootFile.getBytes());
     }
 }

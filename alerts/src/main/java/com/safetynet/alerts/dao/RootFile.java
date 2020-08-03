@@ -10,7 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 @Repository
-public class RootFile {
+public class RootFile implements IRootFile {
 
     @Getter
     @Setter
@@ -26,19 +26,24 @@ public class RootFile {
      */
     public RootFile(AlertsProperties alertsProperties) {
         this.path = alertsProperties.getJsonFilePath();
-        setBytesWithPath(false);
+        try {
+            setBytesWithPath(false);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
      * init fileBytes array
      */
-    public void setBytesWithPath(boolean forceSetting){
+    @Override
+    public void setBytesWithPath(boolean forceSetting) throws IOException {
         try {
             if (this.bytes == null || forceSetting){
                 this.bytes = Files.readAllBytes(Paths.get(this.getPath()));
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new IOException("File don't exist: check the file path", e);
         }
     }
 }
