@@ -5,7 +5,6 @@ import com.safetynet.alerts.models.Person;
 import com.safetynet.alerts.utils.Jackson;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -18,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
 
 @Slf4j
 @SpringBootTest

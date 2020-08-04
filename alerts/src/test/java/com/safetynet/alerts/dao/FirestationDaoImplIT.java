@@ -5,20 +5,15 @@ import com.safetynet.alerts.models.Firestation;
 import com.safetynet.alerts.utils.Jackson;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
 
 @Slf4j
 @SpringBootTest
@@ -74,8 +69,7 @@ class FirestationDaoImplIT {
     @Test
     void convertJsonRootDataToJavaTest() throws IOException {
         //GIVEN
-        //this.personDAO.getRootFile().setBytes(personsJson.getBytes());
-        //Person List as we should find in DAO Person List
+        //Firestation List as we should find in DAO Firestation List
         List<Firestation> firestationList = Jackson.convertJsonRootDataToJava(
                 this.firestationDAO.getRootFile().getBytes(),
                 "firestations",

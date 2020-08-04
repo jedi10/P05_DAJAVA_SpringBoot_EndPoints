@@ -128,7 +128,7 @@ class PersonDaoImplTest {
         assertEquals(personsGiven.get(0), personDAO.getPersonList().get(0));
         assertEquals(personsGiven.get(1), personDAO.getPersonList().get(1));
     }
-    
+
     @Order(4)
     @Test
     void setPersonList() {
@@ -172,7 +172,7 @@ class PersonDaoImplTest {
 
         /**We have checked that Person constructor contain this:
         personDAO.setPersonList(Jackson.convertJsonRootDataToJava(
-                this.personDAO.getRootFile().getBytes(),
+                this.getRootFile().getBytes(),
                 "persons",
                 Person.class)
         );**/
@@ -237,7 +237,7 @@ class PersonDaoImplTest {
 
     @Order(10)
     @Test
-    void update() {
+    void update_error() {
         //**************************
         //Case when person not exist
         //**************************
@@ -245,7 +245,11 @@ class PersonDaoImplTest {
         Person personUpdated = personDAO.update(personNoSaved);
         //Then
         assertNull(personUpdated);
+    }
 
+    @Order(11)
+    @Test
+    void update() {
         //***********************
         //Case when person exists
         //***********************
@@ -256,7 +260,7 @@ class PersonDaoImplTest {
         personCreated.setEmail(newMail);
 
         //When
-        personUpdated = personDAO.update(personCreated);
+        Person personUpdated = personDAO.update(personCreated);
         //Then
         assertNotNull(personUpdated);
         assertEquals(newMail, personUpdated.getEmail());
@@ -264,9 +268,9 @@ class PersonDaoImplTest {
         assertEquals(newMail, personUpdated.getEmail());
     }
 
-    @Order(11)
+    @Order(12)
     @Test
-    void delete() {
+    void delete_error() {
         //**************************
         //Case when person not exist
         //**************************
@@ -274,14 +278,18 @@ class PersonDaoImplTest {
         boolean deleteSuccess = personDAO.delete(personNoSaved);
         //Then
         assertFalse(deleteSuccess);
+    }
 
+    @Order(13)
+    @Test
+    void delete() {
         //***********************
         //Case when person exists
         //***********************
         assertEquals(personsGiven.size(), personDAO.findAll().size());
         Person personToDelete = personDAO.findAll().get(1);
         //When
-        deleteSuccess = personDAO.delete(personToDelete);
+        boolean deleteSuccess = personDAO.delete(personToDelete);
         //Then
         assertTrue(deleteSuccess);
         assertEquals(personsGiven.size()-1, personDAO.findAll().size());

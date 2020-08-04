@@ -76,8 +76,8 @@ public class Jackson {
             JsonNode rootNode = mapper.readTree(fileByte);
             //*****************************
             //Get specific part of the data
-            JsonNode personsNode = rootNode.path(listWrapperName);
-            String listFromJson = personsNode.toString();
+            JsonNode objectWantedNode = rootNode.path(listWrapperName);
+            String listFromJson = objectWantedNode.toString();
             //**********************
             //Convert in Java Object
             expectedJavaObject = mapper.readValue(listFromJson, mapper.getTypeFactory().constructCollectionType(ArrayList.class, workingClass));

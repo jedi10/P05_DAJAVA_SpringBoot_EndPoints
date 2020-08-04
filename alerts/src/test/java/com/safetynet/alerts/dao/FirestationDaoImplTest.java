@@ -1,7 +1,6 @@
 package com.safetynet.alerts.dao;
 
 import com.safetynet.alerts.models.Firestation;
-import com.safetynet.alerts.models.Person;
 import com.safetynet.alerts.utils.Jackson;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
@@ -126,8 +125,7 @@ class FirestationDaoImplTest {
     @Test
     void convertJsonRootDataToJavaTest() throws IOException {
         //GIVEN
-        //this.personDAO.getRootFile().setBytes(personsJson.getBytes());
-        //Person List as we should find in DAO Person List
+        //Firestation List as we should find in DAO Firestation List
         List<Firestation> firestationList = Jackson.convertJsonRootDataToJava(
                 this.firestationDAO.getRootFile().getBytes(),
                 "firestations",

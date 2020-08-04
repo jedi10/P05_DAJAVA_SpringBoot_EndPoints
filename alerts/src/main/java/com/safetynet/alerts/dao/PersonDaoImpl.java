@@ -15,15 +15,6 @@ public class PersonDaoImpl extends DaoImpl implements IPersonDAO {
     @Getter
     @Setter
     private List<Person> personList;
-    /*
-    static {
-        Person person = new Person("julia", "werner", "rue du colysée", "Rome", 45, "06-12-23-34-45", "wermer@mail.it");
-        Person person2 = new Person("judy", "holmes", "rue de la pensee", "Londre", 89, "06-25-74-90-12", "holmes@mail.en");
-        Person personCreated = new Person("jack", "mortimer", "rue du stade", "Rome", 45, "06-25-50-90-12", "mortimer@mail.it");
-        //personList = List.of(person, person2);//immutable
-        personList.add(person);
-        personList.add(person2);
-    }*/
 
     public PersonDaoImpl(RootFile rootFile) throws IOException {
         super(rootFile);

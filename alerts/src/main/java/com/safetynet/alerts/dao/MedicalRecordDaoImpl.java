@@ -15,26 +15,6 @@ public class MedicalRecordDaoImpl extends DaoImpl implements IMedicalRecordDAO {
     @Getter
     @Setter
     private List<MedicalRecord> medicalRecordList;
-    /*
-    static {
-        List<String> medicationList = new ArrayList<>();
-        medicationList.add("aznol:350mg"); medicationList.add("hydrapermazol:100mg");
-        List<String> allergiesList = new ArrayList<>();
-        allergiesList.add("nillacilan");
-        //https://howtodoinjava.com/java/date-time/java-time-localdate-class/
-        //DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-d-yyyy");
-        MedicalRecord medicalRecord1 = new MedicalRecord("john", "boyd",
-                LocalDate.of(1984, 3, 6),
-                medicationList, allergiesList);
-        medicationList.clear();
-        medicationList.add("pharmacol:5000mg"); medicationList.add("terazine:10mg"); medicationList.add("noznazol:250mg");
-        allergiesList.clear();
-        MedicalRecord medicalRecord2 = new MedicalRecord("jacob", "boyd",
-                LocalDate.of(1989, 3, 6),
-                medicationList, allergiesList);
-        medicalRecordList.add(medicalRecord1);
-        medicalRecordList.add(medicalRecord2);
-    }*/
 
     public MedicalRecordDaoImpl(RootFile rootFile) throws IOException {
         super(rootFile);
