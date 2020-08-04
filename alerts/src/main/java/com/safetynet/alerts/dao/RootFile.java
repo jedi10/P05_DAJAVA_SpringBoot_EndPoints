@@ -6,6 +6,7 @@ import lombok.Setter;
 import org.springframework.stereotype.Repository;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -40,7 +41,9 @@ public class RootFile implements IRootFile {
     public void setBytesWithPath(boolean forceSetting) throws IOException {
         try {
             if (this.bytes == null || forceSetting){
-                this.bytes = Files.readAllBytes(Paths.get(this.getPath()));
+                String fileString = Files.readString(Paths.get(this.getPath()));
+                this.bytes = fileString.getBytes(StandardCharsets.UTF_8);
+                //this.bytes = Files.readAllBytes(Paths.get(this.getPath()));
             }
         } catch (IOException e) {
             throw new IOException("File don't exist: check the file path", e);

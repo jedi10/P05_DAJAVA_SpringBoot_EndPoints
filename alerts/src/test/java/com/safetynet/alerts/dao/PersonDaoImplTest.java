@@ -8,6 +8,7 @@ import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -55,7 +56,7 @@ class PersonDaoImplTest {
 
     static {
         //GIVEN
-        Person person = new Person("julia", "werner", "rue du colysee", "Rome", 45, "06-12-23-34-45", "wermer@mail.it");
+        Person person = new Person("julia", "werner", "rue du colysée", "Rome", 45, "06-12-23-34-45", "wermer@mail.it");
         Person person2 = new Person("judy", "holmes", "rue de la pensee", "Londre", 89, "06-25-74-90-12", "holmes@mail.en");
         //personList = List.of(person, person2);//immutable
         personsGiven.add(person);
@@ -77,7 +78,7 @@ class PersonDaoImplTest {
         when(rootFileGiven.getPath()).thenReturn("/url/file");
         //when(rootFileGiven.getBytes()).thenReturn("{'data':'infoByte'}".getBytes());
         String personsJson = Jackson.convertJavaToJson(wrapperList);
-        when(rootFileGiven.getBytes()).thenReturn(personsJson.getBytes());
+        when(rootFileGiven.getBytes()).thenReturn(personsJson.getBytes(StandardCharsets.UTF_8));
         //WHEN
         this.personDAO = new PersonDaoImpl(rootFileGiven);
     }

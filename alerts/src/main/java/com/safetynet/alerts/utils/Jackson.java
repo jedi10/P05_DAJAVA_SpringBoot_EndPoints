@@ -1,6 +1,7 @@
 package com.safetynet.alerts.utils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.json.JsonWriteFeature;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -53,6 +54,8 @@ public class Jackson {
                             .appendLiteral('-')
                             .appendValue(YEAR, 4, 10, SignStyle.EXCEEDS_PAD)
                             .toFormatter())));
+            //.configure(JsonWriteFeature.ESCAPE_NON_ASCII.mappedFeature(), true);
+            //https://stackoverflow.com/questions/23121765/write-objectnode-to-json-string-with-utf-8-characters-to-escaped-ascii
 
     /**
      * <b>Convert Json data to ArrayList of Object</b>
