@@ -3,6 +3,7 @@ package com.safetynet.alerts.dao;
 import com.safetynet.alerts.configuration.AlertsProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -13,6 +14,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
 
 @Slf4j
 @SpringBootTest
@@ -20,10 +22,9 @@ import static org.junit.jupiter.api.Assertions.*;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class RootFileTest {
 
-    @Autowired
     private RootFile rootFile;
 
-    @Autowired
+    @Mock
     private AlertsProperties alertsProperties;
 
     private String rootFileName = "testData.json";
@@ -35,8 +36,14 @@ class RootFileTest {
     @BeforeAll
     void setUp(){
         //GIVEN-WHEN
-        rootFile.setPath(pathRepository+rootFileName);
+        when(alertsProperties.getJsonFilePath()).thenReturn(pathRepository+rootFileName);
+        rootFile = new RootFile(alertsProperties);
         rootFile.setBytes(byteStub);
+    }
+
+    @AfterAll
+    void tearDown() {
+        rootFile = null;
     }
 
     @Order(1)
@@ -154,8 +161,8 @@ class RootFileTest {
         //Setter will use a wrong path: Error !
         //**************************************
         //GIVEN
-        rootFile.setPath("wrong/path"+rootFileName);
-        rootFile.setBytes(null);
+        when(alertsProperties.getJsonFilePath()).thenReturn("wrong/path/"+rootFileName);
+        rootFile = new RootFile(alertsProperties);
         //WHEN-THEN
         Exception exception =  assertThrows(IOException.class, () -> {
             rootFile.setBytesWithPath(false);
