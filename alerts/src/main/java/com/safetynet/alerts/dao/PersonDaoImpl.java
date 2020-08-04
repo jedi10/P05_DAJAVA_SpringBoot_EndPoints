@@ -1,23 +1,31 @@
 package com.safetynet.alerts.dao;
 
 import com.safetynet.alerts.models.Person;
+import com.safetynet.alerts.utils.Jackson;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
+import java.io.IOException;
 import java.util.List;
 
 @Repository
-public class PersonDaoImpl implements IPersonDAO {
+public class PersonDaoImpl extends DaoImpl implements IPersonDAO {
 
-    public static List<Person> personList = new ArrayList<>();
+    @Getter
+    @Setter
+    private List<Person> personList;
 
-    static {
-        Person person = new Person("julia", "werner", "rue du colysée", "Rome", 45, "06-12-23-34-45", "wermer@mail.it");
-        Person person2 = new Person("judy", "holmes", "rue de la pensee", "Londre", 89, "06-25-74-90-12", "holmes@mail.en");
-        Person personCreated = new Person("jack", "mortimer", "rue du stade", "Rome", 45, "06-25-50-90-12", "mortimer@mail.it");
-        //personList = List.of(person, person2);//immutable
-        personList.add(person);
-        personList.add(person2);
+    public PersonDaoImpl(RootFile rootFile) throws IOException {
+        super(rootFile);
+        try {
+            this.personList = Jackson.convertJsonRootDataToJava(
+                    this.getRootFile().getBytes(),
+                    "persons",
+                    Person.class);
+        } catch (IOException e) {
+            throw new IOException(e);
+        }
     }
 
     @Override

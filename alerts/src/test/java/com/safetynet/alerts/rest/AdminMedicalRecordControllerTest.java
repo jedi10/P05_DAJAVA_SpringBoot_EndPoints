@@ -116,7 +116,7 @@ class AdminMedicalRecordControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(content().string(containsString("1984")))
                 //.andExpect(content().json("{'birthday':'03-06-1984'}"))
-                .andExpect(jsonPath("$[0].birthday").value(convertToString(medicalRecord1.getBirthday(),null)))
+                .andExpect(jsonPath("$[0].birthdate").value(convertToString(medicalRecord1.getBirthdate(),null)))
                 .andExpect(jsonPath("$[0].firstName").value(medicalRecord1.getFirstName()))
                 .andReturn();
         //*********************************************************
@@ -293,7 +293,7 @@ class AdminMedicalRecordControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(content().string(containsString(medicalRecordUpdated.getFirstName())))
                 .andExpect(jsonPath("$.lastName").value(medicalRecordUpdated.getLastName()))
-                .andExpect(jsonPath("$.birthday").value(convertToString(medicalRecordUpdated.getBirthday(), null)))
+                .andExpect(jsonPath("$.birthdate").value(convertToString(medicalRecordUpdated.getBirthdate(), null)))
                 .andExpect(jsonPath("$.medications").value(medicalRecordUpdated.getMedications()))
                 .andReturn();
         //*********************************************************

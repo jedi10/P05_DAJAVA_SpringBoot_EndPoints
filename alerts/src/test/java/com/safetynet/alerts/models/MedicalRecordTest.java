@@ -61,9 +61,9 @@ class MedicalRecordTest {
 
     @Order(3)
     @Test
-    void getBirthday() {
+    void getBirthdate() {
         //WHEN
-        LocalDate dateFromObject = medicalRecord.getBirthday();
+        LocalDate dateFromObject = medicalRecord.getBirthdate();
         //THEN
         assertEquals(LocalDate.of(2084, Month.MARCH, 06),
                 dateFromObject);
@@ -143,13 +143,13 @@ class MedicalRecordTest {
 
     @Order(8)
     @Test
-    void setBirthday() {
+    void setBirthdate() {
         //GIVEN
         LocalDate birthdayGiven = LocalDate.of(1989, Month.JANUARY, 03);
         //WHEN
-        medicalRecord.setBirthday(birthdayGiven);
+        medicalRecord.setBirthdate(birthdayGiven);
         //THEN
-        assertEquals(birthdayGiven, medicalRecord.getBirthday());
+        assertEquals(birthdayGiven, medicalRecord.getBirthdate());
     }
 
     @Order(9)
