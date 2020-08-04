@@ -1,16 +1,12 @@
 package com.safetynet.alerts.dao;
 
-import com.safetynet.alerts.configuration.AlertsProperties;
 import com.safetynet.alerts.models.MedicalRecord;
-import com.safetynet.alerts.models.Person;
 import com.safetynet.alerts.utils.Jackson;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.stereotype.Repository;
 
-import java.lang.reflect.Array;
-import java.time.LocalDate;
-import java.util.ArrayList;
+import java.io.IOException;
 import java.util.List;
 
 @Repository
@@ -40,13 +36,16 @@ public class MedicalRecordDaoImpl extends DaoImpl implements IMedicalRecordDAO {
         medicalRecordList.add(medicalRecord2);
     }*/
 
-    public MedicalRecordDaoImpl(RootFile rootFile){
+    public MedicalRecordDaoImpl(RootFile rootFile) throws IOException {
         super(rootFile);
-        /**this.setFileBytesWithPath(this.getJsonFilePath());
-        this.medicalRecordList = Jackson.convertJsonFileToJava(
-                this.getFileBytes(),
-                "medicalrecords",
-                MedicalRecord.class);**/
+        try {
+            this.medicalRecordList = Jackson.convertJsonRootDataToJava(
+                    this.getRootFile().getBytes(),
+                    "medicalrecords",
+                    MedicalRecord.class);
+        } catch (IOException e) {
+            throw new IOException(e);
+        }
     }
 
 
