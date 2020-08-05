@@ -9,6 +9,9 @@ import org.springframework.stereotype.Repository;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * <b>Load and Manage MedicalRecord Type Data</b>
+ */
 @Repository
 public class MedicalRecordDaoImpl extends DaoImpl implements IMedicalRecordDAO {
 

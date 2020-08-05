@@ -5,6 +5,10 @@ import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * <b>Activate Spring Configuration Metadata</b>
+ * <p>application.properties can define variable declared in this class</p>
+ */
 @Configuration
 @ConfigurationProperties(prefix = "app.alerts")
 public class AlertsProperties {

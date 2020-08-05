@@ -9,6 +9,9 @@ import org.springframework.stereotype.Repository;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * <b>Load and Manage Firestation Type Data</b>
+ */
 @Repository
 public class FirestationDaoImpl extends DaoImpl implements IFirestationDAO {
 
