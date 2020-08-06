@@ -101,6 +101,51 @@ public class Jackson {
     }
 
     /**
+     * <b>Convert Json data to ArrayList of Object</b>
+     * <p>Search in Bytes Array the List of Object from the given type</p>
+     * @param fileByte bytes of the file
+     * @param workingClass name of argument
+     * @param <T> Type of Object we are working on
+     * @return List of Object expected
+     */
+    public static <T> List<T> convertJsonListToJava(byte[] fileByte , Class<T> workingClass) throws IOException {
+        List<T> expectedJavaObject = null;
+        try {
+            //**********************
+            //Convert in Java Object
+            expectedJavaObject = mapper.readValue(fileByte, mapper.getTypeFactory().constructCollectionType(ArrayList.class, workingClass));
+
+            //expectedJavaObject = mapper.readValue(listFromJson, new TypeReference<ArrayList<T>>(){});// T is inoperative !!!
+            //System.out.println("expectedJavaObject = " + expectedJavaObject.toString());
+        } catch (IOException e) {
+            throw new IOException("unexpected data: check data", e);
+        }
+        return expectedJavaObject;
+        }
+
+    /**
+     * <b>Convert Json data to ArrayList of Object</b>
+     * <p>Search in Bytes Array the List of Object from the given type</p>
+     * @param fileByte bytes of the file
+     * @param workingClass name of argument
+     * @param <T> Type of Object we are working on
+     * @return Object expected
+     */
+    public static <T> T convertJsonToJava(byte[] fileByte , Class<T> workingClass) throws IOException {
+        T expectedJavaObject = null;
+        try {
+            //**********************
+            //Convert in Java Object
+            expectedJavaObject = mapper.readValue(fileByte, workingClass);
+            //expectedJavaObject = mapper.readValue(listFromJson, new TypeReference<ArrayList<T>>(){});// T is inoperative !!!
+            //System.out.println("expectedJavaObject = " + expectedJavaObject.toString());
+        } catch (IOException e) {
+            throw new IOException("unexpected data: check data", e);
+        }
+        return expectedJavaObject;
+    }
+
+    /**
      * <b>Convert java Object to Json</b>
      * @param javaObject java Object
      * @return JSON string
