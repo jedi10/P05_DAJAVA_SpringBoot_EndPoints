@@ -19,7 +19,7 @@ public class LocalDateFormatter {
      */
     public static String convertToString(@NonNull LocalDate localdate, @Nullable String pattern){
         if(pattern == null){
-            return localdate.format(DateTimeFormatter.ofPattern("MM-dd-YYYY"));}
+            return localdate.format(DateTimeFormatter.ofPattern("MM/dd/YYYY"));}
         else {
             return localdate.format(DateTimeFormatter.ofPattern(pattern));
         }

@@ -21,8 +21,8 @@ public class MedicalRecord {
 
     @Getter
     @Setter
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM-dd-yyyy")
-    private LocalDate birthday;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM/dd/yyyy")
+    private LocalDate birthdate;
 
     @Getter
     private List<String> medications;
@@ -60,15 +60,15 @@ public class MedicalRecord {
      * <p>if Medications or Allergies List are Null, an empty List will be created</p>
      * @param firstName first name
      * @param lastName last name
-     * @param birthday birthday
+     * @param birthdate birthday
      * @param medications medications list
      * @param allergies allergies list
      */
-    public MedicalRecord(String firstName, String lastName, LocalDate birthday,
+    public MedicalRecord(String firstName, String lastName, LocalDate birthdate,
                          List<String> medications, List<String> allergies) {
         this.firstName = firstName;
         this.lastName = lastName;
-        this.birthday = birthday;
+        this.birthdate = birthdate;
         this.setMedications(medications);
         this.setAllergies(allergies);
     }
@@ -78,12 +78,12 @@ public class MedicalRecord {
      * Medications and Allergies List are created and will be empty
      * @param firstName first name
      * @param lastName last name
-     * @param birthday birthday
+     * @param birthdate birthday
      */
-    public MedicalRecord(String firstName, String lastName, LocalDate birthday) {
+    public MedicalRecord(String firstName, String lastName, LocalDate birthdate) {
         this.firstName = firstName;
         this.lastName = lastName;
-        this.birthday = birthday;
+        this.birthdate = birthdate;
         this.medications = new ArrayList<String>();
         this.allergies = new ArrayList<String>();
     }
