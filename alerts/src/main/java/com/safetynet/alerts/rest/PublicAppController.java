@@ -17,6 +17,8 @@ public class PublicAppController {
     /**
      * redirection to getPerson EndPoint Controller
      * @see AdminPersonController#getPerson(String, String)
+     * @param firstName firstName
+     * @param lastName lastName
      * @param httpResponse response
      * @throws Exception exception
      */

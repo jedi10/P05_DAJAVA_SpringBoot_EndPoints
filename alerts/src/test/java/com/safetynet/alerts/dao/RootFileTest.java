@@ -22,7 +22,7 @@ import static org.mockito.Mockito.when;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class RootFileTest {
 
-    private RootFile rootFile;
+    private IRootFile rootFile;
 
     @Mock
     private AlertsProperties alertsProperties;

@@ -65,6 +65,7 @@ public class Jackson {
      * @param workingClass name of argument
      * @param <T> Type of Object we are working on
      * @return List of Object expected
+     * @throws IOException Exception Throws
      */
     public static <T> List<T> convertJsonRootDataToJava(byte[] fileByte , String listWrapperName, Class<T> workingClass) throws IOException {
         List<T> expectedJavaObject = null;
@@ -107,6 +108,7 @@ public class Jackson {
      * @param workingClass name of argument
      * @param <T> Type of Object we are working on
      * @return List of Object expected
+     * @throws IOException Exception Throws
      */
     public static <T> List<T> convertJsonListToJava(byte[] fileByte , Class<T> workingClass) throws IOException {
         List<T> expectedJavaObject = null;
@@ -130,6 +132,7 @@ public class Jackson {
      * @param workingClass name of argument
      * @param <T> Type of Object we are working on
      * @return Object expected
+     * @throws IOException Exception Throws
      */
     public static <T> T convertJsonToJava(byte[] fileByte , Class<T> workingClass) throws IOException {
         T expectedJavaObject = null;
