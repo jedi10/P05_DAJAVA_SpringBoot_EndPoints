@@ -21,7 +21,6 @@ import java.util.List;
 import static com.safetynet.alerts.utils.Jackson.convertJavaToJson;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.verify;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -71,7 +70,6 @@ class AdminPersonControllerIT {
 
     @AfterEach
     void tearDown() {
-        //personDAO = null;
     }
 
     @Order(1)
@@ -79,7 +77,8 @@ class AdminPersonControllerIT {
     void getAllPersons() throws Exception {
         //***********WHEN*************
         ResponseEntity<String> result = template.getForEntity(
-                this.baseURL.toURI(), String.class);
+                this.baseURL.toURI(),
+                String.class);
 
         //**************THEN***************
         assertNotNull(result);
@@ -116,14 +115,14 @@ class AdminPersonControllerIT {
                 person1.getLastName());
         //WHEN
         ResponseEntity<String> result = template.getForEntity(
-                urlTemplate, String.class);
+                urlTemplate,
+                String.class);
         //THEN
         assertNotNull(result);
         assertEquals(HttpStatus.OK, result.getStatusCode());//200
 
         String content = result.getBody();
         assertNotNull(content);
-
         //*********************************************************
         //**************CHECK RESPONSE CONTENT*********************
         //*********************************************************
@@ -133,7 +132,6 @@ class AdminPersonControllerIT {
                 Person.class);
         assertNotNull(resultJavaObject);
         assertThat(person1).isEqualToComparingFieldByField(resultJavaObject);
-
     }
 
     @Order(3)
@@ -142,12 +140,16 @@ class AdminPersonControllerIT {
         //****************GIVEN*******************
         String jsonGiven = convertJavaToJson(personCreated);
         String urlDestination = String.format("%s&%s",
-                UriUtils.encode(personCreated.getFirstName(), "UTF-8"),
-                UriUtils.encode(personCreated.getLastName(), "UTF-8"));
+                UriUtils.encode(
+                        personCreated.getFirstName(), StandardCharsets.UTF_8),
+                UriUtils.encode(
+                        personCreated.getLastName(), StandardCharsets.UTF_8));
         HttpEntity<String> request = new HttpEntity<String>(jsonGiven, headers);
 
         //****************WHEN********************
-        URI locationHeader = template.postForLocation(this.baseURL.toURI(), request);
+        URI locationHeader = template.postForLocation(
+                this.baseURL.toURI(),
+                request);
 
         //****************THEN********************
         assertNotNull(locationHeader);
@@ -159,8 +161,9 @@ class AdminPersonControllerIT {
         //*********************************************************
         //**************CHECK OBJECT created***********************
         //*********************************************************
-        ResponseEntity<String> response
-                = template.getForEntity(locationHeader.getPath(), String.class);
+        ResponseEntity<String> response = template.getForEntity(
+                locationHeader.getPath(),
+                String.class);
         assertEquals(response.getStatusCode(), HttpStatus.OK);
         String content = response.getBody();
         assertNotNull(content);
@@ -178,17 +181,24 @@ class AdminPersonControllerIT {
         //https://stackoverflow.com/questions/52364187/resttemplate-exchange-vs-postforentity-vs-execute
     }
 
+    @Order(4)
     @Test
     void updatePerson() throws Exception {
         //*********************GIVEN*************************
         String jsonGiven = convertJavaToJson(personUpdated);
         String urlUpdated = String.format("%s%s&%s",
                 this.baseURL.getPath(),
-                UriUtils.encode(personUpdated.getFirstName(), "UTF-8"),
-                UriUtils.encode(personUpdated.getLastName(), "UTF-8"));
+                UriUtils.encode(
+                        personUpdated.getFirstName(), StandardCharsets.UTF_8),
+                UriUtils.encode(
+                        personUpdated.getLastName(), StandardCharsets.UTF_8));
         HttpEntity<String> request = new HttpEntity<String>(jsonGiven, headers);
         //********************WHEN****************************
-        ResponseEntity<Person> response = template.exchange(this.baseURL.toURI(), HttpMethod.PUT, request, Person.class);
+        ResponseEntity<Person> response = template.exchange(
+                this.baseURL.toURI(),
+                HttpMethod.PUT,
+                request,
+                Person.class);
 
         //********************THEN****************************
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -204,8 +214,9 @@ class AdminPersonControllerIT {
         //*********************************************************
         //**************CHECK OBJECT updated***********************
         //*********************************************************
-        ResponseEntity<Person> response2
-                = template.getForEntity(urlUpdated, Person.class);
+        ResponseEntity<Person> response2 = template.getForEntity(
+                urlUpdated,
+                Person.class);
         assertEquals(HttpStatus.OK, response2.getStatusCode());
         Person resultJavaObject2 = response2.getBody();
         assertNotNull(resultJavaObject2);
@@ -221,60 +232,37 @@ class AdminPersonControllerIT {
         //https://o7planning.org/fr/11647/exemple-spring-boot-restful-client-avec-resttemplate#a13901576
     }
 
-
+    @Order(5)
     @Test
     void deletePerson() throws Exception {
         String urlTemplate = String.format("%s%s&%s",
                 this.baseURL.getPath(),
                 personUpdated.getFirstName(),
                 personUpdated.getLastName());
-        URI urlFull = URI.create(urlTemplate);
+        URI uriFull = URI.create(urlTemplate);
         HttpEntity<Person> request = new HttpEntity<>(headers);
         //WHEN
-        ResponseEntity<Person> response = template.exchange(urlFull, HttpMethod.DELETE, request, Person.class);
+        ResponseEntity<Person> response = template.exchange(
+                uriFull,
+                HttpMethod.DELETE,
+                request,
+                Person.class);
 
         //THEN
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        Person personResponse = response.getBody();
-        assertNull(personResponse);
+        Person resultJavaObject = response.getBody();
+        assertNull(resultJavaObject);
 
-        //**************CHECK Deleted Person**************
-        ResponseEntity<Person> response2
-                = template.getForEntity(urlTemplate, Person.class);
+        //**************CHECK Deleted Object**************
+        ResponseEntity<Person> response2 = template.getForEntity(
+                urlTemplate,
+                Person.class);
         assertNotNull(response2);
         assertEquals(HttpStatus.NOT_FOUND, response2.getStatusCode());
-        Person personResponse2 = response2.getBody();
-        assertNull(personResponse2);
-
-
-
+        Person resultJavaObject2 = response2.getBody();
+        assertNull(resultJavaObject2);
     }
-    /**
-    @Test
-    void deleteUnknownPerson() throws Exception {
-        //***********GIVEN*************
-        String urlTemplate = String.format("%s%s&%s",
-                rootURL,
-                unknownPerson.getFirstName(),
-                unknownPerson.getLastName());//"grrr&trex"
-        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.delete(urlTemplate);
-
-        //***********************************************************
-        //**************CHECK MOCK INVOCATION at start***************
-        //***********************************************************
-        verify(personDAO, Mockito.times(0)).delete(unknownPerson);
-
-        //**************WHEN-THEN****************************
-        mockMvc.perform(builder)//.andDo(print());
-                .andExpect(status().isNotFound());
-
-        //*********************************************************
-        //**************CHECK MOCK INVOCATION at end***************
-        //*********************************************************
-        verify(personDAO, Mockito.times(1)).findByName("grrr","trex");//.save(any());
-        verify(personDAO, Mockito.times(0)).delete(ArgumentMatchers.refEq(unknownPerson));//.save(any());
-    }**/
 }
 
 

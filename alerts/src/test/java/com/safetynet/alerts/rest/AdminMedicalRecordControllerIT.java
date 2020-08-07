@@ -128,8 +128,6 @@ class AdminMedicalRecordControllerIT {
         assertEquals(HttpStatus.OK, result.getStatusCode());//200
 
         MedicalRecord resultJavaObject = result.getBody();
-        assertNotNull(resultJavaObject);
-
         //*********************************************************
         //**************CHECK RESPONSE CONTENT*********************
         //*********************************************************
@@ -144,8 +142,10 @@ class AdminMedicalRecordControllerIT {
         //****************GIVEN*******************
         String jsonGiven = convertJavaToJson(medicalRecordCreated);
         String urlDestination = String.format("%s&%s",
-                UriUtils.encode(medicalRecordCreated.getFirstName(), "UTF-8"),
-                UriUtils.encode(medicalRecordCreated.getLastName(), "UTF-8"));
+                UriUtils.encode(
+                        medicalRecordCreated.getFirstName(), StandardCharsets.UTF_8),
+                UriUtils.encode
+                        (medicalRecordCreated.getLastName(), StandardCharsets.UTF_8));
         HttpEntity<String> request = new HttpEntity<String>(jsonGiven, headers);
 
         //****************WHEN********************
@@ -186,8 +186,10 @@ class AdminMedicalRecordControllerIT {
         String jsonGiven = convertJavaToJson(medicalRecordUpdated);
         String urlUpdated = String.format("%s%s&%s",
                 this.baseURL.getPath(),
-                UriUtils.encode(medicalRecordUpdated.getFirstName(), "UTF-8"),
-                UriUtils.encode(medicalRecordUpdated.getLastName(), "UTF-8"));
+                UriUtils.encode(
+                        medicalRecordUpdated.getFirstName(), StandardCharsets.UTF_8),
+                UriUtils.encode(
+                        medicalRecordUpdated.getLastName(), StandardCharsets.UTF_8));
         HttpEntity<String> request = new HttpEntity<String>(jsonGiven, headers);
         //********************WHEN****************************
         ResponseEntity<MedicalRecord> response = template.exchange(

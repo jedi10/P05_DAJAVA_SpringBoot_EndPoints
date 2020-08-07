@@ -114,8 +114,6 @@ class AdminFirestationControllerIT {
         assertEquals(HttpStatus.OK, result.getStatusCode());//200
 
         Firestation resultJavaObject = result.getBody();
-        assertNotNull(resultJavaObject);
-
         //*********************************************************
         //**************CHECK RESPONSE CONTENT*********************
         //*********************************************************
@@ -130,7 +128,8 @@ class AdminFirestationControllerIT {
         //****************GIVEN*******************
         String jsonGiven = convertJavaToJson(firestationCreated);
         String urlDestination = String.format("%s",
-                UriUtils.encode(firestationCreated.getAddress(), "UTF-8"));
+                UriUtils.encode(
+                        firestationCreated.getAddress(), StandardCharsets.UTF_8));
         HttpEntity<String> request = new HttpEntity<String>(jsonGiven, headers);
 
         //****************WHEN********************
@@ -174,7 +173,7 @@ class AdminFirestationControllerIT {
         String jsonGiven = convertJavaToJson(firestationUpdated);
         String urlUpdated = String.format("%s%s",
                 this.baseURL.getPath(),
-                firestationUpdated.getAddress(), "UTF-8");
+                firestationUpdated.getAddress());
         HttpEntity<String> request = new HttpEntity<String>(jsonGiven, headers);
         //********************WHEN****************************
         ResponseEntity<Firestation> response = template.exchange(
@@ -221,8 +220,7 @@ class AdminFirestationControllerIT {
         String urlTemplate = String.format("%s%s",
                 this.baseURL.getPath(),
                 UriUtils.encode(
-                        firestationUpdated.getAddress(),
-                        StandardCharsets.UTF_8));
+                        firestationUpdated.getAddress(), StandardCharsets.UTF_8));
         URI uriFull = URI.create(urlTemplate);
         HttpEntity<Firestation> request = new HttpEntity<>(headers);
         //WHEN
@@ -234,8 +232,8 @@ class AdminFirestationControllerIT {
         //THEN
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        Firestation personResponse = response.getBody();
-        assertNull(personResponse);
+        Firestation resultJavaObject = response.getBody();
+        assertNull(resultJavaObject);
 
         //**************CHECK Deleted Object**************
         ResponseEntity<Firestation> response2 = template.getForEntity(
@@ -243,8 +241,8 @@ class AdminFirestationControllerIT {
                 Firestation.class);
         assertNotNull(response2);
         assertEquals(HttpStatus.NOT_FOUND, response2.getStatusCode());
-        Firestation personResponse2 = response2.getBody();
-        assertNull(personResponse2);
+        Firestation resultJavaObject2 = response2.getBody();
+        assertNull(resultJavaObject2);
     }
 }
 
