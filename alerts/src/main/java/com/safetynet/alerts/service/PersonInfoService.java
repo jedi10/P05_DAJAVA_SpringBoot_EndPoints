@@ -21,9 +21,9 @@ public class PersonInfoService {
     @Autowired
     IMedicalRecordDAO medicalRecordDAO;
 
-    private String firstName;
+    String firstName;
 
-    private String lastName;
+    String lastName;
 
     IPersonInfoRTO personInfo;
 

@@ -5,9 +5,7 @@ import com.safetynet.alerts.dao.IPersonDAO;
 import com.safetynet.alerts.models.MedicalRecord;
 import com.safetynet.alerts.models.Person;
 import com.safetynet.alerts.service.rto_models.IPersonInfoRTO;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +20,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class PersonInfoServiceTest {
 
     @Autowired
@@ -67,8 +66,12 @@ class PersonInfoServiceTest {
 
     @AfterEach
     void tearDown() {
+        personInfoService.firstName = null;
+        personInfoService.lastName = null;
+        personInfoService.personInfo = null;
     }
 
+    @Order(1)
     @Test
     void getPersonInfo_Ok() throws Exception {
         //WHEN
@@ -86,6 +89,7 @@ class PersonInfoServiceTest {
         assertNotSame(medicalRecord1.getMedications(), personInfoRTO.getMedications());
     }
 
+    @Order(2)
     @Test
     void getPersonInfoDebounce_Ok() {
         //WHEN
@@ -102,6 +106,7 @@ class PersonInfoServiceTest {
         assertSame(personInfoRTO, personInfoRTO2);
     }
 
+    @Order(3)
     @Test
     void getPersonInfoNull_Error() {
         //WHEN
@@ -114,6 +119,7 @@ class PersonInfoServiceTest {
         assertNull(personInfoRTO);
     }
 
+    @Order(4)
     @Test
     void getPersonInfoNullFromDao_Error() throws Exception {
         //WHEN
