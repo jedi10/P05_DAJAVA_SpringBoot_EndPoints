@@ -41,9 +41,12 @@ public class MedicalRecordDaoImpl extends DaoImpl implements IMedicalRecordDAO {
     public MedicalRecord findByName(String firstName, String lastName) {
         return medicalRecordList.stream()
                 .filter(x -> {
-                    return firstName.equals(x.getFirstName()) &&
-                            lastName.equals(x.getLastName());})
-                .findAny()                                      // If 'findAny' then return found
+                    return firstName.toLowerCase().equals(
+                                    x.getFirstName().toLowerCase()) &&
+                            lastName.toLowerCase().equals(
+                                    x.getLastName().toLowerCase());
+                        })
+                .findAny()    // If 'findAny' then return found
                 .orElse(null);
         //https://mkyong.com/java8/java-8-streams-filter-examples/
     }

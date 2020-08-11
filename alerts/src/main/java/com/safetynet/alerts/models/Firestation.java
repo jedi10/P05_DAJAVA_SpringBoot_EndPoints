@@ -35,7 +35,8 @@ public class Firestation {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Firestation that = (Firestation) o;
-        return address.equals(that.address);
+        return  Objects.equals(
+                    address.toLowerCase(), that.address.toLowerCase());
     }
 
     @Override

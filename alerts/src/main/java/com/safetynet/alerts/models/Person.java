@@ -63,8 +63,10 @@ public class Person {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Person person = (Person) o;
-        return Objects.equals(firstName, person.firstName) &&
-                Objects.equals(lastName, person.lastName);
+        return Objects.equals(
+                        firstName.toLowerCase(), person.firstName.toLowerCase()) &&
+                Objects.equals(
+                        lastName.toLowerCase(), person.lastName.toLowerCase());
     }
 
     @Override

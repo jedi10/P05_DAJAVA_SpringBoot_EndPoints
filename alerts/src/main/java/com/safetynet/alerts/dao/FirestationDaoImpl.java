@@ -40,9 +40,10 @@ public class FirestationDaoImpl extends DaoImpl implements IFirestationDAO {
     public Firestation findByAddress(String address) {
         return firestationList.stream()
                 .filter( x -> {
-                    return address.equals(x.getAddress());
-                })
-                .findAny()                                      // If 'findAny' then return found
+                    return address.toLowerCase().equals(
+                                x.getAddress().toLowerCase());
+                    })
+                .findAny()      // If 'findAny' then return found
                 .orElse(null);
         //https://mkyong.com/java8/java-8-streams-filter-examples/
     }
@@ -50,7 +51,7 @@ public class FirestationDaoImpl extends DaoImpl implements IFirestationDAO {
     private boolean isPresent(Firestation firestation){
         return firestationList.stream()
                 .anyMatch( p -> {
-                    return p.getAddress().equals(firestation.getAddress());
+                    return p.equals(firestation);
                 });
         //https://www.baeldung.com/java-streams-find-list-items
     }
@@ -71,7 +72,7 @@ public class FirestationDaoImpl extends DaoImpl implements IFirestationDAO {
         if(isPresent(firestation)){
             firestationList.replaceAll( p ->
             {
-                if (p.getAddress().equals(firestation.getAddress())) {
+                if (p.equals(firestation)) {
                     return firestation;
                 } else {
                     return p;}

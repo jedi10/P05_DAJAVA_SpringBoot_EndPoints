@@ -40,9 +40,12 @@ public class PersonDaoImpl extends DaoImpl implements IPersonDAO {
     public Person findByName(String firstName, String lastName) {
         return personList.stream()
                 .filter(x -> {
-                    return firstName.equals(x.getFirstName()) &&
-                            lastName.equals(x.getLastName());})
-                .findAny()                                      // If 'findAny' then return found
+                    return firstName.toLowerCase().equals(
+                                    x.getFirstName().toLowerCase()) &&
+                            lastName.toLowerCase().equals(
+                                    x.getLastName().toLowerCase());
+                        })
+                .findAny()        // If 'findAny' then return found
                 .orElse(null);
         //https://mkyong.com/java8/java-8-streams-filter-examples/
     }
@@ -50,8 +53,7 @@ public class PersonDaoImpl extends DaoImpl implements IPersonDAO {
     private boolean isPresent(Person person){
         return personList.stream()
                 .anyMatch((p)->{
-                    return p.getFirstName().equals(person.getFirstName())&&
-                            p.getLastName().equals(person.getLastName());});
+                    return p.equals(person);});
         //https://www.baeldung.com/java-streams-find-list-items
     }
     @Override
@@ -70,8 +72,7 @@ public class PersonDaoImpl extends DaoImpl implements IPersonDAO {
         if(isPresent(person)){
             personList.replaceAll(p ->
             {
-                if (p.getFirstName().equals(person.getFirstName()) &&
-                        p.getLastName().equals(person.getLastName())) {
+                if (p.equals(person)) {
                     return person;
                 }else {
                     return p;}
