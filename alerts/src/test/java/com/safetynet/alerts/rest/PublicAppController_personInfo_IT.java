@@ -19,6 +19,7 @@ import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -33,9 +34,9 @@ import java.util.stream.Stream;
 import static com.safetynet.alerts.utils.Jackson.convertJavaToJson;
 import static com.safetynet.alerts.utils.JsonConvertForTest.parseResponse;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.InstanceOfAssertFactories.predicate;
 import static org.hamcrest.Matchers.containsString;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -55,6 +56,9 @@ class PublicAppController_personInfo_IT {
     @Autowired
     public PersonInfoService personInfoService;
 
+    @Autowired
+    public AdminPersonController adminPersonController;
+
     @Mock
     public IPersonInfoRTO personInfoRTO;
 
@@ -63,6 +67,7 @@ class PublicAppController_personInfo_IT {
 
     @Mock
     public IMedicalRecordDAO medicalRecordDAO;
+
 
     private Person person1 = new Person(
             "john", "boyd", "rue du colisee", "Rome", 45, "06-12-23-34-45", "wermer@mail.it");
@@ -85,6 +90,63 @@ class PublicAppController_personInfo_IT {
     }
 
     @Order(1)
+    @ParameterizedTest
+    @CsvSource({"julia,roberts"})
+    void redirectGetPerson(String firstName, String lastName) throws Exception {
+        //GIVEN
+        String urlTemplate = String.format("%s%s&%s",
+                "/admin/personinfo/",
+                firstName,
+                lastName);
+        String expectedUrl = String.format("%s%s&%s",
+                "/person/",
+                firstName,
+                lastName);
+        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get(urlTemplate);
+
+        //WHEN
+        MvcResult mvcResult = mockMvc.perform(builder)//.andDo(print());
+                .andExpect(status().isFound())
+                .andExpect(redirectedUrl(expectedUrl))
+                .andReturn();
+
+        //THEN
+        assertNotNull(mvcResult.getResponse());
+        assertEquals(HttpStatus.FOUND.value(), mvcResult.getResponse().getStatus());
+        String redirectedUrlResult = mvcResult.getResponse().getRedirectedUrl();
+        assertNotNull(redirectedUrlResult);
+
+        //GIVEN
+        builder = MockMvcRequestBuilders.get(redirectedUrlResult);
+        when(personDAO.findByName(firstName, lastName)).
+                thenReturn(person1);
+        //Mock Injection in Object tested
+        adminPersonController.personDAO = personDAO;
+        //***********************************************************
+        //**************CHECK MOCK INVOCATION at start***************
+        //***********************************************************
+        verify(personDAO, Mockito.never()).findByName(firstName, lastName);
+        //WHEN
+        mvcResult = mockMvc.perform(builder)//.andDo(print());
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andReturn();
+        //THEN
+        //***********************************************************
+        //**************CHECK MOCK INVOCATION at end***************
+        //***********************************************************
+        verify(personDAO, Mockito.times(1)).findByName(
+                firstName, lastName);
+        //*********************************************************
+        //**************CHECK RESPONSE CONTENT*********************
+        //*********************************************************
+        //*****************Check with JAVA*************************
+        assertNotNull(mvcResult.getResponse().getContentAsString());
+        Person resultJavaObject = parseResponse(mvcResult, Person.class);
+        assertThat(person1).isEqualToComparingFieldByField(resultJavaObject);
+    }
+
+    @Order(2)
     @Test
     void getPersonInfo_Ok() throws Exception {
         //***********GIVEN*************
@@ -141,7 +203,7 @@ class PublicAppController_personInfo_IT {
         assertThat(personInfoRTO).isEqualToComparingFieldByField(resultJavaObject);
     }
 
-    @Order(2)
+    @Order(3)
     @ParameterizedTest
     @CsvSource({"toto,riri","toto,''", "'',''"})
         //@ValueSource(strings = { "toto", "" })
@@ -187,7 +249,7 @@ class PublicAppController_personInfo_IT {
                 Arguments.of("", null));
     }
 
-    @Order(3)
+    @Order(4)
     @ParameterizedTest
     @MethodSource("nullEmptyNames")
     void getPersonInfo_NullCase(String firstName, String lastName) throws Exception {

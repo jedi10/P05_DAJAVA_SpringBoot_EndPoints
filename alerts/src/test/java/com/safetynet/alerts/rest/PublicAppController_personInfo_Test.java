@@ -78,13 +78,23 @@ class PublicAppController_personInfo_Test {
     }
 
     @Order(1)
-    @Test
-    void redirectGetPerson() throws Exception {
-        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get("/personinfolight/julia&roberts");
-
+    @ParameterizedTest
+    @CsvSource({"julia,roberts"})
+    void redirectGetPerson(String firstName, String lastName) throws Exception {
+        //GIVEN
+        String urlTemplate = String.format("%s%s&%s",
+                "/admin/personinfo/",
+                firstName,
+                lastName);
+        String expectedUrl = String.format("%s%s&%s",
+                "/person/",
+                firstName,
+                lastName);
+        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get(urlTemplate);
+        //WHEN
         mockMvc.perform(builder)//.andDo(print());
                 .andExpect(status().isFound())
-                .andExpect(redirectedUrl("/person/julia&roberts"));
+                .andExpect(redirectedUrl(expectedUrl));
     }
 
     @Order(2)

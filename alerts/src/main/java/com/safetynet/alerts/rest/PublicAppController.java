@@ -27,7 +27,7 @@ public class PublicAppController {
      * @param httpResponse response
      * @throws Exception exception
      */
-    @RequestMapping(value = "/personinfolight/{firstName}&{lastName}", method = RequestMethod.GET)
+    @RequestMapping(value = "/admin/personinfo/{firstName}&{lastName}", method = RequestMethod.GET)
     public void redirectGetPerson(@PathVariable("firstName") String firstName, @PathVariable("lastName") String lastName,
                                   HttpServletResponse httpResponse) throws Exception {
 
