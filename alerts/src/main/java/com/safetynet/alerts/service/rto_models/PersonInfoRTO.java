@@ -107,7 +107,9 @@ public class PersonInfoRTO implements IPersonInfoRTO {
             this.setBirthdate(medicalRecord.getBirthdate());
             this.setMedications(medicalRecord.getMedications());
             this.setAllergies(medicalRecord.getAllergies());
-
     }
 
+    public PersonInfoRTO() {
+
+    }
 }
