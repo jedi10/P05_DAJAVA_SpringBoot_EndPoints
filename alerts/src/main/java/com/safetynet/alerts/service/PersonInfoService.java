@@ -57,4 +57,9 @@ public class PersonInfoService {
     public PersonInfoService() {
 
     }
+
+    public void setDAO(IPersonDAO personDao, IMedicalRecordDAO medicalRecordDAO){
+        this.personDAO = personDao;
+        this.medicalRecordDAO = medicalRecordDAO;
+    }
 }
