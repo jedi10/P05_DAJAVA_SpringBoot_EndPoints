@@ -8,6 +8,7 @@ import com.safetynet.alerts.service.rto_models.PersonInfoRTO;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.*;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.Spy;
@@ -31,6 +32,8 @@ import static com.safetynet.alerts.utils.JsonConvertForTest.parseResponse;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -107,7 +110,7 @@ class PublicAppController_personinfo_Test {
         //***********************************************************
         //**************CHECK MOCK INVOCATION at start***************
         //***********************************************************
-        verify(personInfoService, Mockito.times(0)).getPersonInfo(
+        verify(personInfoService, Mockito.never()).getPersonInfo(
                 person1.getFirstName(), person1.getLastName());
 
         //**************WHEN-THEN****************************
@@ -155,7 +158,7 @@ class PublicAppController_personinfo_Test {
         //***********************************************************
         //**************CHECK MOCK INVOCATION at start***************
         //***********************************************************
-        verify(personInfoService, Mockito.times(0)).getPersonInfo(
+        verify(personInfoService, Mockito.never()).getPersonInfo(
                 firstName, lastName);
 
         //**************WHEN-THEN****************************
@@ -168,14 +171,15 @@ class PublicAppController_personinfo_Test {
         //*********************************************************
         //**************CHECK MOCK INVOCATION at end***************
         //*********************************************************
-        verify(personInfoService, Mockito.times(1)).getPersonInfo(firstName, lastName);
+        verify(personInfoService, Mockito.times(1)).getPersonInfo(
+                firstName, lastName);
     }
 
     static Stream<Arguments> nullEmptyNames() {
         return Stream.of(
+                Arguments.of(null, null),
                 Arguments.of(null, ""),
-                Arguments.of("", null),
-                Arguments.of(null, null));
+                Arguments.of("", null));
     }
 
     @Order(4)
@@ -183,7 +187,11 @@ class PublicAppController_personinfo_Test {
     @MethodSource("nullEmptyNames")
     void getPersonInfo_NullCase(String firstName, String lastName) throws Exception {
         //***********GIVEN*************
-        when(personInfoService.getPersonInfo(firstName, lastName)).
+        when(personInfoService.getPersonInfo(ArgumentMatchers.isNull(), ArgumentMatchers.isNull())).
+                thenReturn(null);
+        when(personInfoService.getPersonInfo(ArgumentMatchers.isNull(), anyString())).
+                thenReturn(null);
+        when(personInfoService.getPersonInfo(anyString(), ArgumentMatchers.isNull())).
                 thenReturn(null);
         //Mock Injection in Object tested
         publicAppController.personInfoService = personInfoService;
@@ -197,7 +205,7 @@ class PublicAppController_personinfo_Test {
         //***********************************************************
         //**************CHECK MOCK INVOCATION at start***************
         //***********************************************************
-        verify(personInfoService, Mockito.times(0)).getPersonInfo(
+        verify(personInfoService, Mockito.never()).getPersonInfo(
                 firstName, lastName);
 
         //**************WHEN-THEN****************************
@@ -207,9 +215,15 @@ class PublicAppController_personinfo_Test {
 
         assertNotNull(mvcResult);
         assertNull(mvcResult.getResponse().getContentType());
+        //*********************************************************
+        //**************CHECK MOCK INVOCATION at end***************
+        //*********************************************************
+        verify(personInfoService, Mockito.times(1)).getPersonInfo(
+                any(), any());
     }
 }
 
 
 //https://blog.oio.de/2018/10/26/use-null-values-in-junit-5-parameterized-tests/
 //https://www.baeldung.com/parameterized-tests-junit-5
+//https://openclassrooms.com/fr/courses/6100311-testez-votre-code-java-pour-realiser-des-applications-de-qualite/6441016-simulez-des-composants-externes-aux-tests-avec-mockito
