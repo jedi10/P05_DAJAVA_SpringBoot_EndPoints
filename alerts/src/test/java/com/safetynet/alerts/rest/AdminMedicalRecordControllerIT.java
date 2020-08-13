@@ -1,6 +1,5 @@
 package com.safetynet.alerts.rest;
 
-import com.safetynet.alerts.dao.IMedicalRecordDAO;
 import com.safetynet.alerts.models.MedicalRecord;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,9 +30,6 @@ class AdminMedicalRecordControllerIT {
 
     @Autowired
     private AdminMedicalRecordController adminMedicalRecordController;
-
-    @Autowired
-    private IMedicalRecordDAO medicalRecordDAO;
 
     @LocalServerPort
     private int port;
@@ -73,8 +69,6 @@ class AdminMedicalRecordControllerIT {
 
     @BeforeEach
     void setUpEach() {
-        //***********GIVEN*************
-        this.adminMedicalRecordController.medicalRecordDAO = medicalRecordDAO;
     }
 
     @AfterEach

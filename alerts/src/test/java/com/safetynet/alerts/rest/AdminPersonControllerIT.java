@@ -1,6 +1,5 @@
 package com.safetynet.alerts.rest;
 
-import com.safetynet.alerts.dao.IPersonDAO;
 import com.safetynet.alerts.models.Person;
 import com.safetynet.alerts.utils.Jackson;
 import org.junit.jupiter.api.*;
@@ -30,12 +29,6 @@ class AdminPersonControllerIT {
     @Autowired
     private AdminPersonController adminPersonController;
 
-    @Autowired
-    private IPersonDAO personDAO;
-
-    //@Autowired
-    //private RootFile rootFile;
-
     @LocalServerPort
     private int port;
 
@@ -62,10 +55,8 @@ class AdminPersonControllerIT {
     }
 
     @BeforeEach
-    void setUpEach() throws IOException {
-        //***********GIVEN*************
-        //personDAO = new PersonDaoImpl(rootFile);
-        this.adminPersonController.personDAO = personDAO;
+    void setUpEach() {
+
     }
 
     @AfterEach

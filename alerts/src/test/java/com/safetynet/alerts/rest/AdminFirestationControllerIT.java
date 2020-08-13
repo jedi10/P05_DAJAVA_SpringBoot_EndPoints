@@ -1,6 +1,5 @@
 package com.safetynet.alerts.rest;
 
-import com.safetynet.alerts.dao.IFirestationDAO;
 import com.safetynet.alerts.models.Firestation;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,9 +29,6 @@ class AdminFirestationControllerIT {
     @Autowired
     private AdminFirestationController adminFirestationController;
 
-    @Autowired
-    private IFirestationDAO firestationDAO;
-
     @LocalServerPort
     private int port;
 
@@ -59,9 +55,7 @@ class AdminFirestationControllerIT {
     }
 
     @BeforeEach
-    void setUpEach() throws IOException {
-        //***********GIVEN*************
-        this.adminFirestationController.firestationDAO = firestationDAO;
+    void setUpEach() {
     }
 
     @AfterEach
