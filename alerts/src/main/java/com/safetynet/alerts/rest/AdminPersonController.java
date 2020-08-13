@@ -25,7 +25,7 @@ import java.util.List;
 public class AdminPersonController {
 
     @Autowired
-    IPersonDAO personDAO;
+    public IPersonDAO personDAO;
 
     /**
      * List of Persons

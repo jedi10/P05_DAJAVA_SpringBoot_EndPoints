@@ -1,7 +1,8 @@
-package com.safetynet.alerts.rest;
+package com.safetynet.alerts.rest.publicmicroservices;
 
 import com.safetynet.alerts.models.MedicalRecord;
 import com.safetynet.alerts.models.Person;
+import com.safetynet.alerts.rest.publicmicroservices.PublicAppController;
 import com.safetynet.alerts.service.PersonInfoService;
 import com.safetynet.alerts.service.rto_models.IPersonInfoRTO;
 import com.safetynet.alerts.service.rto_models.PersonInfoRTO;

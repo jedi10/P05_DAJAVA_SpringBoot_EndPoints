@@ -1,9 +1,11 @@
-package com.safetynet.alerts.rest;
+package com.safetynet.alerts.rest.publicmicroservices;
 
 import com.safetynet.alerts.dao.IMedicalRecordDAO;
 import com.safetynet.alerts.dao.IPersonDAO;
 import com.safetynet.alerts.models.MedicalRecord;
 import com.safetynet.alerts.models.Person;
+import com.safetynet.alerts.rest.AdminPersonController;
+import com.safetynet.alerts.rest.publicmicroservices.PublicAppController;
 import com.safetynet.alerts.service.PersonInfoService;
 import com.safetynet.alerts.service.rto_models.IPersonInfoRTO;
 import com.safetynet.alerts.service.rto_models.PersonInfoRTO;
@@ -14,7 +16,6 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.Spy;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -34,7 +35,6 @@ import java.util.stream.Stream;
 import static com.safetynet.alerts.utils.Jackson.convertJavaToJson;
 import static com.safetynet.alerts.utils.JsonConvertForTest.parseResponse;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.InstanceOfAssertFactories.predicate;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;

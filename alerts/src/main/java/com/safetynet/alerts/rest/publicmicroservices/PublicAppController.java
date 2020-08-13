@@ -1,5 +1,6 @@
-package com.safetynet.alerts.rest;
+package com.safetynet.alerts.rest.publicmicroservices;
 
+import com.safetynet.alerts.rest.AdminPersonController;
 import com.safetynet.alerts.service.PersonInfoService;
 import com.safetynet.alerts.service.rto_models.IPersonInfoRTO;
 import com.safetynet.alerts.service.rto_models.PersonInfoRTO;
