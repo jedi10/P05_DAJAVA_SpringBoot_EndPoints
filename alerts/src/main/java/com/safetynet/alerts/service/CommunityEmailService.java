@@ -21,9 +21,12 @@ public class CommunityEmailService {
         List<Person> personList = personDAO.getPersonList();
 
         result = personList.stream()
-                .map(n -> n.getEmail())
+                .filter(o -> city.equals(o.getCity()))
+                .map(Person::getEmail)
                 .collect(Collectors.toList());
 
         return result;
     }
 }
+
+//https://mkyong.com/java8/java-8-streams-filter-examples/

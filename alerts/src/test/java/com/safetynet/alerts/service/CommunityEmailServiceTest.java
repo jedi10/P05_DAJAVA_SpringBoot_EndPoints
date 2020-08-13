@@ -35,6 +35,12 @@ class CommunityEmailServiceTest {
 
     @BeforeAll
     void setUp() throws IOException {
+
+    }
+
+
+    @BeforeEach
+    void setUpEach() throws IOException {
         String fileString = Files.readString(Paths.get("src/test/resources/testData.json"));
         byte[] fileBytes = fileString.getBytes(StandardCharsets.UTF_8);
         try {
@@ -47,16 +53,14 @@ class CommunityEmailServiceTest {
         }
     }
 
-    @BeforeEach
-    void setUpEach() {
-    }
 
     @AfterEach
     void tearDown() {
     }
 
+    @Order(1)
     @Test
-    void getCommunityEmail() {
+    void getCommunityEmail_cityOK() {
         //GIVEN
         assertNotNull(this.personList,
                 "PersonList is Null: we need it for furthur tests");
@@ -97,6 +101,48 @@ class CommunityEmailServiceTest {
         //*********CHECK mail selection with a city******************
         //***********************************************************
         assertTrue(emailListResult.contains(personChosenForTest.getEmail()));
+        assertEquals(expectedMailList, emailListResult);
+
+        //***********************************************************
+        //**************CHECK MOCK INVOCATION at end***************
+        //***********************************************************
+        verify(personDAO, Mockito.times(1)).getPersonList();
+    }
+
+    @Order(2)
+    @Test
+    void getCommunityEmail_cityNotFound() {
+        //GIVEN
+        assertNotNull(this.personList,
+                "PersonList is Null: we need it for furthur tests");
+        assertTrue(this.personList.size()>2);
+        String city = "New York";
+        //Filtering list and transformation
+        List<String> expectedMailList = this.personList.stream()
+                .filter(o -> city.equals(o.getCity()))
+                .map(n -> n.getEmail())
+                .collect(Collectors.toList());
+        when(personDAO.getPersonList()).thenReturn(this.personList);
+        //Mock Injection
+        communityEmailService.personDAO = personDAO;
+        //***********************************************************
+        //**************CHECK MOCK INVOCATION at start***************
+        //***********************************************************
+        verify(personDAO, Mockito.never()).getPersonList();
+
+        //WHEN
+        List<String> emailListResult = communityEmailService.getCommunityEmail(city);
+
+        //THEN
+        //***********************************************************
+        //*****CHECK transformation List<Person> to List<mail>*******
+        //***********************************************************
+        assertNotNull(emailListResult);
+
+        //***********************************************************
+        //*********CHECK mail selection with a city******************
+        //***********************************************************
+        assertTrue(emailListResult.isEmpty());
         assertEquals(expectedMailList, emailListResult);
 
         //***********************************************************
