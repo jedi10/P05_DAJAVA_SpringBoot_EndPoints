@@ -14,6 +14,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
@@ -60,8 +61,16 @@ class CommunityEmailServiceTest {
         assertNotNull(this.personList,
                 "PersonList is Null: we need it for furthur tests");
         assertTrue(this.personList.size()>2);
+        //We want to make sure there is at least one city different from other
+        this.personList.get(personList.size()-1).setCity("New York");
+        //we choose first element on list to gest the city for test
         Person personChosenForTest = this.personList.get(0);
         String city = personChosenForTest.getCity();
+        //Filtering list and transformation
+        List<String> expectedMailList = this.personList.stream()
+                .filter(o -> city.equals(o.getCity()))
+                .map(n -> n.getEmail())
+                .collect(Collectors.toList());
         when(personDAO.getPersonList()).thenReturn(this.personList);
         //Mock Injection
         communityEmailService.personDAO = personDAO;
@@ -73,11 +82,22 @@ class CommunityEmailServiceTest {
 
         //WHEN
         List<String> emailListResult = communityEmailService.getCommunityEmail(city);
-        assertNotNull(emailListResult);
-        assertTrue(emailListResult.contains(personChosenForTest.getEmail()));
-        assertTrue(emailListResult.stream().anyMatch(item -> item.contains("@")));
 
         //THEN
+        //***********************************************************
+        //*****CHECK transformation List<Person> to List<mail>*******
+        //***********************************************************
+        assertNotNull(emailListResult);
+        assertTrue(emailListResult.stream().anyMatch(item -> item.contains("@")));
+        assertTrue(emailListResult.stream().allMatch(item -> item.contains("@")));
+        emailListResult.add("toto_on_the_city");
+        assertFalse(emailListResult.stream().allMatch(item -> item.contains("@")));
+        emailListResult.remove("toto_on_the_city");
+        //***********************************************************
+        //*********CHECK mail selection with a city******************
+        //***********************************************************
+        assertTrue(emailListResult.contains(personChosenForTest.getEmail()));
+        assertEquals(expectedMailList, emailListResult);
 
         //***********************************************************
         //**************CHECK MOCK INVOCATION at end***************
