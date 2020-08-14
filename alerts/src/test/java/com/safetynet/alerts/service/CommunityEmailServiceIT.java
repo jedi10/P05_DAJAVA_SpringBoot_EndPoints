@@ -1,6 +1,9 @@
 package com.safetynet.alerts.service;
 
 import com.safetynet.alerts.dao.IPersonDAO;
+import com.safetynet.alerts.dao.MedicalRecordDaoImpl;
+import com.safetynet.alerts.dao.PersonDaoImpl;
+import com.safetynet.alerts.dao.RootFile;
 import com.safetynet.alerts.models.Person;
 import com.safetynet.alerts.utils.Jackson;
 import org.junit.jupiter.api.*;
@@ -23,34 +26,33 @@ import static org.mockito.Mockito.when;
 @SpringBootTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class CommunityEmailServiceTest {
+class CommunityEmailServiceIT {
 
     @Autowired
     CommunityEmailService communityEmailService;
 
-    @Mock
     IPersonDAO personDAO;
+
+    @Mock
+    private RootFile rootFile;
+
+    private byte[] fileBytes;
 
     List<Person> personList;
 
     @BeforeAll
-    void setUp() {
-
+    void setUp() throws IOException {
+        //GIVEN
+        String fileString = Files.readString(Paths.get("src/test/resources/testData.json"));
+        fileBytes = fileString.getBytes(StandardCharsets.UTF_8);
     }
+
 
     @BeforeEach
-    void setUpEach() throws IOException {
-        String fileString = Files.readString(Paths.get("src/test/resources/testData.json"));
-        byte[] fileBytes = fileString.getBytes(StandardCharsets.UTF_8);
-        try {
-            this.personList = Jackson.convertJsonRootDataToJava(
-                    fileBytes,
-                    "persons",
-                    Person.class);
-        } catch (IOException e) {
-            throw new IOException(e);
-        }
+    void setUpEach()  {
+
     }
+
 
     @AfterEach
     void tearDown() {
@@ -58,11 +60,21 @@ class CommunityEmailServiceTest {
 
     @Order(1)
     @Test
-    void getCommunityEmail_cityOK() {
+    void getCommunityEmail_cityOK() throws IOException {
         //GIVEN
+        when(rootFile.getBytes()).thenReturn(fileBytes);
+        //Mock injection
+        personDAO = new PersonDaoImpl(rootFile);
+        //***********************************************************
+        //**************CHECK MOCK INVOCATION at start***************
+        //***********************************************************
+        verify(rootFile, Mockito.times(1)).getBytes();
+
         //***********************************
         //Preparation List of DATA
         //***********************************
+        personList = personDAO.getPersonList();
+        communityEmailService.personDAO = personDAO;
         assertNotNull(this.personList,
                 "PersonList is Null: we need it for further tests");
         assertTrue(this.personList.size()>2);
@@ -76,15 +88,6 @@ class CommunityEmailServiceTest {
                 .filter(o -> city.equals(o.getCity()))
                 .map(n -> n.getEmail())
                 .collect(Collectors.toList());
-        when(personDAO.getPersonList()).thenReturn(this.personList);
-        //Mock Injection
-        communityEmailService.personDAO = personDAO;
-        //***********************************************************
-        //**************CHECK MOCK INVOCATION at start***************
-        //***********************************************************
-        verify(personDAO, Mockito.never()).getPersonList();
-
-
         //WHEN
         List<String> emailListResult = communityEmailService.getCommunityEmail(city);
 
@@ -107,29 +110,29 @@ class CommunityEmailServiceTest {
         //***********************************************************
         //**************CHECK MOCK INVOCATION at end***************
         //***********************************************************
-        verify(personDAO, Mockito.times(1)).getPersonList();
+        verify(rootFile, Mockito.times(1)).getBytes();
     }
 
     @Order(2)
     @Test
-    void getCommunityEmail_cityNotFound() {
+    void getCommunityEmail_cityNotFound() throws IOException {
         //GIVEN
-        assertNotNull(this.personList,
-                "PersonList is Null: we need it for further tests");
-        assertTrue(this.personList.size()>2);
+        when(rootFile.getBytes()).thenReturn(fileBytes);
+        //Mock injection
+        personDAO = new PersonDaoImpl(rootFile);
+        //***********************************************************
+        //**************CHECK MOCK INVOCATION at start***************
+        //***********************************************************
+        verify(rootFile, Mockito.times(1)).getBytes();
+
+        personList = personDAO.getPersonList();
+        communityEmailService.personDAO = personDAO;
         String city = "New York";
         //Filtering list and transformation
         List<String> expectedMailList = this.personList.stream()
                 .filter(o -> city.equals(o.getCity()))
                 .map(n -> n.getEmail())
                 .collect(Collectors.toList());
-        when(personDAO.getPersonList()).thenReturn(this.personList);
-        //Mock Injection
-        communityEmailService.personDAO = personDAO;
-        //***********************************************************
-        //**************CHECK MOCK INVOCATION at start***************
-        //***********************************************************
-        verify(personDAO, Mockito.never()).getPersonList();
 
         //WHEN
         List<String> emailListResult = communityEmailService.getCommunityEmail(city);
@@ -149,6 +152,6 @@ class CommunityEmailServiceTest {
         //***********************************************************
         //**************CHECK MOCK INVOCATION at end***************
         //***********************************************************
-        verify(personDAO, Mockito.times(1)).getPersonList();
+        verify(rootFile, Mockito.times(1)).getBytes();
     }
 }
