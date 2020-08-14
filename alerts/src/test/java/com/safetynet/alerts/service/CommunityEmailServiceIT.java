@@ -79,7 +79,8 @@ class CommunityEmailServiceIT {
                 "PersonList is Null: we need it for further tests");
         assertTrue(this.personList.size()>2);
         //We want to make sure there is at least one city different from other
-        this.personList.get(personList.size()-1).setCity("New York");
+        Person personWithDifferentCity = this.personList.get(personList.size()-1);
+        personWithDifferentCity.setCity("New York");
         //we choose first element on list to get the city for test
         Person personChosenForTest = this.personList.get(0);
         String city = personChosenForTest.getCity();
@@ -97,15 +98,23 @@ class CommunityEmailServiceIT {
         //***********************************************************
         assertNotNull(emailListResult);
         assertTrue(emailListResult.stream().anyMatch(item -> item.contains("@")));
-        assertTrue(emailListResult.stream().allMatch(item -> item.contains("@")));
+        assertTrue(emailListResult.stream().allMatch(item -> item.contains("@")),
+                "resultList should have email as elements");
         emailListResult.add("toto_on_the_city");
         assertFalse(emailListResult.stream().allMatch(item -> item.contains("@")));
         emailListResult.remove("toto_on_the_city");
         //***********************************************************
         //*********CHECK mail selection with a city******************
         //***********************************************************
-        assertTrue(emailListResult.contains(personChosenForTest.getEmail()));
-        assertEquals(expectedMailList, emailListResult);
+        assertTrue(emailListResult.contains(personChosenForTest.getEmail()),
+                "result list don't contains mail of choosen Person to grab city filter value");
+        assertNotEquals(this.personList.size(), emailListResult.size(),
+                "emailListResult should have, at least, one element less than initial personList" +
+                        " (we change city on one of it's element");
+        assertFalse(emailListResult.contains(personWithDifferentCity.getEmail()),
+                "emailListResult should not have the mail of the person we change the city");
+        assertEquals(expectedMailList, emailListResult,
+                "expected and result should be the same");
 
         //***********************************************************
         //**************CHECK MOCK INVOCATION at end***************
