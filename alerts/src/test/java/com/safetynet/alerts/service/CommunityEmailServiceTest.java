@@ -162,4 +162,36 @@ class CommunityEmailServiceTest {
         //***********************************************************
         verify(personDAO, Mockito.times(1)).getPersonList();
     }
+
+    @Order(3)
+    @Test
+    void getCommunityEmail_cityNullCase() {
+        //GIVEN
+        assertNotNull(this.personList,
+                "PersonList is Null: we need it for further tests");
+        assertTrue(this.personList.size()>2);
+        String city = null;
+
+        when(personDAO.getPersonList()).thenReturn(this.personList);
+        //Mock Injection
+        communityEmailService.personDAO = personDAO;
+        //***********************************************************
+        //**************CHECK MOCK INVOCATION at start***************
+        //***********************************************************
+        verify(personDAO, Mockito.never()).getPersonList();
+
+        //WHEN
+        List<String> emailListResult = communityEmailService.getCommunityEmail(city);
+
+        //THEN
+        //***********************************************************
+        //*********CHECK result Null**********
+        //***********************************************************
+        assertNull(emailListResult);
+
+        //***********************************************************
+        //**************CHECK MOCK INVOCATION at end***************
+        //***********************************************************
+        verify(personDAO, Mockito.never()).getPersonList();
+    }
 }

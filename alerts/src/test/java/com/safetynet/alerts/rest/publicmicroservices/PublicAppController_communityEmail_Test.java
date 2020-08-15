@@ -12,6 +12,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -89,8 +90,9 @@ class PublicAppController_communityEmail_Test {
 
 
     @Order(1)
-    @Test
-    void getCommunityEmail_Ok() throws Exception {
+    @ParameterizedTest
+    @ValueSource(strings = {"cityName"})
+    void getCommunityEmail_Ok(String city) throws Exception {
         //***********GIVEN*************
         //Mock Configuration
         when(communityEmailService.getCommunityEmail(anyString())).thenReturn(expectedMailList);
@@ -99,14 +101,14 @@ class PublicAppController_communityEmail_Test {
 
         String urlTemplate = String.format("%s%s",
                 "/communityemail/",
-                "cityName");
+                city);
         MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get(urlTemplate)
                 .accept(MediaType.APPLICATION_JSON_VALUE);
         Person person1 = this.personList.get(0);
         //***********************************************************
         //**************CHECK MOCK INVOCATION at start***************
         //***********************************************************
-        verify(communityEmailService, Mockito.never()).getCommunityEmail("cityName");
+        verify(communityEmailService, Mockito.never()).getCommunityEmail(city);
 
         //**************WHEN-THEN****************************
         MvcResult mvcResult = mockMvc.perform(builder)//.andDo(print());
@@ -118,7 +120,7 @@ class PublicAppController_communityEmail_Test {
         //**************CHECK MOCK INVOCATION at end***************
         //*********************************************************
         verify(communityEmailService, Mockito.times(1)).
-                getCommunityEmail("cityName");
+                getCommunityEmail(city);
 
         //*********************************************************
         //**************CHECK RESPONSE CONTENT*********************
@@ -130,8 +132,9 @@ class PublicAppController_communityEmail_Test {
     }
 
     @Order(2)
-    @Test
-    void getCommunityEmail_NotFound() throws Exception {
+    @ParameterizedTest
+    @ValueSource(strings = {"cityName"})
+    void getCommunityEmail_NotFound(String city) throws Exception {
         //***********GIVEN*************
         //Mock Configuration
         when(communityEmailService.getCommunityEmail(anyString())).thenReturn(new ArrayList<>());
@@ -140,13 +143,13 @@ class PublicAppController_communityEmail_Test {
 
         String urlTemplate = String.format("%s%s",
                 "/communityemail/",
-                "cityName");
+                city);
         MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get(urlTemplate)
                 .accept(MediaType.APPLICATION_JSON_VALUE);
         //***********************************************************
         //**************CHECK MOCK INVOCATION at start***************
         //***********************************************************
-        verify(communityEmailService, Mockito.never()).getCommunityEmail("cityName");
+        verify(communityEmailService, Mockito.never()).getCommunityEmail(city);
 
         //**************WHEN-THEN****************************
         MvcResult mvcResult = mockMvc.perform(builder)//.andDo(print());
@@ -156,12 +159,50 @@ class PublicAppController_communityEmail_Test {
         //**************CHECK MOCK INVOCATION at end***************
         //*********************************************************
         verify(communityEmailService, Mockito.times(1)).
-                getCommunityEmail("cityName");
+                getCommunityEmail(city);
 
         //*********************************************************
         //**************CHECK RESPONSE CONTENT*********************
         //*********************************************************
         assertTrue(mvcResult.getResponse().getContentAsString().isEmpty());
+    }
+
+    @Disabled//this test is useless
+    @Order(3)
+    @Test
+    void getCommunityEmail_NullCase() throws Exception {
+        //***********GIVEN*************
+        //Mock Configuration
+        when(communityEmailService.getCommunityEmail(anyString())).thenReturn(new ArrayList<>());
+        //Mock Injection in tested Object
+        publicAppController.communityEmailService = communityEmailService;
+
+        String urlTemplate = String.format("%s",
+                "/communityemail/"
+                );
+        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get(urlTemplate)
+                .accept(MediaType.APPLICATION_JSON_VALUE);
+        //***********************************************************
+        //**************CHECK MOCK INVOCATION at start***************
+        //***********************************************************
+        verify(communityEmailService, Mockito.never()).getCommunityEmail(ArgumentMatchers.nullable(String.class));
+
+        //**************WHEN-THEN****************************
+        MvcResult mvcResult = mockMvc.perform(builder)//.andDo(print());
+                .andExpect(status().isNotFound())
+                .andReturn();
+        //*********************************************************
+        //**************CHECK MOCK INVOCATION at end***************
+        //*********************************************************
+        verify(communityEmailService, Mockito.never()).
+                getCommunityEmail(ArgumentMatchers.nullable(String.class));
+
+        //*********************************************************
+        //**************CHECK RESPONSE CONTENT*********************
+        //*********************************************************
+        assertTrue(mvcResult.getResponse().getContentAsString().isEmpty());
+
+        //https://www.baeldung.com/java-avoid-null-check
     }
 }
 

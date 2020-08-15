@@ -18,13 +18,14 @@ public class CommunityEmailService {
 
     public List<String> getCommunityEmail(String city){
         List<String> result = null;
-        List<Person> personList = personDAO.getPersonList();
+        if (null != city) {
+            List<Person> personList = personDAO.getPersonList();
 
-        result = personList.stream()
-                .filter(o -> city.equals(o.getCity()))
-                .map(Person::getEmail)
-                .collect(Collectors.toList());
-
+            result = personList.stream()
+                    .filter(o -> city.equals(o.getCity()))
+                    .map(Person::getEmail)
+                    .collect(Collectors.toList());
+        }
         return result;
     }
 
@@ -34,3 +35,4 @@ public class CommunityEmailService {
 }
 
 //https://mkyong.com/java8/java-8-streams-filter-examples/
+//https://www.baeldung.com/java-avoid-null-check

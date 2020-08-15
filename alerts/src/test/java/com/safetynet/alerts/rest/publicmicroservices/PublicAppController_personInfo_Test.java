@@ -193,6 +193,7 @@ class PublicAppController_personInfo_Test {
                 Arguments.of("", null));
     }
 
+    @Disabled//this test is useless
     @Order(4)
     @ParameterizedTest
     @MethodSource("nullEmptyNames")

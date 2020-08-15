@@ -5,6 +5,11 @@ import com.safetynet.alerts.models.Person;
 import com.safetynet.alerts.service.CommunityEmailService;
 import com.safetynet.alerts.utils.Jackson;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +28,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.safetynet.alerts.utils.JsonConvertForTest.parseResponse;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -144,8 +150,9 @@ class PublicAppController_communityEmail_IT {
     }
 
     @Order(2)
-    @Test
-    void getCommunityEmail_NotFound() throws Exception {
+    @ParameterizedTest
+    @ValueSource(strings = {"cityName"})
+    void getCommunityEmail_NotFound(String city) throws Exception {
         //***********GIVEN*************
         //Mock Configuration
         when(personDAO.getPersonList()).thenReturn(this.personList);
@@ -154,7 +161,7 @@ class PublicAppController_communityEmail_IT {
 
         String urlTemplate = String.format("%s%s",
                 "/communityemail/",
-                "cityName");
+                city);
         MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get(urlTemplate)
                 .accept(MediaType.APPLICATION_JSON_VALUE);
         //***********************************************************
@@ -175,6 +182,43 @@ class PublicAppController_communityEmail_IT {
         //**************CHECK RESPONSE CONTENT*********************
         //*********************************************************
         assertTrue(mvcResult.getResponse().getContentAsString().isEmpty());
+    }
+
+    @Disabled//this test is useless
+    @Order(3)
+    @Test
+    void getCommunityEmail_NullCase() throws Exception {
+        //***********GIVEN*************
+        //Mock Configuration
+        when(personDAO.getPersonList()).thenReturn(this.personList);
+        //Mock Injection
+        communityEmailService.setDAO(personDAO);
+
+        String urlTemplate = String.format("%s",
+                "/communityemail/"
+                );
+        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get(urlTemplate)
+                .accept(MediaType.APPLICATION_JSON_VALUE);
+        //***********************************************************
+        //**************CHECK MOCK INVOCATION at start***************
+        //***********************************************************
+        verify(personDAO, Mockito.never()).getPersonList();
+
+        //**************WHEN-THEN****************************
+        MvcResult mvcResult = mockMvc.perform(builder)//.andDo(print());
+                .andExpect(status().isNotFound())
+                .andReturn();
+        //*********************************************************
+        //**************CHECK MOCK INVOCATION at end***************
+        //*********************************************************
+        verify(personDAO, Mockito.never()).getPersonList();
+
+        //*********************************************************
+        //**************CHECK RESPONSE CONTENT*********************
+        //*********************************************************
+        assertTrue(mvcResult.getResponse().getContentAsString().isEmpty());
+
+        //https://www.baeldung.com/java-avoid-null-check
     }
 }
 

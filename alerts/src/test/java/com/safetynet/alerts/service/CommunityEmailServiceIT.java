@@ -165,4 +165,35 @@ class CommunityEmailServiceIT {
         //***********************************************************
         verify(rootFile, Mockito.times(1)).getBytes();
     }
+
+    @Order(3)
+    @Test
+    void getCommunityEmail_cityNull() throws IOException {
+        //GIVEN
+        when(rootFile.getBytes()).thenReturn(fileBytes);
+        //Mock injection
+        personDAO = new PersonDaoImpl(rootFile);
+        //***********************************************************
+        //**************CHECK MOCK INVOCATION at start***************
+        //***********************************************************
+        verify(rootFile, Mockito.times(1)).getBytes();
+
+        personList = personDAO.getPersonList();
+        communityEmailService.personDAO = personDAO;
+        String city = null;
+
+        //WHEN
+        List<String> emailListResult = communityEmailService.getCommunityEmail(city);
+
+        //THEN
+        //***********************************************************
+        //*********CHECK result Null**********
+        //***********************************************************
+        assertNull(emailListResult);
+
+        //***********************************************************
+        //**************CHECK MOCK INVOCATION at end***************
+        //***********************************************************
+        verify(rootFile, Mockito.times(1)).getBytes();
+    }
 }
