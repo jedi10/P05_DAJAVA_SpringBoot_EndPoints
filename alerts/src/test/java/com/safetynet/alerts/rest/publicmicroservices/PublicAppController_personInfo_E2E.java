@@ -158,6 +158,7 @@ class PublicAppController_personInfo_E2E {
                 Arguments.of("", null));
     }
 
+    @Disabled//Useless Test
     @Order(4)
     @ParameterizedTest
     @MethodSource("nullEmptyNames")
