@@ -27,6 +27,10 @@ public class CommunityEmailService {
 
         return result;
     }
+
+    public void setDAO(IPersonDAO personDAO){
+        this.personDAO = personDAO;
+    }
 }
 
 //https://mkyong.com/java8/java-8-streams-filter-examples/

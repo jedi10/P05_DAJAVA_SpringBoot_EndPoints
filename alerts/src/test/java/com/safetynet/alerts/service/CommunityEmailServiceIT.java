@@ -89,6 +89,8 @@ class CommunityEmailServiceIT {
                 .filter(o -> city.equals(o.getCity()))
                 .map(n -> n.getEmail())
                 .collect(Collectors.toList());
+        assertFalse(expectedMailList.contains(personWithDifferentCity.getEmail()),
+                "expectedMailList should not have the mail of the person we change the city");
         //WHEN
         List<String> emailListResult = communityEmailService.getCommunityEmail(city);
 
