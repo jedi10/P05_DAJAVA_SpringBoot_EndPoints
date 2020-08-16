@@ -22,7 +22,7 @@ public class CommunityEmailService {
             List<Person> personList = personDAO.getPersonList();
 
             result = personList.stream()
-                    .filter(o -> city.equals(o.getCity()))
+                    .filter(o -> city.equalsIgnoreCase(o.getCity()))
                     .map(Person::getEmail)
                     .collect(Collectors.toList());
         }
