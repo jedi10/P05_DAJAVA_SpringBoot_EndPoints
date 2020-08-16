@@ -2,17 +2,21 @@ package com.safetynet.alerts.rest.publicmicroservices;
 
 import com.safetynet.alerts.models.MedicalRecord;
 import com.safetynet.alerts.models.Person;
-import com.safetynet.alerts.rest.publicmicroservices.PublicAppController;
+import com.safetynet.alerts.service.CommunityEmailService;
 import com.safetynet.alerts.service.PersonInfoService;
-import com.safetynet.alerts.service.rto_models.IPersonInfoRTO;
+
 import com.safetynet.alerts.service.rto_models.PersonInfoRTO;
+import com.safetynet.alerts.utils.Jackson;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.*;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.Spy;
+
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -23,9 +27,14 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.safetynet.alerts.utils.Jackson.convertJavaToJson;
@@ -37,14 +46,13 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class PublicAppController_personInfo_Test {
+class PublicAppController_communityEmail_Test {
 
     @Autowired
     public MockMvc mockMvc;
@@ -53,24 +61,26 @@ class PublicAppController_personInfo_Test {
     public PublicAppController publicAppController;
 
     @Mock
-    public PersonInfoService personInfoService;
+    public CommunityEmailService communityEmailService;
 
-    @Spy
-    public IPersonInfoRTO personInfoRTO;
-
-    private Person person1 = new Person(
-            "john", "boyd", "rue du colisee", "Rome", 45, "06-12-23-34-45", "wermer@mail.it");
-
-    private List<String> medicationList = new ArrayList<>();
-
-    private List<String> allergiesList = new ArrayList<>();
-
-    private MedicalRecord medicalRecord1 = new MedicalRecord("john", "boyd",
-            LocalDate.of(1984, 3, 6));
+    List<Person> personList;
+    List<String> expectedMailList;
 
     @BeforeEach
     void setUp() throws Exception {
-
+        String fileString = Files.readString(Paths.get("src/test/resources/testData.json"));
+        byte[] fileBytes = fileString.getBytes(StandardCharsets.UTF_8);
+        try {
+            this.personList = Jackson.convertJsonRootDataToJava(
+                    fileBytes,
+                    "persons",
+                    Person.class);
+        } catch (IOException e) {
+            throw new IOException(e);
+        }
+        expectedMailList = this.personList.stream()
+                .map(n -> n.getEmail())
+                .collect(Collectors.toList());
     }
 
     @AfterEach
@@ -78,160 +88,121 @@ class PublicAppController_personInfo_Test {
 
     }
 
+
     @Order(1)
     @ParameterizedTest
-    @CsvSource({"julia,roberts"})
-    void redirectGetPerson(String firstName, String lastName) throws Exception {
-        //GIVEN
-        String urlTemplate = String.format("%s%s&%s",
-                "/admin/personinfo/",
-                firstName,
-                lastName);
-        String expectedUrl = String.format("%s%s&%s",
-                "/person/",
-                firstName,
-                lastName);
-        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get(urlTemplate);
-        //WHEN
-        mockMvc.perform(builder)//.andDo(print());
-                .andExpect(status().isFound())
-                .andExpect(redirectedUrl(expectedUrl));
-    }
-
-    @Order(2)
-    @Test
-    void getPersonInfo_Ok() throws Exception {
+    @ValueSource(strings = {"cityName"})
+    void getCommunityEmail_Ok(String city) throws Exception {
         //***********GIVEN*************
-        medicationList.add("aznol:350mg"); medicationList.add("hydrapermazol:100mg");
-        allergiesList.add("nillacilan");
-        medicalRecord1.setMedications(medicationList);
-        medicalRecord1.setAllergies(allergiesList);
-        personInfoRTO = new PersonInfoRTO(person1, medicalRecord1);
-        when(personInfoService.getPersonInfo(person1.getFirstName(), person1.getLastName())).
-                thenReturn(personInfoRTO);
-        //Mock Injection in Object tested
-        publicAppController.personInfoService = personInfoService;
+        //Mock Configuration
+        when(communityEmailService.getCommunityEmail(anyString())).thenReturn(expectedMailList);
+        //Mock Injection in tested Object
+        publicAppController.communityEmailService = communityEmailService;
 
-        String urlTemplate = String.format("%s%s&%s",
-                "/personinfo/",
-                person1.getFirstName(),
-                person1.getLastName());
+        String urlTemplate = String.format("%s%s",
+                "/communityemail/",
+                city);
         MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get(urlTemplate)
                 .accept(MediaType.APPLICATION_JSON_VALUE);
+        Person person1 = this.personList.get(0);
         //***********************************************************
         //**************CHECK MOCK INVOCATION at start***************
         //***********************************************************
-        verify(personInfoService, Mockito.never()).getPersonInfo(
-                person1.getFirstName(), person1.getLastName());
+        verify(communityEmailService, Mockito.never()).getCommunityEmail(city);
 
         //**************WHEN-THEN****************************
         MvcResult mvcResult = mockMvc.perform(builder)//.andDo(print());
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(content().string(containsString(person1.getEmail())))
-                .andExpect(jsonPath("$.firstName").value(person1.getFirstName()))
                 .andReturn();
         //*********************************************************
         //**************CHECK MOCK INVOCATION at end***************
         //*********************************************************
-        verify(personInfoService, Mockito.times(1)).getPersonInfo(
-                person1.getFirstName(), person1.getLastName());
+        verify(communityEmailService, Mockito.times(1)).
+                getCommunityEmail(city);
 
         //*********************************************************
         //**************CHECK RESPONSE CONTENT*********************
         //*********************************************************
-        //*****************Check with JSON*************************
-        String expectedJson = null;
-        expectedJson = convertJavaToJson(personInfoRTO);
-        JSONAssert.assertEquals(expectedJson, mvcResult.getResponse().getContentAsString(), true);
+
         //*****************Check with JAVA*************************
-        PersonInfoRTO resultJavaObject = parseResponse(mvcResult, PersonInfoRTO.class);
-        assertThat(personInfoRTO).isEqualToComparingFieldByField(resultJavaObject);
+        ArrayList<?> resultJavaObject = parseResponse(mvcResult, ArrayList.class);
+        assertThat(expectedMailList).isEqualTo(resultJavaObject);
     }
 
-    @Order(3)
+    @Order(2)
     @ParameterizedTest
-    @CsvSource({"toto,riri","toto,''", "'',''"})
-    //@ValueSource(strings = { "toto", "" })
-    void getPersonInfo_NotFound(String firstName, String lastName) throws Exception {
+    @ValueSource(strings = {"cityName"})
+    void getCommunityEmail_NotFound(String city) throws Exception {
         //***********GIVEN*************
-        when(personInfoService.getPersonInfo(firstName, lastName)).
-                thenReturn(null);
-        //Mock Injection in Object tested
-        publicAppController.personInfoService = personInfoService;
+        //Mock Configuration
+        when(communityEmailService.getCommunityEmail(anyString())).thenReturn(new ArrayList<>());
+        //Mock Injection in tested Object
+        publicAppController.communityEmailService = communityEmailService;
 
-        String urlTemplate = String.format("%s%s&%s",
-                "/personinfo/",
-                 firstName,
-                 lastName);
+        String urlTemplate = String.format("%s%s",
+                "/communityemail/",
+                city);
         MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get(urlTemplate)
                 .accept(MediaType.APPLICATION_JSON_VALUE);
         //***********************************************************
         //**************CHECK MOCK INVOCATION at start***************
         //***********************************************************
-        verify(personInfoService, Mockito.never()).getPersonInfo(
-                firstName, lastName);
+        verify(communityEmailService, Mockito.never()).getCommunityEmail(city);
 
         //**************WHEN-THEN****************************
         MvcResult mvcResult = mockMvc.perform(builder)//.andDo(print());
                 .andExpect(status().isNotFound())
                 .andReturn();
-
-        assertNotNull(mvcResult);
-        assertNull(mvcResult.getResponse().getContentType());
         //*********************************************************
         //**************CHECK MOCK INVOCATION at end***************
         //*********************************************************
-        verify(personInfoService, Mockito.times(1)).getPersonInfo(
-                firstName, lastName);
-    }
+        verify(communityEmailService, Mockito.times(1)).
+                getCommunityEmail(city);
 
-    static Stream<Arguments> nullEmptyNames() {
-        return Stream.of(
-                Arguments.of(null, null),
-                Arguments.of(null, ""),
-                Arguments.of("", null));
+        //*********************************************************
+        //**************CHECK RESPONSE CONTENT*********************
+        //*********************************************************
+        assertTrue(mvcResult.getResponse().getContentAsString().isEmpty());
     }
 
     @Disabled//this test is useless
-    @Order(4)
-    @ParameterizedTest
-    @MethodSource("nullEmptyNames")
-    void getPersonInfo_NullCase(String firstName, String lastName) throws Exception {
+    @Order(3)
+    @Test
+    void getCommunityEmail_NullCase() throws Exception {
         //***********GIVEN*************
-        when(personInfoService.getPersonInfo(ArgumentMatchers.isNull(), ArgumentMatchers.isNull())).
-                thenReturn(null);
-        when(personInfoService.getPersonInfo(ArgumentMatchers.isNull(), anyString())).
-                thenReturn(null);
-        when(personInfoService.getPersonInfo(anyString(), ArgumentMatchers.isNull())).
-                thenReturn(null);
-        //Mock Injection in Object tested
-        publicAppController.personInfoService = personInfoService;
+        //Mock Configuration
+        when(communityEmailService.getCommunityEmail(anyString())).thenReturn(new ArrayList<>());
+        //Mock Injection in tested Object
+        publicAppController.communityEmailService = communityEmailService;
 
-        String urlTemplate = String.format("%s%s&%s",
-                "/personinfo/",
-                firstName,
-                lastName);
+        String urlTemplate = String.format("%s",
+                "/communityemail/"
+                );
         MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get(urlTemplate)
                 .accept(MediaType.APPLICATION_JSON_VALUE);
         //***********************************************************
         //**************CHECK MOCK INVOCATION at start***************
         //***********************************************************
-        verify(personInfoService, Mockito.never()).getPersonInfo(
-                firstName, lastName);
+        verify(communityEmailService, Mockito.never()).getCommunityEmail(ArgumentMatchers.nullable(String.class));
 
         //**************WHEN-THEN****************************
         MvcResult mvcResult = mockMvc.perform(builder)//.andDo(print());
                 .andExpect(status().isNotFound())
                 .andReturn();
-
-        assertNotNull(mvcResult);
-        assertNull(mvcResult.getResponse().getContentType());
         //*********************************************************
         //**************CHECK MOCK INVOCATION at end***************
         //*********************************************************
-        verify(personInfoService, Mockito.times(1)).getPersonInfo(
-                any(), any());
+        verify(communityEmailService, Mockito.never()).
+                getCommunityEmail(ArgumentMatchers.nullable(String.class));
+
+        //*********************************************************
+        //**************CHECK RESPONSE CONTENT*********************
+        //*********************************************************
+        assertTrue(mvcResult.getResponse().getContentAsString().isEmpty());
+
+        //https://www.baeldung.com/java-avoid-null-check
     }
 }
 
