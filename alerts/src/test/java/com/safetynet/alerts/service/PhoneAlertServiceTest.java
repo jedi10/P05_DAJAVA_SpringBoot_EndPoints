@@ -85,9 +85,13 @@ class PhoneAlertServiceTest {
 
         when(firestationDAO.findAll()).thenReturn(firestationList);
         when(personDAO.findAll()).thenReturn(personList);
-        String stationChoosenForTest = firestationList.get(0).getStation();
+        //Inject Mocks in tested Object
+        phoneAlertService.firestationDAO = firestationDAO;
+        phoneAlertService.personDAO = personDAO;
+
+        String stationChosenForTest = firestationList.get(0).getStation();
         List<String> expectedAddressList = firestationList.stream()
-                .filter(e-> e.getStation().equalsIgnoreCase(stationChoosenForTest))
+                .filter(e-> e.getStation().equalsIgnoreCase(stationChosenForTest))
                 .map(Firestation::getAddress)
                 .collect(Collectors.toList());
 
@@ -99,12 +103,12 @@ class PhoneAlertServiceTest {
         //***********************************************************
         //**************CHECK MOCK INVOCATION at start***************
         //***********************************************************
-        verify(firestationDAO, Mockito.never()).getFirestationList();
-        verify(personDAO, Mockito.never()).getPersonList();
+        verify(firestationDAO, Mockito.never()).findAll();
+        verify(personDAO, Mockito.never()).findAll();
 
         //**************************WHEN****************************
         List<String> phoneListResult = phoneAlertService.getPhoneAlert(
-                stationChoosenForTest);
+                stationChosenForTest);
 
         //**************************THEN****************************
         assertNotNull(phoneListResult);
@@ -114,10 +118,10 @@ class PhoneAlertServiceTest {
         //***********************************************************
         //***************CHECK MOCK INVOCATION at end****************
         //***********************************************************
-        verify(firestationDAO, Mockito.times(1)).
-                getFirestationList();
-        verify(personDAO, Mockito.times(1)).
-                getPersonList();
+        verify(firestationDAO, Mockito.times(1))
+                .findAll();
+        verify(personDAO, Mockito.times(1))
+                .findAll();
     }
 
     @Order(2)
@@ -132,6 +136,9 @@ class PhoneAlertServiceTest {
 
         when(firestationDAO.findAll()).thenReturn(firestationList);
         when(personDAO.findAll()).thenReturn(personList);
+        //Inject Mocks in tested Object
+        phoneAlertService.firestationDAO = firestationDAO;
+        phoneAlertService.personDAO = personDAO;
 
         List<String> expectedPhoneList = new ArrayList<>();
 
@@ -152,9 +159,9 @@ class PhoneAlertServiceTest {
         //***********************************************************
         //***************CHECK MOCK INVOCATION at end****************
         //***********************************************************
-        verify(firestationDAO, Mockito.times(1)).
-                getFirestationList();
-        verify(personDAO, Mockito.never()).getPersonList();
+        verify(firestationDAO, Mockito.times(1))
+                .findAll();
+        verify(personDAO, Mockito.never()).findAll();
     }
 
     @Order(3)
@@ -168,14 +175,17 @@ class PhoneAlertServiceTest {
 
         when(firestationDAO.findAll()).thenReturn(firestationList);
         when(personDAO.findAll()).thenReturn(personList);
+        //Inject Mocks in tested Object
+        phoneAlertService.firestationDAO = firestationDAO;
+        phoneAlertService.personDAO = personDAO;
 
         List<String> expectedPhoneList = new ArrayList<>();
 
         //***********************************************************
         //**************CHECK MOCK INVOCATION at start***************
         //***********************************************************
-        verify(firestationDAO, Mockito.never()).getFirestationList();
-        verify(personDAO, Mockito.never()).getPersonList();
+        verify(firestationDAO, Mockito.never()).findAll();
+        verify(personDAO, Mockito.never()).findAll();
         //**************************WHEN****************************
         List<String> phoneListResult = phoneAlertService.getPhoneAlert(
                 null);
@@ -188,7 +198,7 @@ class PhoneAlertServiceTest {
         //***********************************************************
         //***************CHECK MOCK INVOCATION at end****************
         //***********************************************************
-        verify(firestationDAO, Mockito.never()).getFirestationList();
-        verify(personDAO, Mockito.never()).getPersonList();
+        verify(firestationDAO, Mockito.never()).findAll();
+        verify(personDAO, Mockito.never()).findAll();
     }
 }
