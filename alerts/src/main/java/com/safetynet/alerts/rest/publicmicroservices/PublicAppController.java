@@ -1,6 +1,7 @@
 package com.safetynet.alerts.rest.publicmicroservices;
 
 import com.safetynet.alerts.rest.AdminPersonController;
+import com.safetynet.alerts.service.PhoneAlertService;
 import com.safetynet.alerts.service.CommunityEmailService;
 import com.safetynet.alerts.service.PersonInfoService;
 import com.safetynet.alerts.service.rto_models.IPersonInfoRTO;
@@ -22,6 +23,9 @@ public class PublicAppController {
 
     @Autowired
     CommunityEmailService communityEmailService;
+
+    @Autowired
+    PhoneAlertService phoneAlertService;
 
 
     /**
@@ -53,7 +57,7 @@ public class PublicAppController {
 
         IPersonInfoRTO personInfo = personInfoService.getPersonInfo(firstName, lastName);
         if(personInfo == null){
-            log.warn("Fetching Person Aborted: {} {} not found", firstName, lastName);
+            log.warn("Fetching Person Aborted: '{}' '{}' not found", firstName, lastName);
             return ResponseEntity.notFound().build();
         }
         return new ResponseEntity<IPersonInfoRTO>(personInfo, HttpStatus.OK);
@@ -62,8 +66,8 @@ public class PublicAppController {
     /**
      * getCommunityEmail public EndPoint Controller
      * @see CommunityEmailService#getCommunityEmail(String)
-     * @param city city      *
-     * @param httpResponse response     *
+     * @param city city
+     * @param httpResponse response
      */
     @GetMapping(value = "/communityemail/{city}")
     public ResponseEntity<?> getCommunityEmail(@PathVariable("city") String city,
@@ -72,9 +76,28 @@ public class PublicAppController {
 
         List<String> mailList = communityEmailService.getCommunityEmail(city);
         if(mailList.isEmpty()){
-            log.warn("Fetching Empty MailList for city: {}", city);
+            log.warn("Fetching Empty MailList for city: '{}'", city);
             return ResponseEntity.notFound().build();
         }
         return new ResponseEntity<List<String>>(mailList, HttpStatus.OK);
+    }
+
+    /**
+     * getPhoneAlert public EndPoint Controller
+     * @see PhoneAlertService#getPhoneAlert(String)
+     * @param station Firestation number
+     * @param httpResponse response
+     */
+    @GetMapping(value = "/phonealert/{station}")
+    public ResponseEntity<?> getPhoneAlert(@PathVariable("station") String station,
+                                               HttpServletResponse httpResponse)  {
+        log.info("Fetching Phone of all persons under responsibility of station:  '{}'", station);
+
+        List<String> phoneList = phoneAlertService.getPhoneAlert(station);
+        if(phoneList.isEmpty()){
+            log.warn("Fetching Empty PhoneList for station: '{}'",station);
+            return ResponseEntity.notFound().build();
+        }
+        return new ResponseEntity<List<String>>(phoneList, HttpStatus.OK);
     }
 }
