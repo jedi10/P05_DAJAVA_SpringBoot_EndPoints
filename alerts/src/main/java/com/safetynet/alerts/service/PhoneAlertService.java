@@ -12,6 +12,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * <b>PhoneAlert Service</b>
+ * <p>give a list of tel number of people located in firestation area</p>
+ */
 @Slf4j
 @Component
 public class PhoneAlertService {
@@ -41,5 +45,10 @@ public class PhoneAlertService {
             }
         }
         return result;
+    }
+
+    public void setDAO(IPersonDAO personDAO, IFirestationDAO firestationDAO){
+        this.personDAO = personDAO;
+        this.firestationDAO = firestationDAO;
     }
 }
