@@ -20,9 +20,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static com.safetynet.alerts.utils.Jackson.convertJavaToJson;
 import static com.safetynet.alerts.utils.JsonConvertForTest.parseResponse;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -86,7 +84,7 @@ class PublicAppController_phoneAlert_Test {
         assertEquals(List.of("123456789", "987654321"), resultJavaObject);
 
         //***********************************************************
-        //**************CHECK MOCK INVOCATION at start***************
+        //**************CHECK MOCK INVOCATION at end***************
         //***********************************************************
         verify(phoneAlertService, Mockito.times(1)).
                 getPhoneAlert(anyString());
@@ -120,7 +118,7 @@ class PublicAppController_phoneAlert_Test {
         assertTrue(mvcResult.getResponse().getContentAsString().isEmpty());
 
         //***********************************************************
-        //**************CHECK MOCK INVOCATION at start***************
+        //**************CHECK MOCK INVOCATION at end***************
         //***********************************************************
         verify(phoneAlertService, Mockito.times(1)).
                 getPhoneAlert(anyString());
