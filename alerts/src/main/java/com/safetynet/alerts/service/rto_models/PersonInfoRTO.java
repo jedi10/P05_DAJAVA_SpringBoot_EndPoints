@@ -7,10 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -109,7 +106,32 @@ public class PersonInfoRTO implements IPersonInfoRTO {
             this.setAllergies(medicalRecord.getAllergies());
     }
 
-    public PersonInfoRTO() {
+    public PersonInfoRTO() {}
 
+    /**
+     * <b>Factory: build PersonInfoRTO List</b>
+     * <p>person and medicalrecord have to have same first and last name</p>
+     * @param personList personList
+     * @param medicalRecordList medicalRecordList
+     * @return
+     */
+    public static List<PersonInfoRTO> buildPersonInfoRTOList(List<Person> personList, List<MedicalRecord> medicalRecordList) {
+        List<PersonInfoRTO> personInfoRTOList = new ArrayList<>();
+        personList.forEach(
+                e -> { List<MedicalRecord> medRecFilters = medicalRecordList.stream()
+                        .filter(med -> med.getFirstName().equalsIgnoreCase(e.getFirstName()) &&
+                                        med.getLastName().equalsIgnoreCase(e.getLastName()))
+                        .collect(Collectors.toList());
+                    if(!medRecFilters.isEmpty()){
+                        try {
+                            PersonInfoRTO personInfoRTO = new PersonInfoRTO(e, medRecFilters.get(0));
+                            personInfoRTOList.add(personInfoRTO);
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                }
+        );
+        return personInfoRTOList;
     }
 }
