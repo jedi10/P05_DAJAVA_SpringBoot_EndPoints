@@ -105,6 +105,8 @@ class PublicAppController_phoneAlert_IT {
         phoneAlertService.setDAO(personDAO, firestationDAO);
 
         String stationChosenForTest = firestationList.get(0).getStation();
+        assertNotNull(stationChosenForTest,
+                "True data loading failed: we need them to go further in Tests");
         List<String> expectedAddressList = firestationList.stream()
                 .filter(e-> e.getStation().equalsIgnoreCase(stationChosenForTest))
                 .map(Firestation::getAddress)
