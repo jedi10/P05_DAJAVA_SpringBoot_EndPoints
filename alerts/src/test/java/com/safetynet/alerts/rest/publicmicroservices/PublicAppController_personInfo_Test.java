@@ -77,7 +77,7 @@ class PublicAppController_personInfo_Test {
     void tearDown() {
 
     }
-
+/*
     @Order(1)
     @ParameterizedTest
     @CsvSource({"julia,roberts"})
@@ -232,7 +232,7 @@ class PublicAppController_personInfo_Test {
         //*********************************************************
         verify(personInfoService, Mockito.times(1)).getPersonInfo(
                 any(), any());
-    }
+    }**/
 }
 
 

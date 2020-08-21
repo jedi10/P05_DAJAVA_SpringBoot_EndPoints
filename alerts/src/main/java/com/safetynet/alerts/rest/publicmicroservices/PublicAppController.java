@@ -55,7 +55,8 @@ public class PublicAppController {
                                   HttpServletResponse httpResponse) {
         log.info("Fetching Person with first Name '{}' and last Name '{}'", firstName, lastName );
 
-        IPersonInfoRTO personInfo = personInfoService.getPersonInfo(firstName, lastName);
+        IPersonInfoRTO personInfo = null;
+        //IPersonInfoRTO personInfo = personInfoService.getPersonInfo(firstName, lastName);
         if(personInfo == null){
             log.warn("Fetching Person Aborted: '{}' '{}' not found", firstName, lastName);
             return ResponseEntity.notFound().build();

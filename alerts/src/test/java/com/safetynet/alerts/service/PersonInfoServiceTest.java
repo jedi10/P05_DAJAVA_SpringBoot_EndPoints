@@ -117,15 +117,14 @@ class PersonInfoServiceTest {
         List<IPersonInfoRTO> expectedPersonRTOList = personInfoRTOListFull.stream()
                 .filter(o -> personChosenForTest.getLastName().equals(o.getLastName()))
                 .collect(Collectors.toList());
-        List<IPersonInfoRTO> expectedChosenPersonRTOList = expectedPersonRTOList.stream()
+        IPersonInfoRTO expectedChosenPersonRTO = expectedPersonRTOList.stream()
                 .filter(e -> e.getFirstName().equalsIgnoreCase(personChosenForTest.getFirstName())&&
                         e.getLastName().equalsIgnoreCase(personChosenForTest.getLastName()))
-                .collect(Collectors.toList());
+                .findAny()
+                .orElse(null);
+        //https://www.baeldung.com/find-list-element-java
 
-        assertFalse(expectedChosenPersonRTOList.isEmpty());
-        assertTrue(expectedChosenPersonRTOList.size()== 1);
-
-        IPersonInfoRTO personInfoRTOexpected = expectedChosenPersonRTOList.get(0);
+        assertNotNull(expectedChosenPersonRTO);
 
         //***********************************************************
         //***************CHECK MOCK INVOCATION at start**************
@@ -147,26 +146,29 @@ class PersonInfoServiceTest {
         //verify(this.personInfoRTOMock, Mockito.times(1)).checkDataConstructor(person1, medicalRecord1);
 
         assertNotNull(personInfoRTOListResult);
-        assertTrue(personInfoRTOListResult.contains(personInfoRTOexpected));
-        assertEquals(expectedPersonRTOList, personInfoRTOListResult);
-        assertNotSame(expectedPersonRTOList, personInfoRTOListResult);
+        assertTrue(personInfoRTOListResult.stream().anyMatch(o ->
+                o.getFirstName().equals(expectedChosenPersonRTO.getFirstName()) &&
+                o.getLastName().equals(expectedChosenPersonRTO.getLastName())
+        ));
+        assertTrue(personInfoRTOListResult.stream().allMatch(o -> o.getLastName().equals(expectedChosenPersonRTO.getLastName())));
+
     }
 
     @Order(2)
     @Test
     void getPersonInfoDebounce_Ok() {
         //WHEN
-        IPersonInfoRTO personInfoRTO = personInfoService.getPersonInfo("john", "boyd");
-        IPersonInfoRTO personInfoRTO2 = personInfoService.getPersonInfo("john", "boyd");
+        List<IPersonInfoRTO> personInfoRTOListResult = personInfoService.getPersonInfo("john", "boyd");
+        List<IPersonInfoRTO> personInfoRTO2ListResult2 = personInfoService.getPersonInfo("john", "boyd");
 
         //THEN
-        verify(personDAO, Mockito.times(1)).findByName("john", "boyd");
-        verify(medicalRecordDAO, Mockito.times(1)).findByName("john", "boyd");
+        verify(personDAO, Mockito.times(1)).findAll();
+        verify(medicalRecordDAO, Mockito.times(1)).findAll();
 
-        assertNotNull(personInfoRTO);
-        assertNotNull(personInfoRTO2);
-        assertEquals(personInfoRTO, personInfoRTO2);
-        assertSame(personInfoRTO, personInfoRTO2);
+        assertNotNull(personInfoRTOListResult);
+        assertNotNull(personInfoRTO2ListResult2);
+        assertEquals(personInfoRTOListResult, personInfoRTO2ListResult2);
+        assertSame(personInfoRTOListResult, personInfoRTO2ListResult2);
     }
 
     @Order(3)
