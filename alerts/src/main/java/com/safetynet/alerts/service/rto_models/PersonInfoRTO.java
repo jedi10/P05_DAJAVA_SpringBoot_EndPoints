@@ -115,8 +115,8 @@ public class PersonInfoRTO implements IPersonInfoRTO {
      * @param medicalRecordList medicalRecordList
      * @return
      */
-    public static List<PersonInfoRTO> buildPersonInfoRTOList(List<Person> personList, List<MedicalRecord> medicalRecordList) {
-        List<PersonInfoRTO> personInfoRTOList = new ArrayList<>();
+    public static List<IPersonInfoRTO> buildPersonInfoRTOList(List<Person> personList, List<MedicalRecord> medicalRecordList) {
+        List<IPersonInfoRTO> personInfoRTOList = new ArrayList<>();
         personList.forEach(
                 e -> { List<MedicalRecord> medRecFilters = medicalRecordList.stream()
                         .filter(med -> med.getFirstName().equalsIgnoreCase(e.getFirstName()) &&

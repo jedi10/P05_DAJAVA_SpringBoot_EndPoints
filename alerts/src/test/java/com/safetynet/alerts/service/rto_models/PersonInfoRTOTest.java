@@ -259,7 +259,7 @@ class PersonInfoRTOTest {
         }
 
         //WHEN
-        List<PersonInfoRTO> personInfoRTOListResult =  PersonInfoRTO.buildPersonInfoRTOList(personList, medicalRecordList);
+        List<IPersonInfoRTO> personInfoRTOListResult =  PersonInfoRTO.buildPersonInfoRTOList(personList, medicalRecordList);
 
         //THEN
         assertNotNull(personInfoRTOListResult);
@@ -287,7 +287,7 @@ class PersonInfoRTOTest {
 
 
         //WHEN
-        List<PersonInfoRTO> personInfoRTOListResult =  PersonInfoRTO.buildPersonInfoRTOList(personList, medicalRecordList);
+        List<IPersonInfoRTO> personInfoRTOListResult =  PersonInfoRTO.buildPersonInfoRTOList(personList, medicalRecordList);
 
         //THEN
         assertNotNull(personInfoRTOListResult);
