@@ -1,8 +1,6 @@
 package com.safetynet.alerts.service;
 
 import com.safetynet.alerts.dao.*;
-import com.safetynet.alerts.models.MedicalRecord;
-import com.safetynet.alerts.models.Person;
 import com.safetynet.alerts.service.rto_models.IPersonInfoRTO;
 import org.junit.jupiter.api.*;
 import org.mockito.Mock;
@@ -14,9 +12,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
@@ -61,7 +56,7 @@ class PersonInfoServiceIT {
     void tearDown() {
         personInfoService.firstName = null;
         personInfoService.lastName = null;
-        personInfoService.personInfo = null;
+        personInfoService.personInfoRTO = null;
     }
 
     @Order(1)

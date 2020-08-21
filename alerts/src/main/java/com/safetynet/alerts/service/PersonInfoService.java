@@ -6,7 +6,6 @@ import com.safetynet.alerts.models.MedicalRecord;
 import com.safetynet.alerts.models.Person;
 import com.safetynet.alerts.service.rto_models.IPersonInfoRTO;
 import com.safetynet.alerts.service.rto_models.PersonInfoRTO;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -25,7 +24,7 @@ public class PersonInfoService {
 
     String lastName;
 
-    IPersonInfoRTO personInfo;
+    IPersonInfoRTO personInfoRTO;
 
     public IPersonInfoRTO getPersonInfo(String firstName, String lastName) {
         IPersonInfoRTO result = null;
@@ -33,8 +32,8 @@ public class PersonInfoService {
             //Debounce functionality
             if (firstName.equals(this.firstName) &&
                     lastName.equals(this.lastName) &&
-                    this.personInfo != null) {
-                result = this.personInfo;
+                    this.personInfoRTO != null) {
+                result = this.personInfoRTO;
             } else {
                 this.firstName = firstName;
                 this.lastName = lastName;
@@ -43,8 +42,8 @@ public class PersonInfoService {
                 MedicalRecord medicalRecord =
                         medicalRecordDAO.findByName(this.firstName, this.lastName);
                 try {
-                    this.personInfo = new PersonInfoRTO(person, medicalRecord);
-                    result = this.personInfo;
+                    this.personInfoRTO = new PersonInfoRTO(person, medicalRecord);
+                    result = this.personInfoRTO;
                 } catch (Exception e) {
                     log.error("PersonInfoService: "+ e.getMessage());
                     e.printStackTrace();
