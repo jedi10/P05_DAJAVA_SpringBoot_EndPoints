@@ -2,7 +2,6 @@ package com.safetynet.alerts.rest.publicmicroservices;
 
 import com.safetynet.alerts.models.MedicalRecord;
 import com.safetynet.alerts.models.Person;
-import com.safetynet.alerts.rest.publicmicroservices.PublicAppController;
 import com.safetynet.alerts.service.PersonInfoService;
 import com.safetynet.alerts.service.rto_models.IPersonInfoRTO;
 import com.safetynet.alerts.service.rto_models.PersonInfoRTO;
@@ -29,8 +28,6 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static com.safetynet.alerts.utils.Jackson.convertJavaToJson;
-import static com.safetynet.alerts.utils.JsonConvertForTest.parseResponse;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -56,7 +53,7 @@ class PublicAppController_personInfo_Test {
     public PersonInfoService personInfoService;
 
     @Spy
-    public IPersonInfoRTO personInfoRTO;
+    public List<IPersonInfoRTO> personInfoRTOList = new ArrayList<>();
 
     private Person person1 = new Person(
             "john", "boyd", "rue du colisee", "Rome", 45, "06-12-23-34-45", "wermer@mail.it");
@@ -77,7 +74,7 @@ class PublicAppController_personInfo_Test {
     void tearDown() {
 
     }
-/*
+
     @Order(1)
     @ParameterizedTest
     @CsvSource({"julia,roberts"})
@@ -106,9 +103,11 @@ class PublicAppController_personInfo_Test {
         allergiesList.add("nillacilan");
         medicalRecord1.setMedications(medicationList);
         medicalRecord1.setAllergies(allergiesList);
-        personInfoRTO = new PersonInfoRTO(person1, medicalRecord1);
-        when(personInfoService.getPersonInfo(person1.getFirstName(), person1.getLastName())).
-                thenReturn(personInfoRTO);
+
+        personInfoRTOList.add(new PersonInfoRTO(person1, medicalRecord1));
+
+        when(personInfoService.getPersonInfo(anyString(), anyString())).
+                thenReturn(personInfoRTOList);
         //Mock Injection in Object tested
         publicAppController.personInfoService = personInfoService;
 
@@ -125,11 +124,11 @@ class PublicAppController_personInfo_Test {
                 person1.getFirstName(), person1.getLastName());
 
         //**************WHEN-THEN****************************
-        MvcResult mvcResult = mockMvc.perform(builder)//.andDo(print());
+       MvcResult mvcResult = mockMvc.perform(builder)//.andDo(print());
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(content().string(containsString(person1.getEmail())))
-                .andExpect(jsonPath("$.firstName").value(person1.getFirstName()))
+                .andExpect(jsonPath("$.[0].firstName").value(person1.getFirstName()))
                 .andReturn();
         //*********************************************************
         //**************CHECK MOCK INVOCATION at end***************
@@ -142,11 +141,8 @@ class PublicAppController_personInfo_Test {
         //*********************************************************
         //*****************Check with JSON*************************
         String expectedJson = null;
-        expectedJson = convertJavaToJson(personInfoRTO);
+        expectedJson = convertJavaToJson(personInfoRTOList);
         JSONAssert.assertEquals(expectedJson, mvcResult.getResponse().getContentAsString(), true);
-        //*****************Check with JAVA*************************
-        PersonInfoRTO resultJavaObject = parseResponse(mvcResult, PersonInfoRTO.class);
-        assertThat(personInfoRTO).isEqualToComparingFieldByField(resultJavaObject);
     }
 
     @Order(3)
@@ -156,7 +152,7 @@ class PublicAppController_personInfo_Test {
     void getPersonInfo_NotFound(String firstName, String lastName) throws Exception {
         //***********GIVEN*************
         when(personInfoService.getPersonInfo(firstName, lastName)).
-                thenReturn(null);
+                thenReturn(new ArrayList<>());
         //Mock Injection in Object tested
         publicAppController.personInfoService = personInfoService;
 
@@ -232,7 +228,7 @@ class PublicAppController_personInfo_Test {
         //*********************************************************
         verify(personInfoService, Mockito.times(1)).getPersonInfo(
                 any(), any());
-    }**/
+    }
 }
 
 

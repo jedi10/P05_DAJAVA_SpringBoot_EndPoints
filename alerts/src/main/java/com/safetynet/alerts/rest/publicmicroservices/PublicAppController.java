@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -55,13 +56,12 @@ public class PublicAppController {
                                   HttpServletResponse httpResponse) {
         log.info("Fetching Person with first Name '{}' and last Name '{}'", firstName, lastName );
 
-        IPersonInfoRTO personInfo = null;
-        //IPersonInfoRTO personInfo = personInfoService.getPersonInfo(firstName, lastName);
-        if(personInfo == null){
+        List<IPersonInfoRTO> personInfoList = personInfoService.getPersonInfo(firstName, lastName);
+        if(personInfoList.isEmpty()){
             log.warn("Fetching Person Aborted: '{}' '{}' not found", firstName, lastName);
             return ResponseEntity.notFound().build();
         }
-        return new ResponseEntity<IPersonInfoRTO>(personInfo, HttpStatus.OK);
+        return new ResponseEntity<List<IPersonInfoRTO>>(personInfoList, HttpStatus.OK);
     }
 
     /**
