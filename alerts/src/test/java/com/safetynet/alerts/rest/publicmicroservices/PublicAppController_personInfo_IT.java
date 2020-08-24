@@ -5,7 +5,6 @@ import com.safetynet.alerts.dao.IPersonDAO;
 import com.safetynet.alerts.models.MedicalRecord;
 import com.safetynet.alerts.models.Person;
 import com.safetynet.alerts.rest.AdminPersonController;
-import com.safetynet.alerts.rest.publicmicroservices.PublicAppController;
 import com.safetynet.alerts.service.PersonInfoService;
 import com.safetynet.alerts.service.rto_models.IPersonInfoRTO;
 import com.safetynet.alerts.service.rto_models.PersonInfoRTO;
@@ -59,8 +58,7 @@ class PublicAppController_personInfo_IT {
     @Autowired
     public AdminPersonController adminPersonController;
 
-    @Mock
-    public IPersonInfoRTO personInfoRTO;
+    public List<IPersonInfoRTO> personInfoRTOList = new ArrayList<>();
 
     @Mock
     public IPersonDAO personDAO;
@@ -154,11 +152,10 @@ class PublicAppController_personInfo_IT {
         allergiesList.add("nillacilan");
         medicalRecord1.setMedications(medicationList);
         medicalRecord1.setAllergies(allergiesList);
-        personInfoRTO = new PersonInfoRTO(person1, medicalRecord1);
-        when(personDAO.findByName(person1.getFirstName(), person1.getLastName())).
-                thenReturn(person1);
-        when(medicalRecordDAO.findByName(person1.getFirstName(), person1.getLastName())).
-                thenReturn(medicalRecord1);
+        this.personInfoRTOList.add(new PersonInfoRTO(person1, medicalRecord1));
+
+        when(personDAO.findAll()).thenReturn(List.of(person1));
+        when(medicalRecordDAO.findAll()).thenReturn(List.of(medicalRecord1));
         //Mock Injection in Object tested
         personInfoService.setDAO(personDAO, medicalRecordDAO);
 
@@ -171,36 +168,30 @@ class PublicAppController_personInfo_IT {
         //***********************************************************
         //**************CHECK MOCK INVOCATION at start***************
         //***********************************************************
-        verify(personDAO, Mockito.never()).findByName(
-                person1.getFirstName(), person1.getLastName());
-        verify(medicalRecordDAO, Mockito.never()).findByName(
-                person1.getFirstName(), person1.getLastName());
+        verify(personDAO, Mockito.never()).findAll();
+        verify(medicalRecordDAO, Mockito.never()).findAll();
 
         //**************WHEN-THEN****************************
         MvcResult mvcResult = mockMvc.perform(builder)//.andDo(print());
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(content().string(containsString(person1.getEmail())))
-                .andExpect(jsonPath("$.firstName").value(person1.getFirstName()))
+                .andExpect(jsonPath("$.[0].firstName").value(person1.getFirstName()))
                 .andReturn();
         //*********************************************************
         //**************CHECK MOCK INVOCATION at end***************
         //*********************************************************
-        verify(personDAO, Mockito.times(1)).findByName(
-                person1.getFirstName(), person1.getLastName());
-        verify(medicalRecordDAO, Mockito.times(1)).findByName(
-                person1.getFirstName(), person1.getLastName());
+        verify(personDAO, Mockito.times(1)).findAll();
+        verify(medicalRecordDAO, Mockito.times(1)).findAll();
 
         //*********************************************************
         //**************CHECK RESPONSE CONTENT*********************
         //*********************************************************
         //*****************Check with JSON*************************
         String expectedJson = null;
-        expectedJson = convertJavaToJson(personInfoRTO);
+        expectedJson = convertJavaToJson(personInfoRTOList);
         JSONAssert.assertEquals(expectedJson, mvcResult.getResponse().getContentAsString(), true);
-        //*****************Check with JAVA*************************
-        PersonInfoRTO resultJavaObject = parseResponse(mvcResult, PersonInfoRTO.class);
-        assertThat(personInfoRTO).isEqualToComparingFieldByField(resultJavaObject);
+
     }
 
     @Order(3)
@@ -223,8 +214,8 @@ class PublicAppController_personInfo_IT {
         //***********************************************************
         //**************CHECK MOCK INVOCATION at start***************
         //***********************************************************
-        verify(personDAO, Mockito.never()).findByName(firstName, lastName);
-        verify(medicalRecordDAO, Mockito.never()).findByName(firstName, lastName);
+        verify(personDAO, Mockito.never()).findAll();
+        verify(medicalRecordDAO, Mockito.never()).findAll();
 
         //**************WHEN-THEN****************************
         MvcResult mvcResult = mockMvc.perform(builder)//.andDo(print());
@@ -236,10 +227,8 @@ class PublicAppController_personInfo_IT {
         //*********************************************************
         //**************CHECK MOCK INVOCATION at end***************
         //*********************************************************
-        verify(personDAO, Mockito.times(1)).findByName(
-                firstName, lastName);
-        verify(medicalRecordDAO, Mockito.times(1)).findByName(
-                firstName, lastName);
+        verify(personDAO, Mockito.times(1)).findAll();
+        verify(medicalRecordDAO, Mockito.times(1)).findAll();
     }
 
     static Stream<Arguments> nullEmptyNames() {
