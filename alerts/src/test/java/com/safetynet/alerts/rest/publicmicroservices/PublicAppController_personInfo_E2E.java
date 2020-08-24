@@ -4,13 +4,14 @@ import com.safetynet.alerts.dao.IMedicalRecordDAO;
 import com.safetynet.alerts.dao.IPersonDAO;
 import com.safetynet.alerts.models.MedicalRecord;
 import com.safetynet.alerts.models.Person;
-import com.safetynet.alerts.rest.publicmicroservices.PublicAppController;
 import com.safetynet.alerts.service.rto_models.PersonInfoRTO;
+import com.safetynet.alerts.utils.Jackson;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -22,6 +23,7 @@ import org.springframework.http.ResponseEntity;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.util.List;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -112,21 +114,25 @@ class PublicAppController_personInfo_E2E {
                 personInfoRTO.getFirstName(),
                 personInfoRTO.getLastName());
         //WHEN
-        ResponseEntity<PersonInfoRTO> result = template.getForEntity(
+        ResponseEntity<List> result = template.getForEntity(
                 URI.create(urlTemplate),
-                PersonInfoRTO.class);
+                List.class);
 
         //**************THEN****************************
         assertNotNull(result);
         assertEquals(HttpStatus.OK, result.getStatusCode());
 
-        PersonInfoRTO resultJavaObject = result.getBody();
+        List<PersonInfoRTO> resultJavaObject = result.getBody();
         //*********************************************************
         //**************CHECK RESPONSE CONTENT*********************
         //*********************************************************
-        //*****************Check with JAVA*************************
+        //*****************Check with Json*************************
         assertNotNull(resultJavaObject);
-        assertThat(personInfoRTO).isEqualToComparingFieldByField(resultJavaObject);
+        assertNotNull(resultJavaObject.get(0));
+        String personInfoRTOExpected = Jackson.convertJavaToJson(personInfoRTO);
+        String personInfoRTOResult = Jackson.convertJavaToJson(resultJavaObject.get(0));
+        assertEquals(personInfoRTOExpected, personInfoRTOResult);
+        JSONAssert.assertEquals(personInfoRTOExpected, personInfoRTOResult, true);
     }
 
     @Order(3)
@@ -139,15 +145,15 @@ class PublicAppController_personInfo_E2E {
                  firstName,
                  lastName);
         //WHEN
-        ResponseEntity<PersonInfoRTO> result = template.getForEntity(
+        ResponseEntity<List> result = template.getForEntity(
                 URI.create(urlTemplate),
-                PersonInfoRTO.class);
+                List.class);
 
         //**************THEN****************************
         assertNotNull(result);
         assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());
 
-        PersonInfoRTO resultJavaObject = result.getBody();
+        List<PersonInfoRTO> resultJavaObject = result.getBody();
         assertNull(resultJavaObject);
     }
 
@@ -169,15 +175,15 @@ class PublicAppController_personInfo_E2E {
                 firstName,
                 lastName);
         //WHEN
-        ResponseEntity<PersonInfoRTO> result = template.getForEntity(
+        ResponseEntity<List> result = template.getForEntity(
                 URI.create(urlTemplate),
-                PersonInfoRTO.class);
+                List.class);
 
         //**************THEN****************************
         assertNotNull(result);
         assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());
 
-        PersonInfoRTO resultJavaObject = result.getBody();
+        List<PersonInfoRTO> resultJavaObject = result.getBody();
         assertNull(resultJavaObject);
     }
 }
