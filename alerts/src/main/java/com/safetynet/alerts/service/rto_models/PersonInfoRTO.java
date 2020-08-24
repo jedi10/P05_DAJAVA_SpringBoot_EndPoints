@@ -134,4 +134,21 @@ public class PersonInfoRTO implements IPersonInfoRTO {
         );
         return personInfoRTOList;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PersonInfoRTO that = (PersonInfoRTO) o;
+        return Objects.equals(
+                firstName.toLowerCase(), that.firstName.toLowerCase()) &&
+                Objects.equals(
+                        lastName.toLowerCase(), that.lastName.toLowerCase());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(firstName, lastName);
+    }
+
 }

@@ -3,6 +3,7 @@ package com.safetynet.alerts.service.rto_models;
 import com.safetynet.alerts.models.MedicalRecord;
 import com.safetynet.alerts.models.Person;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
@@ -72,6 +73,9 @@ public interface IPersonInfoRTO {
     void setEmail(String email);
 
     void setBirthdate(java.time.LocalDate birthdate);
+
+    Comparator<IPersonInfoRTO> comparator = Comparator.comparing(IPersonInfoRTO::getLastName).thenComparing(IPersonInfoRTO::getFirstName);
 }
 
 //https://www.baeldung.com/java-static-default-methods
+//https://reversecoding.net/java-8-comparator-how-to-sort-a-list/

@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -84,6 +83,9 @@ class PersonInfoServiceTest {
         //when(personInfoRTOMock.checkDataConstructor(person1, medicalRecord1)).thenReturn(true);
         //when(personInfoRTOMock.checkDataConstructor(person1, null)).thenThrow(new Exception("coucou"));
         //when(personInfoRTOMock.checkDataConstructor(null, medicalRecord1)).thenReturn(false);
+        //************************************************
+        //DATA available via Mock DAO injection in Service
+        //************************************************
         //Mock injection
         personInfoService.personDAO = this.personDAO;
         personInfoService.medicalRecordDAO = this.medicalRecordDAO;
@@ -152,14 +154,21 @@ class PersonInfoServiceTest {
         ));
         assertTrue(personInfoRTOListResult.stream().allMatch(o -> o.getLastName().equals(expectedChosenPersonRTO.getLastName())));
 
+        //Sorting expected and Result List to compare them
+        personInfoRTOListResult.sort(IPersonInfoRTO.comparator);
+        expectedPersonRTOList.sort(IPersonInfoRTO.comparator);
+        assertEquals(expectedPersonRTOList, personInfoRTOListResult);
+
     }
 
     @Order(2)
     @Test
     void getPersonInfoDebounce_Ok() {
         //WHEN
-        List<IPersonInfoRTO> personInfoRTOListResult = personInfoService.getPersonInfo("john", "boyd");
-        List<IPersonInfoRTO> personInfoRTO2ListResult2 = personInfoService.getPersonInfo("john", "boyd");
+        List<IPersonInfoRTO> personInfoRTOListResult = personInfoService.getPersonInfo(
+                person1.getFirstName(),person1.getLastName());
+        List<IPersonInfoRTO> personInfoRTO2ListResult2 = personInfoService.getPersonInfo(
+                person1.getFirstName(),person1.getLastName());
 
         //THEN
         verify(personDAO, Mockito.times(1)).findAll();
@@ -175,7 +184,8 @@ class PersonInfoServiceTest {
     @Test
     void getPersonInfoNullOnParamLastName() {
         //WHEN
-        List<IPersonInfoRTO> personInfoRTOListResult = personInfoService.getPersonInfo("john", null);
+        List<IPersonInfoRTO> personInfoRTOListResult = personInfoService.getPersonInfo(
+                person1.getFirstName(), null);
 
         //THEN
         verify(personDAO, Mockito.never()).findAll();
@@ -187,7 +197,7 @@ class PersonInfoServiceTest {
 
     @Order(4)
     @Test
-    void getPersonInfo_firstAndLastNameNotFound() throws Exception {
+    void getPersonInfo_firstAndLastNameNotFound() {
         //WHEN
         List<IPersonInfoRTO> personInfoRTOListResult = personInfoService.getPersonInfo("john2", "boyd2");
 
