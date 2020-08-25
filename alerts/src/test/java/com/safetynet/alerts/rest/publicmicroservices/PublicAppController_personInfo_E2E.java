@@ -4,6 +4,7 @@ import com.safetynet.alerts.dao.IMedicalRecordDAO;
 import com.safetynet.alerts.dao.IPersonDAO;
 import com.safetynet.alerts.models.MedicalRecord;
 import com.safetynet.alerts.models.Person;
+import com.safetynet.alerts.service.rto_models.IPersonInfoRTO;
 import com.safetynet.alerts.service.rto_models.PersonInfoRTO;
 import com.safetynet.alerts.utils.Jackson;
 import org.junit.jupiter.api.*;
@@ -24,6 +25,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -45,8 +47,6 @@ class PublicAppController_personInfo_E2E {
     @Autowired
     public IMedicalRecordDAO medicalRecordDAO;
 
-    public PersonInfoRTO personInfoRTO;
-
     @LocalServerPort
     private int port;
 
@@ -66,7 +66,7 @@ class PublicAppController_personInfo_E2E {
     }
 
     @BeforeEach
-    void setUpEach() throws Exception {
+    void setUpEach() {
 
     }
 
@@ -104,15 +104,37 @@ class PublicAppController_personInfo_E2E {
     @Test
     void getPersonInfo_Ok() throws Exception {
         //***********GIVEN*************
-        Person person1 = personDAO.findAll().get(0);
-        MedicalRecord medicalRecord1 = medicalRecordDAO.findAll().get(0);
-        personInfoRTO = new PersonInfoRTO(person1, medicalRecord1);
-        assertNotNull(personInfoRTO,
+        List<Person> personList = personDAO.findAll();
+        List<MedicalRecord> medicalRecordList = medicalRecordDAO.findAll();
+        assertNotNull(personList,
+                "PersonList is Null: we need it for further tests");
+        assertTrue(personList.size()>2);
+        assertNotNull(medicalRecordList,
+                "MedicalRecordList is Null: we need it for further tests");
+        assertTrue(medicalRecordList.size()>2);
+
+        List<IPersonInfoRTO> personInfoRTOListFull =  PersonInfoRTO.buildPersonInfoRTOList(personList, medicalRecordList);
+
+        //we choose first element on list to get the name for test
+        Person personChosenForTest = personList.get(0);
+
+        //Filtering list
+        List<IPersonInfoRTO> expectedPersonRTOList = personInfoRTOListFull.stream()
+                .filter(o -> personChosenForTest.getLastName().equals(o.getLastName()))
+                .collect(Collectors.toList());
+        IPersonInfoRTO expectedChosenPersonRTO = expectedPersonRTOList.stream()
+                .filter(e -> e.getFirstName().equalsIgnoreCase(personChosenForTest.getFirstName())&&
+                        e.getLastName().equalsIgnoreCase(personChosenForTest.getLastName()))
+                .findAny()
+                .orElse(null);
+        //https://www.baeldung.com/find-list-element-java
+
+        assertNotNull(expectedChosenPersonRTO,
                 "True data loading failed: we need them to go further in Tests");
         String urlTemplate = String.format("%s%s&%s",
                 this.baseURL,
-                personInfoRTO.getFirstName(),
-                personInfoRTO.getLastName());
+                personChosenForTest.getFirstName(),
+                personChosenForTest.getLastName());
         //WHEN
         ResponseEntity<List> result = template.getForEntity(
                 URI.create(urlTemplate),
@@ -126,13 +148,18 @@ class PublicAppController_personInfo_E2E {
         //*********************************************************
         //**************CHECK RESPONSE CONTENT*********************
         //*********************************************************
-        //*****************Check with Json*************************
         assertNotNull(resultJavaObject);
         assertNotNull(resultJavaObject.get(0));
-        String personInfoRTOExpected = Jackson.convertJavaToJson(personInfoRTO);
-        String personInfoRTOResult = Jackson.convertJavaToJson(resultJavaObject.get(0));
-        assertEquals(personInfoRTOExpected, personInfoRTOResult);
-        JSONAssert.assertEquals(personInfoRTOExpected, personInfoRTOResult, true);
+        //*****************Check with Json*************************
+        //Check selected Object- perfect match on first and last name
+        String expectedChosenPersonRTOString = Jackson.convertJavaToJson(expectedChosenPersonRTO);
+        String resultStringObject = Jackson.convertJavaToJson(resultJavaObject.get(0));
+        assertEquals(expectedChosenPersonRTOString, resultStringObject);
+        JSONAssert.assertEquals(expectedChosenPersonRTOString, resultStringObject, true);
+        //Check all list- perfect match on last name
+        String expectedPersonInfoRTOListString = Jackson.convertJavaToJson(expectedPersonRTOList);
+        String resultStringList = Jackson.convertJavaToJson(resultJavaObject);
+        JSONAssert.assertEquals(expectedPersonInfoRTOListString, resultStringList, true);
     }
 
     @Order(3)
