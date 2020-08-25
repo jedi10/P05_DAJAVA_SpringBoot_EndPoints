@@ -49,8 +49,8 @@ public class PersonInfoService {
                 //Put the perfect Match in Result List
                 IPersonInfoRTO personInfoRTOPerfectResult = personInfoRTOFull.stream()
                         .filter(o ->
-                                    o.getFirstName().equals(firstName) &&
-                                    o.getLastName().equals(lastName))
+                                    o.getFirstName().equalsIgnoreCase(firstName) &&
+                                    o.getLastName().equalsIgnoreCase(lastName))
                         .findAny()
                         .orElse(null);
                 //https://www.baeldung.com/find-list-element-java
@@ -60,7 +60,7 @@ public class PersonInfoService {
                 }
                 //Put Last Name Match in Result List
                 List<IPersonInfoRTO> personInfoRTOListSameName = personInfoRTOFull.stream()
-                        .filter(o ->  o.getLastName().equals(lastName))
+                        .filter(o ->  o.getLastName().equalsIgnoreCase(lastName))
                         .collect(Collectors.toList());
                 this.personInfoRTOList.addAll(personInfoRTOListSameName);
 
