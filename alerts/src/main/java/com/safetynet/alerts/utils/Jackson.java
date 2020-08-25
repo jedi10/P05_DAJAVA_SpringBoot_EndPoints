@@ -184,6 +184,7 @@ public class Jackson {
         }
         return result;
         //https://www.baeldung.com/java-deep-copy
+        //https://www.baeldung.com/java-copy-list-to-another
     }
 
 }
