@@ -1,12 +1,14 @@
 package com.safetynet.alerts.service.rto_models;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.safetynet.alerts.models.MedicalRecord;
 import com.safetynet.alerts.models.Person;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.Period;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -47,7 +49,12 @@ public class PersonInfoRTO implements IPersonInfoRTO {
     @Getter
     @Setter
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM/dd/yyyy")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private LocalDate birthdate;
+
+    @Getter
+    @Setter
+    private Integer age;
 
     @Getter
     private List<String> medications;
@@ -81,6 +88,12 @@ public class PersonInfoRTO implements IPersonInfoRTO {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public void setAge(LocalDate birthdate) {
+        this.age = Period.between(birthdate, LocalDate.now()).getYears();
+        //https://www.baeldung.com/java-get-age
+    }
+
     /**
      * <b>Constructor PersonInfoRTO</b>
      * <p>First and last name of Person and MedicalRecord have to be the same</p>
@@ -102,6 +115,7 @@ public class PersonInfoRTO implements IPersonInfoRTO {
             this.setPhone(person.getPhone());
             this.setEmail(person.getEmail());
             this.setBirthdate(medicalRecord.getBirthdate());
+            this.setAge(medicalRecord.getBirthdate());
             this.setMedications(medicalRecord.getMedications());
             this.setAllergies(medicalRecord.getAllergies());
     }
@@ -152,3 +166,6 @@ public class PersonInfoRTO implements IPersonInfoRTO {
     }
 
 }
+
+
+//https://stackoverflow.com/questions/14708386/want-to-hide-some-fields-of-an-object-that-are-being-mapped-to-json-by-jackson

@@ -54,6 +54,8 @@ public interface IPersonInfoRTO {
 
     java.time.LocalDate getBirthdate();
 
+    Integer getAge();
+
     List<String> getMedications();
 
     List<String> getAllergies();
@@ -73,6 +75,8 @@ public interface IPersonInfoRTO {
     void setEmail(String email);
 
     void setBirthdate(java.time.LocalDate birthdate);
+
+    void setAge(java.time.LocalDate birthdate);
 
     Comparator<IPersonInfoRTO> comparator = Comparator.comparing(IPersonInfoRTO::getLastName).thenComparing(IPersonInfoRTO::getFirstName);
 }
