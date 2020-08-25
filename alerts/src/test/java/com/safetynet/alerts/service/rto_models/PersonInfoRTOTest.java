@@ -2,13 +2,19 @@ package com.safetynet.alerts.service.rto_models;
 
 import com.safetynet.alerts.models.MedicalRecord;
 import com.safetynet.alerts.models.Person;
+import com.safetynet.alerts.utils.Jackson;
 import org.junit.jupiter.api.*;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -231,5 +237,75 @@ class PersonInfoRTOTest {
                 "need the same firstname and lastname properties"));
     }
 
+    @Order(15)
+    @Test()
+    void buildPersonInfoRTOList_OK() throws IOException {
+        //GIVEN
+        String fileString = Files.readString(Paths.get("src/test/resources/testData.json"));
+        byte[] fileBytes = fileString.getBytes(StandardCharsets.UTF_8);
+        List<Person> personList;
+        List<MedicalRecord> medicalRecordList;
+        try {
+            personList = Jackson.convertJsonRootDataToJava(
+                    fileBytes,
+                    "persons",
+                    Person.class);
+            medicalRecordList = Jackson.convertJsonRootDataToJava(
+                    fileBytes,
+                    "medicalrecords",
+                    MedicalRecord.class);
+        } catch (IOException e) {
+            throw new IOException(e);
+        }
 
+        //WHEN
+        List<IPersonInfoRTO> personInfoRTOListResult =  PersonInfoRTO.buildPersonInfoRTOList(personList, medicalRecordList);
+
+        //THEN
+        assertNotNull(personInfoRTOListResult);
+        assertEquals(personList.size(), personInfoRTOListResult.size());
+
+        //WHEN
+        Collections.reverse(personList);
+        personInfoRTOListResult =  PersonInfoRTO.buildPersonInfoRTOList(personList, medicalRecordList);
+
+        //THEN
+        assertNotNull(personInfoRTOListResult);
+        assertEquals(personList.size(), personInfoRTOListResult.size());
+    }
+
+    @Order(16)
+    @Test()
+    void buildPersonInfoRTOList_EmptyList() {
+        //***********************************************
+        //CHECK One Person with Empty Medical Record List
+        //***********************************************
+        //GIVEN
+        List<Person> personList = new ArrayList<>();
+        personList.add(person);
+        List<MedicalRecord> medicalRecordList = new ArrayList<>();
+
+
+        //WHEN
+        List<IPersonInfoRTO> personInfoRTOListResult =  PersonInfoRTO.buildPersonInfoRTOList(personList, medicalRecordList);
+
+        //THEN
+        assertNotNull(personInfoRTOListResult);
+        assertTrue(personInfoRTOListResult.isEmpty());
+
+        //*******************************************************
+        //CHECK One Person with One Medical Record different name
+        //*******************************************************
+        //GIVEN
+        medicalRecord.setLastName("differentName");
+        medicalRecordList.add(medicalRecord);
+
+        //WHEN
+        personInfoRTOListResult =  PersonInfoRTO.buildPersonInfoRTOList(personList, medicalRecordList);
+
+        //THEN
+        assertNotNull(personInfoRTOListResult);
+        assertTrue(personInfoRTOListResult.isEmpty());
+
+    }
 }

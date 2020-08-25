@@ -7,10 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -109,7 +106,49 @@ public class PersonInfoRTO implements IPersonInfoRTO {
             this.setAllergies(medicalRecord.getAllergies());
     }
 
-    public PersonInfoRTO() {
+    public PersonInfoRTO() {}
 
+    /**
+     * <b>Factory: build PersonInfoRTO List</b>
+     * <p>person and medicalrecord have to have same first and last name</p>
+     * @param personList personList
+     * @param medicalRecordList medicalRecordList
+     * @return
+     */
+    public static List<IPersonInfoRTO> buildPersonInfoRTOList(List<Person> personList, List<MedicalRecord> medicalRecordList) {
+        List<IPersonInfoRTO> personInfoRTOList = new ArrayList<>();
+        personList.forEach(
+                e -> { List<MedicalRecord> medRecFilters = medicalRecordList.stream()
+                        .filter(med -> med.getFirstName().equalsIgnoreCase(e.getFirstName()) &&
+                                        med.getLastName().equalsIgnoreCase(e.getLastName()))
+                        .collect(Collectors.toList());
+                    if(!medRecFilters.isEmpty()){
+                        try {
+                            PersonInfoRTO personInfoRTO = new PersonInfoRTO(e, medRecFilters.get(0));
+                            personInfoRTOList.add(personInfoRTO);
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                }
+        );
+        return personInfoRTOList;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PersonInfoRTO that = (PersonInfoRTO) o;
+        return Objects.equals(
+                firstName.toLowerCase(), that.firstName.toLowerCase()) &&
+                Objects.equals(
+                        lastName.toLowerCase(), that.lastName.toLowerCase());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(firstName, lastName);
+    }
+
 }
