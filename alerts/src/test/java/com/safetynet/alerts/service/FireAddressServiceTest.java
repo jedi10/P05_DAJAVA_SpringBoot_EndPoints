@@ -130,7 +130,7 @@ class FireAddressServiceTest {
                 personChosenForTest.getAddress());
 
         //WHEN
-        Map<String, List> objectListResult = fireAddressService.getFireAddress(
+        Map<String, List> objectListResult = fireAddressService.getFireAndPersonsWithAddress(
                 personChosenForTest.getAddress());
 
         //THEN
@@ -159,7 +159,7 @@ class FireAddressServiceTest {
     @Test
     void getFireAddress_NullParam() {
         //WHEN
-        Map<String, List> objectListResult = fireAddressService.getFireAddress(null);
+        Map<String, List> objectListResult = fireAddressService.getFireAndPersonsWithAddress(null);
 
         //THEN
         verify(personDAO, Mockito.never()).findAll();
@@ -190,7 +190,7 @@ class FireAddressServiceTest {
         fireAddressService.firestationDAO = this.firestationDAO;
 
         //WHEN
-        Map<String, List> objectListResult = fireAddressService.getFireAddress("bad address");
+        Map<String, List> objectListResult = fireAddressService.getFireAndPersonsWithAddress("bad address");
 
         //THEN
         verify(personDAO, Mockito.times(1)).findAll();

@@ -32,7 +32,7 @@ public class FireAddressService {
     IFirestationDAO firestationDAO;
 
 
-    public Map<String, List> getFireAddress(String address) {
+    public Map<String, List> getFireAndPersonsWithAddress(String address) {
         Map<String, List> result = new HashMap<>();
         List<IPersonInfoRTO> personInfoRTOList = new ArrayList<>();
         List<String> fireStationNumber = new ArrayList<>();
