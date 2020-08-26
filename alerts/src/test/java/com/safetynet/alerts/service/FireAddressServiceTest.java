@@ -50,7 +50,7 @@ class FireAddressServiceTest {
 
     private List<MedicalRecord> medicalRecordList;
 
-    private Firestation firestation;
+    private List<Firestation> firestationList;
 
     @BeforeEach
     void setUp() throws IOException {
@@ -65,6 +65,11 @@ class FireAddressServiceTest {
                     fileBytes,
                     "medicalrecords",
                     MedicalRecord.class);
+            this.firestationList = Jackson.convertJsonRootDataToJava(
+                    fileBytes,
+                    "firestations",
+                    Firestation.class);
+
         } catch (IOException e) {
             throw new IOException(e);
         }
@@ -96,15 +101,17 @@ class FireAddressServiceTest {
                 .collect(Collectors.toList());
         assertFalse(expectedPersonRTOList.isEmpty());
 
-        Firestation expectedFirestation = firestationDAO.findByAddress(
-                personChosenForTest.getAddress());
+        Firestation expectedFirestation = firestationList.stream()
+                .filter(e-> e.getAddress().equalsIgnoreCase(personChosenForTest.getAddress()))
+                .findAny()
+                .orElse(null);
         assertNotNull(expectedFirestation);
         String expectedFirestationNumber = expectedFirestation.getStation();
 
 
         when(personDAO.findAll()).thenReturn(this.personList);
         when(medicalRecordDAO.findAll()).thenReturn(this.medicalRecordList);
-        when(firestationDAO.findByAddress(personChosenForTest.getAddress())).thenReturn(this.firestation);
+        when(firestationDAO.findByAddress(personChosenForTest.getAddress())).thenReturn(expectedFirestation);
 
         //************************************************
         //DATA available via Mock DAO injection in Service
@@ -145,7 +152,7 @@ class FireAddressServiceTest {
 
         List<String> stationListResult = objectListResult.get("Firestation");
         assertFalse(stationListResult.isEmpty());
-        assertEquals(expectedFirestation, stationListResult.get(0));
+        assertEquals(expectedFirestationNumber, stationListResult.get(0));
     }
 
     @Order(2)
@@ -169,6 +176,19 @@ class FireAddressServiceTest {
     @Order(3)
     @Test
     void getFireAddress_addressNotFound() {
+        //GIVEN
+        when(personDAO.findAll()).thenReturn(this.personList);
+        when(medicalRecordDAO.findAll()).thenReturn(this.medicalRecordList);
+        when(firestationDAO.findByAddress(anyString())).thenReturn(null);
+
+        //************************************************
+        //DATA available via Mock DAO injection in Service
+        //************************************************
+        //Mock injection
+        fireAddressService.personDAO = this.personDAO;
+        fireAddressService.medicalRecordDAO = this.medicalRecordDAO;
+        fireAddressService.firestationDAO = this.firestationDAO;
+
         //WHEN
         Map<String, List> objectListResult = fireAddressService.getFireAddress("bad address");
 
