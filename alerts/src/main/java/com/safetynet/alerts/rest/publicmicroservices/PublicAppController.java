@@ -1,6 +1,7 @@
 package com.safetynet.alerts.rest.publicmicroservices;
 
 import com.safetynet.alerts.rest.AdminPersonController;
+import com.safetynet.alerts.service.FireAddressService;
 import com.safetynet.alerts.service.PhoneAlertService;
 import com.safetynet.alerts.service.CommunityEmailService;
 import com.safetynet.alerts.service.PersonInfoService;
@@ -12,8 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -27,6 +28,9 @@ public class PublicAppController {
 
     @Autowired
     PhoneAlertService phoneAlertService;
+
+    @Autowired
+    FireAddressService fireAddressService;
 
 
     /**
@@ -91,7 +95,7 @@ public class PublicAppController {
      */
     @GetMapping(value = "/phonealert/{station}")
     public ResponseEntity<?> getPhoneAlert(@PathVariable("station") String station,
-                                               HttpServletResponse httpResponse)  {
+                                           HttpServletResponse httpResponse)  {
         log.info("Fetching Phone of all persons under responsibility of station:  '{}'", station);
 
         List<String> phoneList = phoneAlertService.getPhoneAlert(station);
@@ -100,5 +104,24 @@ public class PublicAppController {
             return ResponseEntity.notFound().build();
         }
         return new ResponseEntity<List<String>>(phoneList, HttpStatus.OK);
+    }
+
+    /**
+     * getFire public EndPoint Controller
+     * @see FireAddressService#getFireAndPersonsWithAddress(String)
+     * @param address firestation address
+     * @param httpResponse response
+     */
+    @GetMapping(value = "/fire/{address}")
+    public ResponseEntity<?> getFireAndPersons(@PathVariable("address") String address,
+                                           HttpServletResponse httpResponse)  {
+        log.info("Fetching List of all persons located under address: '{}' and the Firestation responsible", address);
+
+        Map<String, List> mapResult = fireAddressService.getFireAndPersonsWithAddress(address);
+        if(mapResult.get("Persons").isEmpty() && mapResult.get("Firestation").isEmpty()){
+            log.warn("Fetching Empty Map for Address: '{}'", address);
+            return ResponseEntity.notFound().build();
+        }
+        return new ResponseEntity<Map<String, List>>(mapResult, HttpStatus.OK);
     }
 }
