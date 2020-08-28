@@ -251,14 +251,14 @@ class ChildAlertServiceTest {
     @Test
     void getChildAlert_NullParam() {
         //WHEN
-        Map<IPersonInfoRTO.HumanCategory, List<IPersonInfoRTO>> objectListResult =
-                childAlertService.getChildAlert(null);
+        Exception exception = assertThrows(NullPointerException.class, () -> {
+            childAlertService.getChildAlert(null);
+        });
+        assertTrue(exception.getMessage().contains(
+                "address is marked non-null but is null"));
 
-        //THEN
         verify(personDAO, Mockito.never()).findAll();
         verify(medicalRecordDAO, Mockito.never()).findAll();
-
-        assertNull(objectListResult);
     }
 
 }

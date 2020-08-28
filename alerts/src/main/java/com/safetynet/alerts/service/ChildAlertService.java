@@ -6,6 +6,7 @@ import com.safetynet.alerts.models.MedicalRecord;
 import com.safetynet.alerts.models.Person;
 import com.safetynet.alerts.service.rto_models.IPersonInfoRTO;
 import com.safetynet.alerts.service.rto_models.PersonInfoRTO;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -19,6 +20,10 @@ import java.util.Map;
 
 import static java.util.stream.Collectors.groupingBy;
 
+/**
+ *  <b>ChildAlert Service</b>
+ *  <p>give a list of Children located at address given (with all adults too)</p>
+ */
 @Slf4j
 @Component
 public class ChildAlertService {
@@ -29,23 +34,27 @@ public class ChildAlertService {
     @Autowired
     IMedicalRecordDAO medicalRecordDAO;
 
-    public Map<IPersonInfoRTO.HumanCategory, List<IPersonInfoRTO>> getChildAlert(String address){
-        Map<IPersonInfoRTO.HumanCategory, List<IPersonInfoRTO>> result = null;
+    public Map<IPersonInfoRTO.HumanCategory, List<IPersonInfoRTO>> getChildAlert(@NonNull String address){
 
-        if (null != address){
-            List<Person> personList = personDAO.findAll();
-            List<MedicalRecord> medicalRecordList = medicalRecordDAO.findAll();
-            List<IPersonInfoRTO> personInfoRTOList =
-                    PersonInfoRTO.buildPersonInfoRTOList(personList, medicalRecordList);
-            Map<IPersonInfoRTO.HumanCategory, List<IPersonInfoRTO>> resultTemp = personInfoRTOList.stream()
-                    .filter(o -> address.equalsIgnoreCase(o.getAddress()))
-                    .collect(groupingBy(IPersonInfoRTO::getHumanCategory));
-            if(null != resultTemp.get(IPersonInfoRTO.HumanCategory.CHILDREN)){
-                result = resultTemp;
-            } else {
-                result = new HashMap<>();
-            }
+        Map<IPersonInfoRTO.HumanCategory, List<IPersonInfoRTO>> result = null;
+        //Search Data
+        List<Person> personList = personDAO.findAll();
+        List<MedicalRecord> medicalRecordList = medicalRecordDAO.findAll();
+        //Build RTO Object
+        List<IPersonInfoRTO> personInfoRTOList =
+                PersonInfoRTO.buildPersonInfoRTOList(personList, medicalRecordList);
+        //List Filtering and Build a Map grouping by HumanCategory
+        Map<IPersonInfoRTO.HumanCategory, List<IPersonInfoRTO>> resultTemp = personInfoRTOList.stream()
+                .filter(o -> address.equalsIgnoreCase(o.getAddress()))
+                .collect(groupingBy(IPersonInfoRTO::getHumanCategory));
+        //Return result only when we have at least one Child
+        if(null != resultTemp.get(IPersonInfoRTO.HumanCategory.CHILDREN)){
+            result = resultTemp;
+        } else {
+            //If no child, Empty HashMap
+            result = new HashMap<>();
         }
+
         return result;
     }
 }
