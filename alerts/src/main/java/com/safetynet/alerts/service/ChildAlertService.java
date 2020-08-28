@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -36,9 +37,14 @@ public class ChildAlertService {
             List<MedicalRecord> medicalRecordList = medicalRecordDAO.findAll();
             List<IPersonInfoRTO> personInfoRTOList =
                     PersonInfoRTO.buildPersonInfoRTOList(personList, medicalRecordList);
-            result = personInfoRTOList.stream()
+            Map<IPersonInfoRTO.HumanCategory, List<IPersonInfoRTO>> resultTemp = personInfoRTOList.stream()
                     .filter(o -> address.equalsIgnoreCase(o.getAddress()))
                     .collect(groupingBy(IPersonInfoRTO::getHumanCategory));
+            if(null != resultTemp.get(IPersonInfoRTO.HumanCategory.CHILDREN)){
+                result = resultTemp;
+            } else {
+                result = new HashMap<>();
+            }
         }
         return result;
     }

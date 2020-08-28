@@ -156,7 +156,74 @@ class ChildAlertServiceTest {
 
     @Order(2)
     @Test
-    void getChildAlert_NotFound() {
+    void getChildAlert_NoChild() {
+        //GIVEN
+        assertNotNull(this.personList,
+                "PersonList is Null: we need it for further tests");
+        assertTrue(this.personList.size()>2);
+        assertNotNull(this.medicalRecordList,
+                "MedicalRecordList is Null: we need it for further tests");
+        assertTrue(this.medicalRecordList.size()>2);
+
+        personInfoRTOList =  PersonInfoRTO.buildPersonInfoRTOList(this.personList, this.medicalRecordList);
+
+        //we choose first element on list to get the address for test
+        Person personChosenForTest = this.personList.get(this.personList.size()-1);
+
+        //Filtering list
+        List<IPersonInfoRTO> expectedChildRTOList = personInfoRTOList.stream()
+                .filter(o ->
+                        personChosenForTest.getAddress().equalsIgnoreCase(o.getAddress()) &&
+                                o.getHumanCategory().equals(IPersonInfoRTO.HumanCategory.CHILDREN)
+                )
+                .collect(Collectors.toList());
+        assertTrue(expectedChildRTOList.isEmpty());
+
+        List<IPersonInfoRTO> expectedAdultRTOList = personInfoRTOList.stream()
+                .filter(o ->
+                        personChosenForTest.getAddress().equalsIgnoreCase(o.getAddress()) &&
+                                o.getHumanCategory().equals(IPersonInfoRTO.HumanCategory.ADULTS)
+                )
+                .collect(Collectors.toList());
+        assertFalse(expectedAdultRTOList.isEmpty());
+
+        //************************************************
+        //Mocks Configuration
+        //************************************************
+        when(personDAO.findAll()).thenReturn(this.personList);
+        when(medicalRecordDAO.findAll()).thenReturn(this.medicalRecordList);
+
+        //************************************************
+        //DATA available via Mock DAO injection in Service
+        //************************************************
+        //Mock injection
+        childAlertService.personDAO = this.personDAO;
+        childAlertService.medicalRecordDAO = this.medicalRecordDAO;
+
+        //***********************************************************
+        //***************CHECK MOCK INVOCATION at start**************
+        //***********************************************************
+        verify(personDAO, Mockito.never()).findAll();
+        verify(medicalRecordDAO, Mockito.never()).findAll();
+
+        //WHEN
+        Map<IPersonInfoRTO.HumanCategory, List<IPersonInfoRTO>> objectListResult =
+                childAlertService.getChildAlert(personChosenForTest.getAddress());
+
+        //THEN
+        //***********************************************************
+        //***************CHECK MOCK INVOCATION at end****************
+        //***********************************************************
+        verify(personDAO, Mockito.times(1)).findAll();
+        verify(medicalRecordDAO, Mockito.times(1)).findAll();
+
+        assertNotNull(objectListResult);
+        assertTrue(objectListResult.isEmpty());
+    }
+
+    @Order(3)
+    @Test
+    void getChildAlert_AddressNotFound() {
         //GIVEN
         when(personDAO.findAll()).thenReturn(this.personList);
         when(medicalRecordDAO.findAll()).thenReturn(this.medicalRecordList);
@@ -180,7 +247,7 @@ class ChildAlertServiceTest {
         assertTrue(objectListResult.isEmpty());
     }
 
-    @Order(3)
+    @Order(4)
     @Test
     void getChildAlert_NullParam() {
         //WHEN
