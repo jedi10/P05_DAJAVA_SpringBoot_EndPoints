@@ -101,9 +101,9 @@ public class PersonInfoRTO implements IPersonInfoRTO {
     public void setHumanCategory(){
         if (null != this.age) {
             if (this.age > 18){
-                this.humanCategory = HumanCategory.ADULT;
+                this.humanCategory = HumanCategory.ADULTS;
             } else {
-                this.humanCategory = HumanCategory.CHILD;
+                this.humanCategory = HumanCategory.CHILDREN;
             }
         }
     }

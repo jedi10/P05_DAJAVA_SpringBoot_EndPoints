@@ -85,8 +85,8 @@ public interface IPersonInfoRTO {
     Comparator<IPersonInfoRTO> comparator = Comparator.comparing(IPersonInfoRTO::getLastName).thenComparing(IPersonInfoRTO::getFirstName);
 
     enum HumanCategory {
-        CHILD,
-        ADULT
+        CHILDREN,
+        ADULTS
     }
 }
 

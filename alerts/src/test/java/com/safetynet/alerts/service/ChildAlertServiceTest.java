@@ -83,7 +83,7 @@ class ChildAlertServiceTest {
         List<IPersonInfoRTO> expectedChildRTOList = personInfoRTOList.stream()
                 .filter(o ->
                         personChosenForTest.getAddress().equalsIgnoreCase(o.getAddress()) &&
-                        o.getHumanCategory().equals(IPersonInfoRTO.HumanCategory.CHILD)
+                        o.getHumanCategory().equals(IPersonInfoRTO.HumanCategory.CHILDREN)
                 )
                 .collect(Collectors.toList());
         assertFalse(expectedChildRTOList.isEmpty());
@@ -91,7 +91,7 @@ class ChildAlertServiceTest {
         List<IPersonInfoRTO> expectedAdultRTOList = personInfoRTOList.stream()
                 .filter(o ->
                         personChosenForTest.getAddress().equalsIgnoreCase(o.getAddress()) &&
-                        o.getHumanCategory().equals(IPersonInfoRTO.HumanCategory.ADULT)
+                        o.getHumanCategory().equals(IPersonInfoRTO.HumanCategory.ADULTS)
                 )
                 .collect(Collectors.toList());
         assertFalse(expectedAdultRTOList.isEmpty());
@@ -116,8 +116,8 @@ class ChildAlertServiceTest {
         verify(medicalRecordDAO, Mockito.never()).findAll();
 
         //WHEN
-        Map<String, List> objectListResult = childAlertService.getChildAlert(
-                personChosenForTest.getAddress());
+        Map<IPersonInfoRTO.HumanCategory, List<IPersonInfoRTO>> objectListResult =
+                childAlertService.getChildAlert(personChosenForTest.getAddress());
 
         //THEN
         //***********************************************************
@@ -131,10 +131,10 @@ class ChildAlertServiceTest {
         //*******************************
         //Check Content for Children List
         //*******************************
-        List<IPersonInfoRTO> childRTOListResult = objectListResult.get("Children");
+        List<IPersonInfoRTO> childRTOListResult = objectListResult.get(IPersonInfoRTO.HumanCategory.CHILDREN);
         assertTrue(childRTOListResult.stream().allMatch(o ->
                 o.getAddress().equals(personChosenForTest.getAddress()) &&
-                        o.getAge() <= 18
+                o.getHumanCategory() == IPersonInfoRTO.HumanCategory.CHILDREN
         ));
         //Sorting expected and Result List to compare them
         childRTOListResult.sort(IPersonInfoRTO.comparator);
@@ -143,15 +143,15 @@ class ChildAlertServiceTest {
         //*******************************
         //Check Content for Adult List
         //*******************************
-        List<IPersonInfoRTO> adultRTOListResult = objectListResult.get("Adults");
+        List<IPersonInfoRTO> adultRTOListResult = objectListResult.get(IPersonInfoRTO.HumanCategory.ADULTS);
         assertTrue(adultRTOListResult.stream().allMatch(o ->
                 o.getAddress().equals(personChosenForTest.getAddress()) &&
-                        o.getAge() > 18
+                o.getHumanCategory() == IPersonInfoRTO.HumanCategory.ADULTS
         ));
         //Sorting expected and Result List to compare them
         adultRTOListResult.sort(IPersonInfoRTO.comparator);
-        expectedChildRTOList.sort(IPersonInfoRTO.comparator);
-        assertEquals(expectedChildRTOList, adultRTOListResult);
+        expectedAdultRTOList.sort(IPersonInfoRTO.comparator);
+        assertEquals(expectedAdultRTOList, adultRTOListResult);
     }
 
     @Order(2)
@@ -169,34 +169,29 @@ class ChildAlertServiceTest {
         childAlertService.medicalRecordDAO = this.medicalRecordDAO;
 
         //WHEN
-        Map<String, List> objectListResult = childAlertService.getChildAlert("bad address");
+        Map<IPersonInfoRTO.HumanCategory, List<IPersonInfoRTO>> objectListResult =
+                childAlertService.getChildAlert("bad address");
 
         //THEN
         verify(personDAO, Mockito.times(1)).findAll();
         verify(medicalRecordDAO, Mockito.times(1)).findAll();
 
         assertNotNull(objectListResult);
-        assertNotNull(objectListResult.get("Children"));
-        assertNotNull(objectListResult.get("Adults"));
-        assertTrue(objectListResult.get("Children").isEmpty());
-        assertTrue(objectListResult.get("Adults").isEmpty());
+        assertTrue(objectListResult.isEmpty());
     }
 
     @Order(3)
     @Test
     void getChildAlert_NullParam() {
         //WHEN
-        Map<String, List> objectListResult = childAlertService.getChildAlert(null);
+        Map<IPersonInfoRTO.HumanCategory, List<IPersonInfoRTO>> objectListResult =
+                childAlertService.getChildAlert(null);
 
         //THEN
         verify(personDAO, Mockito.never()).findAll();
         verify(medicalRecordDAO, Mockito.never()).findAll();
 
-        assertNotNull(objectListResult);
-        assertNotNull(objectListResult.get("Children"));
-        assertNotNull(objectListResult.get("Adults"));
-        assertTrue(objectListResult.get("Children").isEmpty());
-        assertTrue(objectListResult.get("Adults").isEmpty());
+        assertNull(objectListResult);
     }
 
 }
