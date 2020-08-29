@@ -170,7 +170,7 @@ class PersonInfoServiceIT {
     @Test
     void getPersonInfo_notFound() {
         //WHEN
-        List<IPersonInfoRTO> personInfoRTOListResult = personInfoService.getPersonInfo("john2", "boyd");
+        List<IPersonInfoRTO> personInfoRTOListResult = personInfoService.getPersonInfo("john2", "boyd2");
 
         //THEN
         assertNotNull(personInfoRTOListResult);
