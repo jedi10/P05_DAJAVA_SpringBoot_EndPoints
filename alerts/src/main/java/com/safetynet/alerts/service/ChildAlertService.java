@@ -28,11 +28,16 @@ import static java.util.stream.Collectors.groupingBy;
 @Component
 public class ChildAlertService {
 
-    @Autowired
+    final
     IPersonDAO personDAO;
 
-    @Autowired
+    final
     IMedicalRecordDAO medicalRecordDAO;
+
+    public ChildAlertService(IPersonDAO personDAO, IMedicalRecordDAO medicalRecordDAO) {
+        this.personDAO = personDAO;
+        this.medicalRecordDAO = medicalRecordDAO;
+    }
 
     public Map<IPersonInfoRTO.HumanCategory, List<IPersonInfoRTO>> getChildAlert(@NonNull String address){
 
