@@ -53,7 +53,6 @@ class PublicAppController_personInfo_IT {
     @Autowired
     public PublicAppController publicAppController;
 
-    @Autowired
     public PersonInfoService personInfoService;
 
     @Autowired
@@ -163,7 +162,8 @@ class PublicAppController_personInfo_IT {
         when(personDAO.findAll()).thenReturn(List.of(person1));
         when(medicalRecordDAO.findAll()).thenReturn(List.of(medicalRecord1));
         //Mock Injection in Object tested
-        personInfoService.setDAO(personDAO, medicalRecordDAO);
+        personInfoService = new PersonInfoService(personDAO, medicalRecordDAO);
+        publicAppController.personInfoService = personInfoService;
 
         String urlTemplate = String.format("%s%s&%s",
                 "/personinfo/",
@@ -209,7 +209,8 @@ class PublicAppController_personInfo_IT {
         when(personDAO.findByName(firstName, lastName)).thenReturn(null);
         when(medicalRecordDAO.findByName(firstName, lastName)).thenReturn(null);
         //Mock Injection in Object tested
-        personInfoService.setDAO(personDAO, medicalRecordDAO);
+        personInfoService = new PersonInfoService(personDAO, medicalRecordDAO);
+        publicAppController.personInfoService = personInfoService;
 
         String urlTemplate = String.format("%s%s&%s",
                 "/personinfo/",
@@ -253,7 +254,8 @@ class PublicAppController_personInfo_IT {
         when(personDAO.findByName(firstName, lastName)).thenReturn(null);
         when(medicalRecordDAO.findByName(firstName, lastName)).thenReturn(null);
         //Mock Injection in Object tested
-        personInfoService.setDAO(personDAO, medicalRecordDAO);
+        personInfoService = new PersonInfoService(personDAO, medicalRecordDAO);
+        publicAppController.personInfoService = personInfoService;
 
         String urlTemplate = String.format("%s%s&%s",
                 "/personinfo/",

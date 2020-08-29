@@ -30,7 +30,6 @@ import static org.mockito.Mockito.when;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class PersonInfoServiceTest {
 
-    @Autowired
     PersonInfoService personInfoService;
 
     @Mock
@@ -87,8 +86,8 @@ class PersonInfoServiceTest {
         //DATA available via Mock DAO injection in Service
         //************************************************
         //Mock injection
-        personInfoService.personDAO = this.personDAO;
-        personInfoService.medicalRecordDAO = this.medicalRecordDAO;
+        personInfoService = new PersonInfoService(this.personDAO, this.medicalRecordDAO);
+
         //personInfoService.personInfoRTO = this.personInfoRTOMock;
     }
 

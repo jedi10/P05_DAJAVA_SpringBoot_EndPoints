@@ -27,7 +27,6 @@ import static org.mockito.Mockito.when;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class PersonInfoServiceIT {
 
-    @Autowired
     PersonInfoService personInfoService;
 
     IPersonDAO personDAO;
@@ -60,8 +59,7 @@ class PersonInfoServiceIT {
         personDAO = new PersonDaoImpl(rootFile);
         medicalRecordDAO = new MedicalRecordDaoImpl(rootFile);
 
-        personInfoService.personDAO = this.personDAO;
-        personInfoService.medicalRecordDAO = this.medicalRecordDAO;
+        personInfoService = new PersonInfoService(this.personDAO, this.medicalRecordDAO);
 
         this.personList = personDAO.findAll();
         this.medicalRecordList = medicalRecordDAO.findAll();

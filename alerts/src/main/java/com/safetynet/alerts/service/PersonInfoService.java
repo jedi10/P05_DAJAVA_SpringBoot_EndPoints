@@ -18,11 +18,17 @@ import java.util.stream.Collectors;
 @Component
 public class PersonInfoService {
 
-    @Autowired
+    final
     IPersonDAO personDAO;
 
-    @Autowired
+    final
     IMedicalRecordDAO medicalRecordDAO;
+
+    public PersonInfoService(IPersonDAO personDAO, IMedicalRecordDAO medicalRecordDAO) {
+
+        this.personDAO = personDAO;
+        this.medicalRecordDAO = medicalRecordDAO;
+    }
 
     String firstName;
 
@@ -70,12 +76,4 @@ public class PersonInfoService {
         return result;
     }
 
-    public PersonInfoService() {
-
-    }
-
-    public void setDAO(IPersonDAO personDao, IMedicalRecordDAO medicalRecordDAO){
-        this.personDAO = personDao;
-        this.medicalRecordDAO = medicalRecordDAO;
-    }
 }
