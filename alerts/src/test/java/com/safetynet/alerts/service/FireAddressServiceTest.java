@@ -117,9 +117,7 @@ class FireAddressServiceTest {
         //DATA available via Mock DAO injection in Service
         //************************************************
         //Mock injection
-        fireAddressService.personDAO = this.personDAO;
-        fireAddressService.medicalRecordDAO = this.medicalRecordDAO;
-        fireAddressService.firestationDAO = this.firestationDAO;
+        fireAddressService = new FireAddressService(this.personDAO, this.medicalRecordDAO, this.firestationDAO);
 
         //***********************************************************
         //***************CHECK MOCK INVOCATION at start**************
@@ -185,9 +183,7 @@ class FireAddressServiceTest {
         //DATA available via Mock DAO injection in Service
         //************************************************
         //Mock injection
-        fireAddressService.personDAO = this.personDAO;
-        fireAddressService.medicalRecordDAO = this.medicalRecordDAO;
-        fireAddressService.firestationDAO = this.firestationDAO;
+        fireAddressService = new FireAddressService(this.personDAO, this.medicalRecordDAO, this.firestationDAO);
 
         //WHEN
         Map<String, List> objectListResult = fireAddressService.getFireAndPersonsWithAddress("bad address");

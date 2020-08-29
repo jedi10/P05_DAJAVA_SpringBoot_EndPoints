@@ -9,7 +9,6 @@ import com.safetynet.alerts.models.Person;
 import com.safetynet.alerts.service.rto_models.IPersonInfoRTO;
 import com.safetynet.alerts.service.rto_models.PersonInfoRTO;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -22,14 +21,20 @@ import java.util.stream.Collectors;
 @Component
 public class FireAddressService {
 
-    @Autowired
+    final
     IPersonDAO personDAO;
 
-    @Autowired
+    final
     IMedicalRecordDAO medicalRecordDAO;
 
-    @Autowired
+    final
     IFirestationDAO firestationDAO;
+
+    public FireAddressService(IPersonDAO personDAO, IMedicalRecordDAO medicalRecordDAO, IFirestationDAO firestationDAO) {
+        this.personDAO = personDAO;
+        this.medicalRecordDAO = medicalRecordDAO;
+        this.firestationDAO = firestationDAO;
+    }
 
 
     public Map<String, List> getFireAndPersonsWithAddress(String address) {
