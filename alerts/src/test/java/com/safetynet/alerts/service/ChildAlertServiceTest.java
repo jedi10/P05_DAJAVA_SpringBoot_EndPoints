@@ -250,7 +250,7 @@ class ChildAlertServiceTest {
     @Order(4)
     @Test
     void getChildAlert_NullParam() {
-        //WHEN
+        //WHEN-THEN
         Exception exception = assertThrows(NullPointerException.class, () -> {
             childAlertService.getChildAlert(null);
         });
