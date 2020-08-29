@@ -53,7 +53,6 @@ class PublicAppController_communityEmail_IT {
     @Autowired
     public PublicAppController publicAppController;
 
-    @Autowired
     public CommunityEmailService communityEmailService;
 
     @Mock
@@ -116,11 +115,8 @@ class PublicAppController_communityEmail_IT {
         //Mock Configuration
         when(personDAO.getPersonList()).thenReturn(this.personList);
         //Mock Injection
-        communityEmailService.setDAO(personDAO);
-
-        //communityEmailService = new CommunityEmailService();
-        //publicAppController.communityEmailService = communityEmailService;
-
+        communityEmailService = new CommunityEmailService(personDAO);
+        publicAppController.communityEmailService = communityEmailService;
 
         String urlTemplate = String.format("%s%s",
                 "/communityemail/",
@@ -163,7 +159,8 @@ class PublicAppController_communityEmail_IT {
         //Mock Configuration
         when(personDAO.getPersonList()).thenReturn(this.personList);
         //Mock Injection
-        communityEmailService.setDAO(personDAO);
+        communityEmailService = new CommunityEmailService(personDAO);
+        publicAppController.communityEmailService = communityEmailService;
 
         String urlTemplate = String.format("%s%s",
                 "/communityemail/",
@@ -198,7 +195,8 @@ class PublicAppController_communityEmail_IT {
         //Mock Configuration
         when(personDAO.getPersonList()).thenReturn(this.personList);
         //Mock Injection
-        communityEmailService.setDAO(personDAO);
+        communityEmailService = new CommunityEmailService(personDAO);
+        publicAppController.communityEmailService = communityEmailService;
 
         String urlTemplate = String.format("%s",
                 "/communityemail/"

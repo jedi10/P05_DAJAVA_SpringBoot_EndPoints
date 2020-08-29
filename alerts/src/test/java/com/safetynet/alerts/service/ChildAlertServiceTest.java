@@ -106,8 +106,7 @@ class ChildAlertServiceTest {
         //DATA available via Mock DAO injection in Service
         //************************************************
         //Mock injection
-        childAlertService.personDAO = this.personDAO;
-        childAlertService.medicalRecordDAO = this.medicalRecordDAO;
+        childAlertService = new ChildAlertService(this.personDAO, this.medicalRecordDAO);
 
         //***********************************************************
         //***************CHECK MOCK INVOCATION at start**************
@@ -197,8 +196,7 @@ class ChildAlertServiceTest {
         //DATA available via Mock DAO injection in Service
         //************************************************
         //Mock injection
-        childAlertService.personDAO = this.personDAO;
-        childAlertService.medicalRecordDAO = this.medicalRecordDAO;
+        childAlertService = new ChildAlertService(this.personDAO, this.medicalRecordDAO);
 
         //***********************************************************
         //***************CHECK MOCK INVOCATION at start**************
@@ -232,8 +230,7 @@ class ChildAlertServiceTest {
         //DATA available via Mock DAO injection in Service
         //************************************************
         //Mock injection
-        childAlertService.personDAO = this.personDAO;
-        childAlertService.medicalRecordDAO = this.medicalRecordDAO;
+        childAlertService = new ChildAlertService(this.personDAO, this.medicalRecordDAO);
 
         //WHEN
         Map<IPersonInfoRTO.HumanCategory, List<IPersonInfoRTO>> objectListResult =
