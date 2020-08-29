@@ -25,7 +25,6 @@ import static org.mockito.Mockito.when;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class CommunityEmailServiceTest {
 
-    @Autowired
     CommunityEmailService communityEmailService;
 
     @Mock
@@ -81,7 +80,7 @@ class CommunityEmailServiceTest {
                 "expectedMailList should not have the mail of the person we change the city");
         when(personDAO.getPersonList()).thenReturn(this.personList);
         //Mock Injection
-        communityEmailService.personDAO = personDAO;
+        communityEmailService = new CommunityEmailService(personDAO);
         //***********************************************************
         //**************CHECK MOCK INVOCATION at start***************
         //***********************************************************
@@ -136,7 +135,7 @@ class CommunityEmailServiceTest {
                 .collect(Collectors.toList());
         when(personDAO.getPersonList()).thenReturn(this.personList);
         //Mock Injection
-        communityEmailService.personDAO = personDAO;
+        communityEmailService = new CommunityEmailService(personDAO);
         //***********************************************************
         //**************CHECK MOCK INVOCATION at start***************
         //***********************************************************
@@ -174,7 +173,7 @@ class CommunityEmailServiceTest {
 
         when(personDAO.getPersonList()).thenReturn(this.personList);
         //Mock Injection
-        communityEmailService.personDAO = personDAO;
+        communityEmailService = new CommunityEmailService(personDAO);
         //***********************************************************
         //**************CHECK MOCK INVOCATION at start***************
         //***********************************************************

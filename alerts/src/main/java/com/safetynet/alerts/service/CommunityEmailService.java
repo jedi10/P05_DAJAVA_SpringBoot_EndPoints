@@ -13,8 +13,12 @@ import java.util.stream.Collectors;
 @Component
 public class CommunityEmailService {
 
-    @Autowired
+    final
     IPersonDAO personDAO;
+
+    public CommunityEmailService(IPersonDAO personDAO) {
+        this.personDAO = personDAO;
+    }
 
     public List<String> getCommunityEmail(String city){
         List<String> result = null;
@@ -29,9 +33,6 @@ public class CommunityEmailService {
         return result;
     }
 
-    public void setDAO(IPersonDAO personDAO){
-        this.personDAO = personDAO;
-    }
 }
 
 //https://mkyong.com/java8/java-8-streams-filter-examples/

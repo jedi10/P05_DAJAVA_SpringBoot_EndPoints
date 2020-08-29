@@ -28,7 +28,6 @@ import static org.mockito.Mockito.when;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class CommunityEmailServiceIT {
 
-    @Autowired
     CommunityEmailService communityEmailService;
 
     IPersonDAO personDAO;
@@ -74,7 +73,7 @@ class CommunityEmailServiceIT {
         //Preparation List of DATA
         //***********************************
         personList = personDAO.getPersonList();
-        communityEmailService.personDAO = personDAO;
+        communityEmailService = new CommunityEmailService(personDAO);
         assertNotNull(this.personList,
                 "PersonList is Null: we need it for further tests");
         assertTrue(this.personList.size()>2);
@@ -137,7 +136,7 @@ class CommunityEmailServiceIT {
         verify(rootFile, Mockito.times(1)).getBytes();
 
         personList = personDAO.getPersonList();
-        communityEmailService.personDAO = personDAO;
+        communityEmailService = new CommunityEmailService(personDAO);
         String city = "New York";
         //Filtering list and transformation
         List<String> expectedMailList = this.personList.stream()
@@ -179,7 +178,7 @@ class CommunityEmailServiceIT {
         verify(rootFile, Mockito.times(1)).getBytes();
 
         personList = personDAO.getPersonList();
-        communityEmailService.personDAO = personDAO;
+        communityEmailService = new CommunityEmailService(personDAO);
         String city = null;
 
         //WHEN
