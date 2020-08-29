@@ -53,8 +53,11 @@ public class PersonInfoRTO implements IPersonInfoRTO {
     private LocalDate birthdate;
 
     @Getter
-    @Setter
     private Integer age;
+
+    @Getter
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private HumanCategory humanCategory;
 
     @Getter
     private List<String> medications;
@@ -94,6 +97,17 @@ public class PersonInfoRTO implements IPersonInfoRTO {
         //https://www.baeldung.com/java-get-age
     }
 
+    @Override
+    public void setHumanCategory(){
+        if (null != this.age) {
+            if (this.age > 18){
+                this.humanCategory = HumanCategory.ADULTS;
+            } else {
+                this.humanCategory = HumanCategory.CHILDREN;
+            }
+        }
+    }
+
     /**
      * <b>Constructor PersonInfoRTO</b>
      * <p>First and last name of Person and MedicalRecord have to be the same</p>
@@ -116,6 +130,7 @@ public class PersonInfoRTO implements IPersonInfoRTO {
             this.setEmail(person.getEmail());
             this.setBirthdate(medicalRecord.getBirthdate());
             this.setAge(medicalRecord.getBirthdate());
+            this.setHumanCategory();
             this.setMedications(medicalRecord.getMedications());
             this.setAllergies(medicalRecord.getAllergies());
     }

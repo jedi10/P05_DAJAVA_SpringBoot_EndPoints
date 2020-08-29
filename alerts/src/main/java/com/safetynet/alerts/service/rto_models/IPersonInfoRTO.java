@@ -56,6 +56,8 @@ public interface IPersonInfoRTO {
 
     Integer getAge();
 
+    HumanCategory getHumanCategory();
+
     List<String> getMedications();
 
     List<String> getAllergies();
@@ -78,7 +80,24 @@ public interface IPersonInfoRTO {
 
     void setAge(java.time.LocalDate birthdate);
 
+    void setHumanCategory();
+
     Comparator<IPersonInfoRTO> comparator = Comparator.comparing(IPersonInfoRTO::getLastName).thenComparing(IPersonInfoRTO::getFirstName);
+
+    enum HumanCategory {
+        CHILDREN("Children"),
+        ADULTS("Adults");
+
+        private final String label;
+
+        HumanCategory(String label) {
+            this.label = label;
+        }
+
+        public String getLabel() {
+            return label;
+        }
+    }
 }
 
 //https://www.baeldung.com/java-static-default-methods

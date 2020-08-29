@@ -1,10 +1,7 @@
 package com.safetynet.alerts.rest.publicmicroservices;
 
 import com.safetynet.alerts.rest.AdminPersonController;
-import com.safetynet.alerts.service.FireAddressService;
-import com.safetynet.alerts.service.PhoneAlertService;
-import com.safetynet.alerts.service.CommunityEmailService;
-import com.safetynet.alerts.service.PersonInfoService;
+import com.safetynet.alerts.service.*;
 import com.safetynet.alerts.service.rto_models.IPersonInfoRTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +28,9 @@ public class PublicAppController {
 
     @Autowired
     FireAddressService fireAddressService;
+
+    @Autowired
+    ChildAlertService childAlertService;
 
 
     /**
@@ -123,5 +123,24 @@ public class PublicAppController {
             return ResponseEntity.notFound().build();
         }
         return new ResponseEntity<Map<String, List>>(mapResult, HttpStatus.OK);
+    }
+
+    /**
+     * getChildAlert public EndPoint Controller
+     * @see com.safetynet.alerts.service.ChildAlertService#getChildAlert(String)
+     * @param address child address
+     * @param httpResponse response
+     */
+    @GetMapping(value = "/childalert/{address}")
+    public ResponseEntity<?> getChildAlert(@PathVariable("address") String address,
+                                               HttpServletResponse httpResponse)  {
+        log.info("Fetching List of all children located under address: '{}' and the adults living with them", address);
+
+        Map<IPersonInfoRTO.HumanCategory, List<IPersonInfoRTO>> mapResult = childAlertService.getChildAlert(address);
+        if(mapResult.isEmpty()){
+            log.warn("Fetching Empty Map for Address: '{}'", address);
+            return ResponseEntity.notFound().build();
+        }
+        return new ResponseEntity<>(mapResult, HttpStatus.OK);
     }
 }
