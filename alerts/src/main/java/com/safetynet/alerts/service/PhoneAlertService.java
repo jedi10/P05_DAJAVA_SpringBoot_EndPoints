@@ -20,11 +20,16 @@ import java.util.stream.Collectors;
 @Component
 public class PhoneAlertService {
 
-    @Autowired
+    final
     IPersonDAO personDAO;
 
-    @Autowired
+    final
     IFirestationDAO firestationDAO;
+
+    public PhoneAlertService(IPersonDAO personDAO, IFirestationDAO firestationDAO) {
+        this.personDAO = personDAO;
+        this.firestationDAO = firestationDAO;
+    }
 
     public List<String> getPhoneAlert(String firestation){
         List<String> result = new ArrayList<>();
@@ -47,8 +52,4 @@ public class PhoneAlertService {
         return result;
     }
 
-    public void setDAO(IPersonDAO personDAO, IFirestationDAO firestationDAO){
-        this.personDAO = personDAO;
-        this.firestationDAO = firestationDAO;
-    }
 }

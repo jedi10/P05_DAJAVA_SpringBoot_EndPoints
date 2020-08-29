@@ -49,7 +49,6 @@ class PublicAppController_phoneAlert_IT {
     @Autowired
     public PublicAppController publicAppController;
 
-    @Autowired
     private PhoneAlertService phoneAlertService;
 
     @Mock
@@ -108,7 +107,8 @@ class PublicAppController_phoneAlert_IT {
         when(firestationDAO.findAll()).thenReturn(firestationList);
         when(personDAO.findAll()).thenReturn(personList);
         //Inject Mocks in tested Object
-        phoneAlertService.setDAO(personDAO, firestationDAO);
+        phoneAlertService = new PhoneAlertService(personDAO, firestationDAO);
+        publicAppController.phoneAlertService = phoneAlertService;
 
         String stationChosenForTest = firestationList.get(0).getStation();
         assertNotNull(stationChosenForTest,
@@ -168,7 +168,8 @@ class PublicAppController_phoneAlert_IT {
         when(firestationDAO.findAll()).thenReturn(firestationList);
         when(personDAO.findAll()).thenReturn(personList);
         //Inject Mocks in tested Object
-        phoneAlertService.setDAO(personDAO, firestationDAO);
+        phoneAlertService = new PhoneAlertService(personDAO, firestationDAO);
+        publicAppController.phoneAlertService = phoneAlertService;
 
         String stationChosenForTest = "404";
         List<String> expectedAddressList = firestationList.stream()

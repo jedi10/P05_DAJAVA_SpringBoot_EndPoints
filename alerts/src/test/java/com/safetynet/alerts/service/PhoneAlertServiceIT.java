@@ -31,7 +31,6 @@ import static org.mockito.Mockito.when;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class PhoneAlertServiceIT {
 
-    @Autowired
     PhoneAlertService phoneAlertService;
 
     @Mock
@@ -100,8 +99,7 @@ class PhoneAlertServiceIT {
         //Mock injection
         personDAO = new PersonDaoImpl(rootFile);
         firestationDAO = new FirestationDaoImpl(rootFile);
-        phoneAlertService.personDAO = this.personDAO;
-        phoneAlertService.firestationDAO = this.firestationDAO;
+        phoneAlertService = new PhoneAlertService(this.personDAO, this.firestationDAO);
 
         //**************************WHEN****************************
         List<String> phoneListResult = phoneAlertService.getPhoneAlert(
@@ -136,8 +134,7 @@ class PhoneAlertServiceIT {
         //Mock injection
         personDAO = new PersonDaoImpl(rootFile);
         firestationDAO = new FirestationDaoImpl(rootFile);
-        phoneAlertService.personDAO = this.personDAO;
-        phoneAlertService.firestationDAO = this.firestationDAO;
+        phoneAlertService = new PhoneAlertService(this.personDAO, this.firestationDAO);
 
         List<String> expectedPhoneList = new ArrayList<>();
 
@@ -173,8 +170,7 @@ class PhoneAlertServiceIT {
         //Mock injection
         personDAO = new PersonDaoImpl(rootFile);
         firestationDAO = new FirestationDaoImpl(rootFile);
-        phoneAlertService.personDAO = this.personDAO;
-        phoneAlertService.firestationDAO = this.firestationDAO;
+        phoneAlertService = new PhoneAlertService(this.personDAO, this.firestationDAO);
 
         List<String> expectedPhoneList = new ArrayList<>();
 

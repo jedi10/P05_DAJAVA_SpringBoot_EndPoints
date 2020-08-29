@@ -32,8 +32,7 @@ import static org.mockito.Mockito.when;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class PhoneAlertServiceTest {
 
-    @Autowired
-    PhoneAlertService phoneAlertService;
+   PhoneAlertService phoneAlertService;
 
     @Mock
     IPersonDAO personDAO;
@@ -86,8 +85,7 @@ class PhoneAlertServiceTest {
         when(firestationDAO.findAll()).thenReturn(firestationList);
         when(personDAO.findAll()).thenReturn(personList);
         //Inject Mocks in tested Object
-        phoneAlertService.firestationDAO = firestationDAO;
-        phoneAlertService.personDAO = personDAO;
+        phoneAlertService = new PhoneAlertService(this.personDAO, this.firestationDAO);
 
         String stationChosenForTest = firestationList.get(0).getStation();
         List<String> expectedAddressList = firestationList.stream()
@@ -137,8 +135,7 @@ class PhoneAlertServiceTest {
         when(firestationDAO.findAll()).thenReturn(firestationList);
         when(personDAO.findAll()).thenReturn(personList);
         //Inject Mocks in tested Object
-        phoneAlertService.firestationDAO = firestationDAO;
-        phoneAlertService.personDAO = personDAO;
+        phoneAlertService = new PhoneAlertService(this.personDAO, this.firestationDAO);
 
         List<String> expectedPhoneList = new ArrayList<>();
 
@@ -176,8 +173,7 @@ class PhoneAlertServiceTest {
         when(firestationDAO.findAll()).thenReturn(firestationList);
         when(personDAO.findAll()).thenReturn(personList);
         //Inject Mocks in tested Object
-        phoneAlertService.firestationDAO = firestationDAO;
-        phoneAlertService.personDAO = personDAO;
+        phoneAlertService = new PhoneAlertService(this.personDAO, this.firestationDAO);
 
         List<String> expectedPhoneList = new ArrayList<>();
 
