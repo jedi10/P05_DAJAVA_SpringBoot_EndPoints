@@ -126,8 +126,8 @@ class PublicAppController_childAlert_E2E {
 
         Map<IPersonInfoRTO.HumanCategory, List<IPersonInfoRTO>> resultJavaObject = result.getBody();
         assertNotNull(resultJavaObject);
-        assertNotNull(resultJavaObject.get(IPersonInfoRTO.HumanCategory.CHILDREN.getLabel()));
-        assertNotNull(resultJavaObject.get(IPersonInfoRTO.HumanCategory.ADULTS.getLabel()));
+        assertNotNull(resultJavaObject.get(IPersonInfoRTO.HumanCategory.CHILDREN.toString()));
+        assertNotNull(resultJavaObject.get(IPersonInfoRTO.HumanCategory.ADULTS.toString()));
         //*********************************************************
         //**************CHECK RESPONSE CONTENT*********************
         //*********************************************************
@@ -135,7 +135,7 @@ class PublicAppController_childAlert_E2E {
         //*********************************************************
         //****************for Children List************************
         //*********************************************************
-        List<IPersonInfoRTO> childRTOListResult = resultJavaObject.get(IPersonInfoRTO.HumanCategory.CHILDREN.getLabel());
+        List<IPersonInfoRTO> childRTOListResult = resultJavaObject.get(IPersonInfoRTO.HumanCategory.CHILDREN.toString());
         String childRTOListResultString = Jackson.convertJavaToJson(childRTOListResult);
         String expectedChildRTOListString = Jackson.convertJavaToJson(expectedChildRTOList);
 
@@ -144,7 +144,7 @@ class PublicAppController_childAlert_E2E {
         //*********************************************************
         //****************for Adult List************************
         //*********************************************************
-        List<IPersonInfoRTO> adultRTOListResult = resultJavaObject.get(IPersonInfoRTO.HumanCategory.ADULTS.getLabel());
+        List<IPersonInfoRTO> adultRTOListResult = resultJavaObject.get(IPersonInfoRTO.HumanCategory.ADULTS.toString());
         String adultRTOListResultString = Jackson.convertJavaToJson(adultRTOListResult);
         String expectedAdultRTOListString = Jackson.convertJavaToJson(expectedAdultRTOList);
 
