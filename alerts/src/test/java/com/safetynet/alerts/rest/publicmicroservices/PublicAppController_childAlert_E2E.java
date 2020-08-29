@@ -75,6 +75,12 @@ class PublicAppController_childAlert_E2E {
 
     }
 
+    @AfterAll
+    void tearDownAll(){
+        publicAppController = null;
+    }
+
+
     @Order(1)
     @Test
     void getChildAlert_Ok() throws Exception {

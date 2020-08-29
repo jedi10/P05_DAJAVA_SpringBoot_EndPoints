@@ -76,7 +76,11 @@ class PublicAppController_fireAndPersons_E2E {
 
     @AfterEach
     void tearDown() {
+    }
 
+    @AfterAll
+    void tearDownAll(){
+        publicAppController = null;
     }
 
     @Order(1)

@@ -81,6 +81,11 @@ class PublicAppController_phoneAlert_E2E {
     void tearDown() {
     }
 
+    @AfterAll
+    void tearDownAll(){
+        publicAppController = null;
+    }
+
     @Order(1)
     @Test
     void getPhoneAlert_Ok() {

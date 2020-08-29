@@ -75,6 +75,11 @@ class PublicAppController_personInfo_E2E {
 
     }
 
+    @AfterAll
+    void tearDownAll(){
+        publicAppController = null;
+    }
+
 
     @Order(1)
     @Test

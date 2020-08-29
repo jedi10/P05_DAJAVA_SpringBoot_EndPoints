@@ -39,6 +39,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class PublicAppController_childAlert_Test {
 
     @Autowired
@@ -71,6 +72,12 @@ class PublicAppController_childAlert_Test {
     @AfterEach
     void tearDown() {
         personInfoRTOList.clear();
+    }
+
+    @AfterAll
+    void tearDownAll(){
+        publicAppController = null;
+        mockMvc = null;
     }
 
     @Order(1)

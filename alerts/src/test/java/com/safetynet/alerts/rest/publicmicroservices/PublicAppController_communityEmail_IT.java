@@ -44,6 +44,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class PublicAppController_communityEmail_IT {
 
     @Autowired
@@ -79,7 +80,12 @@ class PublicAppController_communityEmail_IT {
 
     @AfterEach
     void tearDown() {
+    }
 
+    @AfterAll
+    void tearDownAll(){
+        publicAppController = null;
+        mockMvc = null;
     }
 
 

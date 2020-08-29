@@ -90,6 +90,12 @@ class PublicAppController_phoneAlert_IT {
     void tearDown() {
     }
 
+    @AfterAll
+    void tearDownAll(){
+        publicAppController = null;
+        mockMvc = null;
+    }
+
     @Order(1)
     @Test
     void getPhoneAlert_Ok() throws Exception {

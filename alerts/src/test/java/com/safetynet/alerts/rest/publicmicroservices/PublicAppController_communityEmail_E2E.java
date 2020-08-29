@@ -63,7 +63,11 @@ class PublicAppController_communityEmail_E2E {
 
     @AfterEach
     void tearDown() {
+    }
 
+    @AfterAll
+    void tearDownAll(){
+        publicAppController = null;
     }
 
 
