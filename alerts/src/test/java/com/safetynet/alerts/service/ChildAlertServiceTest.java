@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -73,11 +74,16 @@ class ChildAlertServiceTest {
         assertNotNull(this.medicalRecordList,
                 "MedicalRecordList is Null: we need it for further tests");
         assertTrue(this.medicalRecordList.size()>2);
+        //We have to be sure to have one child in our list:
+        this.medicalRecordList.get(0).setBirthdate(LocalDate.now().minusYears(15));
 
         personInfoRTOList =  PersonInfoRTO.buildPersonInfoRTOList(this.personList, this.medicalRecordList);
 
         //we choose first element on list to get the address for test
-        Person personChosenForTest = this.personList.get(0);
+        IPersonInfoRTO personChosenForTest = personInfoRTOList.stream()
+                .filter(e->e.getHumanCategory().equals(IPersonInfoRTO.HumanCategory.CHILDREN))
+                .findAny()
+                .orElse(null);
 
         //Filtering list
         List<IPersonInfoRTO> expectedChildRTOList = personInfoRTOList.stream()
