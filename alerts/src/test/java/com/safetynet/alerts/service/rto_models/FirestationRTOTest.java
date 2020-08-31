@@ -47,11 +47,11 @@ class FirestationRTOTest {
         PersonInfoRTO personInfoRTO = new PersonInfoRTO(person, medicalRecord);
         personInfoRTOList.add(personInfoRTO);
         PersonInfoRTO personInfoRTO2 = Jackson.deepCopy(personInfoRTO, PersonInfoRTO.class);
-        personInfoRTO2.setAge(15);
+        personInfoRTO2.setAge(LocalDate.now().minusYears(15));
         personInfoRTO2.setFirstName("Junior");
         personInfoRTOList.add(personInfoRTO2);
         PersonInfoRTO personInfoRTO3 = Jackson.deepCopy(personInfoRTO, PersonInfoRTO.class);
-        personInfoRTO3.setAge(17);
+        personInfoRTO3.setAge(LocalDate.now().minusYears(17));
         personInfoRTO3.setFirstName("Junior2");
         personInfoRTOList.add(personInfoRTO3);
     }

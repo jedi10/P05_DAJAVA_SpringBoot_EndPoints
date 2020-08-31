@@ -92,16 +92,10 @@ public class PersonInfoRTO implements IPersonInfoRTO {
     }
 
     @Override
-    public void setAge(LocalDate birthdate) {
-        this.age = Period.between(birthdate, LocalDate.now()).getYears();
+    public void setAge(LocalDate birthDate) {
+        this.age = Period.between(birthDate, LocalDate.now()).getYears();
         this.setHumanCategory();
         //https://www.baeldung.com/java-get-age
-    }
-
-    public void setAge(int personYears) {
-        this.age = personYears;
-        this.birthdate = LocalDate.now().minusYears(personYears);
-        this.setHumanCategory();
     }
 
     @Override
