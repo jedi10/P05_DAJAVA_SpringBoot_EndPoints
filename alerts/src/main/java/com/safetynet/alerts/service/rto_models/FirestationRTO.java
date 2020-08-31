@@ -6,6 +6,7 @@ import lombok.NonNull;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class FirestationRTO {
@@ -28,6 +29,8 @@ public class FirestationRTO {
                         IPersonInfoRTO::getHumanCategory, Collectors.counting()
                 )
         );
+        humanCategoryMap.putIfAbsent(IPersonInfoRTO.HumanCategory.CHILDREN, 0L);
+        humanCategoryMap.putIfAbsent(IPersonInfoRTO.HumanCategory.ADULTS, 0L);
     }
 }
 
