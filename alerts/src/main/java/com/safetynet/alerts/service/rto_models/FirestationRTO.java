@@ -1,5 +1,6 @@
 package com.safetynet.alerts.service.rto_models;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -12,11 +13,12 @@ import java.util.stream.Collectors;
 public class FirestationRTO {
 
     @Getter
+    @JsonProperty("FIRESTATION AREA")
     private Map<String, List<IPersonInfoRTO>> personInfoRTOMap;
 
     @Getter
+    @JsonProperty("COUNTER")
     private Map<IPersonInfoRTO.HumanCategory, Long> humanCategoryMap;
-
 
     public FirestationRTO(@NonNull List<IPersonInfoRTO> personInfoRTOList) {
         personInfoRTOMap = new HashMap<>();
