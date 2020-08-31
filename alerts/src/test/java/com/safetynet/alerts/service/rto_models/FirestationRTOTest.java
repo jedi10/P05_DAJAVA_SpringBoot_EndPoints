@@ -25,7 +25,7 @@ class FirestationRTOTest {
 
     private MedicalRecord medicalRecord;
 
-    private List<PersonInfoRTO> personInfoRTOList = new ArrayList<>();
+    private List<IPersonInfoRTO> personInfoRTOList = new ArrayList<>();
 
     @BeforeEach
     void setUp() throws Exception {
@@ -70,7 +70,7 @@ class FirestationRTOTest {
         //*********************************
         //Test Content of PersonInfoRTO Map
         //*********************************
-        Map<String, List<PersonInfoRTO>> personInfoRTOMapResult = firestationRTO.getPersonInfoRTOMap();
+        Map<String, List<IPersonInfoRTO>> personInfoRTOMapResult = firestationRTO.getPersonInfoRTOMap();
         assertNotNull(personInfoRTOMapResult);
         assertEquals(personInfoRTOList, personInfoRTOMapResult.get("PERSONS"));
         //*********************************

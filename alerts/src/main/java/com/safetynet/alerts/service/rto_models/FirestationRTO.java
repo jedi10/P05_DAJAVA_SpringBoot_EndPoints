@@ -11,18 +11,18 @@ import java.util.stream.Collectors;
 public class FirestationRTO {
 
     @Getter
-    private Map<String, List<PersonInfoRTO>> personInfoRTOMap;
+    private Map<String, List<IPersonInfoRTO>> personInfoRTOMap;
 
     @Getter
     private Map<IPersonInfoRTO.HumanCategory, Long> humanCategoryMap;
 
 
-    public FirestationRTO(@NonNull List<PersonInfoRTO> personInfoRTOList) {
+    public FirestationRTO(@NonNull List<IPersonInfoRTO> personInfoRTOList) {
         personInfoRTOMap = new HashMap<>();
         personInfoRTOMap.put("PERSONS", personInfoRTOList);
         this.setHumanCategoryMap(personInfoRTOList);
     }
-    private void setHumanCategoryMap(List<PersonInfoRTO> personInfoRTOList){
+    private void setHumanCategoryMap(List<IPersonInfoRTO> personInfoRTOList){
         humanCategoryMap = personInfoRTOList.stream().collect(
                 Collectors.groupingBy(
                         IPersonInfoRTO::getHumanCategory, Collectors.counting()
