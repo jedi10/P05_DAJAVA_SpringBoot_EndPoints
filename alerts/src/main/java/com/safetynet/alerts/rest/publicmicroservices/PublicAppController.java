@@ -2,7 +2,7 @@ package com.safetynet.alerts.rest.publicmicroservices;
 
 import com.safetynet.alerts.rest.AdminPersonController;
 import com.safetynet.alerts.service.*;
-import com.safetynet.alerts.service.rto_models.FirestationAreaRTO;
+import com.safetynet.alerts.service.rto_models.IFirestationAreaRTO;
 import com.safetynet.alerts.service.rto_models.IPersonInfoRTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -159,7 +159,7 @@ public class PublicAppController {
                                            HttpServletResponse httpResponse)  {
         log.info("Fetching List of all persons in the area of responsibilities of station: '{}' with children and adults counter", station);
 
-        FirestationAreaRTO objectResult = firestationAreaService.getFirestationArea(station);
+        IFirestationAreaRTO objectResult = firestationAreaService.getFirestationArea(station);
         if(null == objectResult){
             log.warn("Fetching Empty Data for station: '{}'", station);
             return ResponseEntity.notFound().build();

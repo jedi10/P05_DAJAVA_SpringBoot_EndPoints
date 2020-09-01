@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class FirestationAreaRTOTest {
 
-    private FirestationAreaRTO firestationAreaRTO;
+    private IFirestationAreaRTO firestationAreaRTO;
 
     private Person person;
 

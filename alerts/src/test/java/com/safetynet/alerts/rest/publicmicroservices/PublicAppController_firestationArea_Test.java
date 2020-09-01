@@ -4,6 +4,7 @@ import com.safetynet.alerts.models.MedicalRecord;
 import com.safetynet.alerts.models.Person;
 import com.safetynet.alerts.service.FirestationAreaService;
 import com.safetynet.alerts.service.rto_models.FirestationAreaRTO;
+import com.safetynet.alerts.service.rto_models.IFirestationAreaRTO;
 import com.safetynet.alerts.service.rto_models.IPersonInfoRTO;
 import com.safetynet.alerts.service.rto_models.PersonInfoRTO;
 import org.junit.jupiter.api.*;
@@ -90,7 +91,7 @@ class PublicAppController_firestationArea_Test {
 
         personInfoRTOList.add(new PersonInfoRTO(person1, medicalRecord1));
 
-        FirestationAreaRTO firestationAreaRTO = new FirestationAreaRTO(personInfoRTOList);
+        IFirestationAreaRTO firestationAreaRTO = new FirestationAreaRTO(personInfoRTOList);
 
         when(firestationAreaService.getFirestationArea("3")).
                 thenReturn(firestationAreaRTO);
@@ -135,7 +136,7 @@ class PublicAppController_firestationArea_Test {
     //@ValueSource(strings = { "toto", "" })
     void getFirestation_NotFound(String station) throws Exception {
         //***********GIVEN*************
-        FirestationAreaRTO firestationAreaRTO = null;
+        IFirestationAreaRTO firestationAreaRTO = null;
 
         when(firestationAreaService.getFirestationArea(station)).
                 thenReturn(firestationAreaRTO);

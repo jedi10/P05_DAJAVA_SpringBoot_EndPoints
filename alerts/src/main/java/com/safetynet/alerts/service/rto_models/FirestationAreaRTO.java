@@ -1,6 +1,7 @@
 package com.safetynet.alerts.service.rto_models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.safetynet.alerts.models.MedicalRecord;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -10,7 +11,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class FirestationAreaRTO {
+public class FirestationAreaRTO implements IFirestationAreaRTO {
 
     @Getter
     @JsonProperty("FIRESTATION AREA")

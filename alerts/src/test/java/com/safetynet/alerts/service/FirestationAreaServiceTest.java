@@ -6,7 +6,7 @@ import com.safetynet.alerts.dao.IPersonDAO;
 import com.safetynet.alerts.models.Firestation;
 import com.safetynet.alerts.models.MedicalRecord;
 import com.safetynet.alerts.models.Person;
-import com.safetynet.alerts.service.rto_models.FirestationAreaRTO;
+import com.safetynet.alerts.service.rto_models.IFirestationAreaRTO;
 import com.safetynet.alerts.service.rto_models.IPersonInfoRTO;
 import com.safetynet.alerts.service.rto_models.PersonInfoRTO;
 import com.safetynet.alerts.utils.Jackson;
@@ -146,7 +146,7 @@ class FirestationAreaServiceTest {
         verify(firestationDAO, Mockito.never()).findAll();
 
         //WHEN
-        FirestationAreaRTO objectListResult =
+        IFirestationAreaRTO objectListResult =
                 firestationAreaService.getFirestationArea(firestationNumber);
 
         //THEN
@@ -226,7 +226,7 @@ class FirestationAreaServiceTest {
         verify(firestationDAO, Mockito.never()).findAll();
 
         //WHEN
-        FirestationAreaRTO objectListResult =
+        IFirestationAreaRTO objectListResult =
                 firestationAreaService.getFirestationArea(firestationNumber);
 
         //THEN
