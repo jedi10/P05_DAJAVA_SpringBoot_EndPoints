@@ -10,7 +10,6 @@ import com.safetynet.alerts.service.rto_models.FirestationRTO;
 import com.safetynet.alerts.service.rto_models.IPersonInfoRTO;
 import com.safetynet.alerts.service.rto_models.PersonInfoRTO;
 import com.safetynet.alerts.utils.Jackson;
-import org.apache.tomcat.jni.Address;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -22,12 +21,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.time.LocalDate;
-import java.time.Month;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -36,10 +30,10 @@ import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class FirestationServiceTest {
+class FirestationAreaServiceTest {
 
     @Autowired
-    private FirestationService firestationService;
+    private FirestationAreaService firestationAreaService;
 
     @Mock
     IPersonDAO personDAO;
@@ -139,7 +133,7 @@ class FirestationServiceTest {
         //DATA available via Mock DAO injection in Service
         //************************************************
         //Mock injection
-        firestationService = new FirestationService(
+        firestationAreaService = new FirestationAreaService(
                 this.personDAO,
                 this.medicalRecordDAO,
                 this.firestationDAO);
@@ -153,7 +147,7 @@ class FirestationServiceTest {
 
         //WHEN
         FirestationRTO objectListResult =
-                firestationService.getFirestationArea(firestationNumber);
+                firestationAreaService.getFirestationArea(firestationNumber);
 
         //THEN
         //***********************************************************
@@ -219,7 +213,7 @@ class FirestationServiceTest {
         //DATA available via Mock DAO injection in Service
         //************************************************
         //Mock injection
-        firestationService = new FirestationService(
+        firestationAreaService = new FirestationAreaService(
                 this.personDAO,
                 this.medicalRecordDAO,
                 this.firestationDAO);
@@ -233,7 +227,7 @@ class FirestationServiceTest {
 
         //WHEN
         FirestationRTO objectListResult =
-                firestationService.getFirestationArea(firestationNumber);
+                firestationAreaService.getFirestationArea(firestationNumber);
 
         //THEN
         //***********************************************************
@@ -251,7 +245,7 @@ class FirestationServiceTest {
     void getChildAlert_NullParam() {
         //WHEN-THEN
         Exception exception = assertThrows(NullPointerException.class, () -> {
-            firestationService.getFirestationArea(null);
+            firestationAreaService.getFirestationArea(null);
         });
         assertTrue(exception.getMessage().contains(
                 "firestation is marked non-null but is null"));

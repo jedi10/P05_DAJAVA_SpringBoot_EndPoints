@@ -2,7 +2,7 @@ package com.safetynet.alerts.rest.publicmicroservices;
 
 import com.safetynet.alerts.models.MedicalRecord;
 import com.safetynet.alerts.models.Person;
-import com.safetynet.alerts.service.FirestationService;
+import com.safetynet.alerts.service.FirestationAreaService;
 import com.safetynet.alerts.service.rto_models.FirestationRTO;
 import com.safetynet.alerts.service.rto_models.IPersonInfoRTO;
 import com.safetynet.alerts.service.rto_models.PersonInfoRTO;
@@ -24,9 +24,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static com.safetynet.alerts.utils.Jackson.convertJavaToJson;
 import static org.hamcrest.Matchers.containsString;
@@ -41,7 +39,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class PublicAppController_firestation_Test {
+class PublicAppController_firestationArea_Test {
 
     @Autowired
     public MockMvc mockMvc;
@@ -50,7 +48,7 @@ class PublicAppController_firestation_Test {
     public PublicAppController publicAppController;
 
     @Mock
-    public FirestationService firestationService;
+    public FirestationAreaService firestationAreaService;
 
     @Spy
     public List<IPersonInfoRTO> personInfoRTOList = new ArrayList<>();
@@ -94,10 +92,10 @@ class PublicAppController_firestation_Test {
 
         FirestationRTO firestationRTO = new FirestationRTO(personInfoRTOList);
 
-        when(firestationService.getFirestationArea("3")).
+        when(firestationAreaService.getFirestationArea("3")).
                 thenReturn(firestationRTO);
         //Mock Injection in Object tested
-        publicAppController.firestationService = firestationService;
+        publicAppController.firestationAreaService = firestationAreaService;
 
         String urlTemplate = String.format("%s%s",
                 "/firestationarea/",
@@ -107,7 +105,7 @@ class PublicAppController_firestation_Test {
         //***********************************************************
         //**************CHECK MOCK INVOCATION at start***************
         //***********************************************************
-        verify(firestationService, Mockito.never()).getFirestationArea("3");
+        verify(firestationAreaService, Mockito.never()).getFirestationArea("3");
 
         //**************WHEN-THEN****************************
        MvcResult mvcResult = mockMvc.perform(builder)//.andDo(print());
@@ -119,7 +117,7 @@ class PublicAppController_firestation_Test {
         //*********************************************************
         //**************CHECK MOCK INVOCATION at end***************
         //*********************************************************
-        verify(firestationService, Mockito.times(1)).getFirestationArea("3");
+        verify(firestationAreaService, Mockito.times(1)).getFirestationArea("3");
 
         //*********************************************************
         //**************CHECK RESPONSE CONTENT*********************
@@ -139,10 +137,10 @@ class PublicAppController_firestation_Test {
         //***********GIVEN*************
         FirestationRTO firestationRTO = null;
 
-        when(firestationService.getFirestationArea(station)).
+        when(firestationAreaService.getFirestationArea(station)).
                 thenReturn(firestationRTO);
         //Mock Injection in Object tested
-        publicAppController.firestationService = firestationService;
+        publicAppController.firestationAreaService = firestationAreaService;
 
         String urlTemplate = String.format("%s%s",
                 "/firestationarea/",
@@ -152,7 +150,7 @@ class PublicAppController_firestation_Test {
         //***********************************************************
         //**************CHECK MOCK INVOCATION at start***************
         //***********************************************************
-        verify(firestationService, Mockito.never())
+        verify(firestationAreaService, Mockito.never())
                 .getFirestationArea(station);
 
         //**************WHEN-THEN****************************
@@ -163,7 +161,7 @@ class PublicAppController_firestation_Test {
         //***********************************************************
         //**************CHECK MOCK INVOCATION at start***************
         //***********************************************************
-        verify(firestationService, Mockito.times(1))
+        verify(firestationAreaService, Mockito.times(1))
                 .getFirestationArea(station);
 
         //*********************************************************

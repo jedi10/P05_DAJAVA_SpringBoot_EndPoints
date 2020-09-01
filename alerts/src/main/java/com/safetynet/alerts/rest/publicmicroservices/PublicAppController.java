@@ -34,7 +34,7 @@ public class PublicAppController {
     ChildAlertService childAlertService;
 
     @Autowired
-    FirestationService firestationService;
+    FirestationAreaService firestationAreaService;
 
 
     /**
@@ -150,7 +150,7 @@ public class PublicAppController {
 
     /**
      * getFirestationArea public EndPoint Controller
-     * @see com.safetynet.alerts.service.FirestationService#getFirestationArea(String)
+     * @see com.safetynet.alerts.service.FirestationAreaService#getFirestationArea(String)
      * @param station station number
      * @param httpResponse response
      */
@@ -159,7 +159,7 @@ public class PublicAppController {
                                            HttpServletResponse httpResponse)  {
         log.info("Fetching List of all persons in the area of responsibilities of station: '{}' with children and adults counter", station);
 
-        FirestationRTO objectResult = firestationService.getFirestationArea(station);
+        FirestationRTO objectResult = firestationAreaService.getFirestationArea(station);
         if(null == objectResult){
             log.warn("Fetching Empty Data for station: '{}'", station);
             return ResponseEntity.notFound().build();

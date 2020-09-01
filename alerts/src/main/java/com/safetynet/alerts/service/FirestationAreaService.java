@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Component
-public class FirestationService {
+public class FirestationAreaService {
 
     final
     IPersonDAO personDAO;
@@ -29,8 +29,8 @@ public class FirestationService {
     final
     IFirestationDAO firestationDAO;
 
-    public FirestationService(IPersonDAO personDAO, IMedicalRecordDAO medicalRecordDAO,
-                              IFirestationDAO firestationDAO) {
+    public FirestationAreaService(IPersonDAO personDAO, IMedicalRecordDAO medicalRecordDAO,
+                                  IFirestationDAO firestationDAO) {
         this.personDAO = personDAO;
         this.medicalRecordDAO = medicalRecordDAO;
         this.firestationDAO = firestationDAO;
