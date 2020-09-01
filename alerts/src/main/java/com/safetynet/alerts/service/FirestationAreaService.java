@@ -6,7 +6,7 @@ import com.safetynet.alerts.dao.IPersonDAO;
 import com.safetynet.alerts.models.Firestation;
 import com.safetynet.alerts.models.MedicalRecord;
 import com.safetynet.alerts.models.Person;
-import com.safetynet.alerts.service.rto_models.FirestationRTO;
+import com.safetynet.alerts.service.rto_models.FirestationAreaRTO;
 import com.safetynet.alerts.service.rto_models.IPersonInfoRTO;
 import com.safetynet.alerts.service.rto_models.PersonInfoRTO;
 import lombok.NonNull;
@@ -36,8 +36,8 @@ public class FirestationAreaService {
         this.firestationDAO = firestationDAO;
     }
 
-    public FirestationRTO getFirestationArea(@NonNull String firestation){
-        FirestationRTO firestationRTO = null;
+    public FirestationAreaRTO getFirestationArea(@NonNull String firestation){
+        FirestationAreaRTO firestationAreaRTO = null;
         //Get Address List linked with firestation number
         List<Firestation> firestationList = firestationDAO.findAll();
         List<String> firestationAddressListResult = firestationList.stream()
@@ -56,10 +56,10 @@ public class FirestationAreaService {
                     .collect(Collectors.toList());
             if (!personInfoRTOListFiltered.isEmpty()){
                 //Results are treated to be exposed in a view
-               firestationRTO = new FirestationRTO(personInfoRTOListFiltered);
+               firestationAreaRTO = new FirestationAreaRTO(personInfoRTOListFiltered);
             }
         }
-        return firestationRTO;
+        return firestationAreaRTO;
     }
 }
 

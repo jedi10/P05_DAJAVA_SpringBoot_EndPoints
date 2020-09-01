@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class FirestationRTO {
+public class FirestationAreaRTO {
 
     @Getter
     @JsonProperty("FIRESTATION AREA")
@@ -20,7 +20,7 @@ public class FirestationRTO {
     @JsonProperty("COUNTER")
     private Map<IPersonInfoRTO.HumanCategory, Long> humanCategoryMap;
 
-    public FirestationRTO(@NonNull List<IPersonInfoRTO> personInfoRTOList) {
+    public FirestationAreaRTO(@NonNull List<IPersonInfoRTO> personInfoRTOList) {
         personInfoRTOMap = new HashMap<>();
         personInfoRTOMap.put("PERSONS", personInfoRTOList);
         this.setHumanCategoryMap(personInfoRTOList);

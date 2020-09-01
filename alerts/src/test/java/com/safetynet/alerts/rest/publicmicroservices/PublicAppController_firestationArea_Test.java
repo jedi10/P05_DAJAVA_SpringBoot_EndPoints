@@ -3,7 +3,7 @@ package com.safetynet.alerts.rest.publicmicroservices;
 import com.safetynet.alerts.models.MedicalRecord;
 import com.safetynet.alerts.models.Person;
 import com.safetynet.alerts.service.FirestationAreaService;
-import com.safetynet.alerts.service.rto_models.FirestationRTO;
+import com.safetynet.alerts.service.rto_models.FirestationAreaRTO;
 import com.safetynet.alerts.service.rto_models.IPersonInfoRTO;
 import com.safetynet.alerts.service.rto_models.PersonInfoRTO;
 import org.junit.jupiter.api.*;
@@ -90,10 +90,10 @@ class PublicAppController_firestationArea_Test {
 
         personInfoRTOList.add(new PersonInfoRTO(person1, medicalRecord1));
 
-        FirestationRTO firestationRTO = new FirestationRTO(personInfoRTOList);
+        FirestationAreaRTO firestationAreaRTO = new FirestationAreaRTO(personInfoRTOList);
 
         when(firestationAreaService.getFirestationArea("3")).
-                thenReturn(firestationRTO);
+                thenReturn(firestationAreaRTO);
         //Mock Injection in Object tested
         publicAppController.firestationAreaService = firestationAreaService;
 
@@ -124,7 +124,7 @@ class PublicAppController_firestationArea_Test {
         //*********************************************************
         //*****************Check with JSON*************************
         String expectedJson = null;
-        expectedJson = convertJavaToJson(firestationRTO);
+        expectedJson = convertJavaToJson(firestationAreaRTO);
         String jsonResult = mvcResult.getResponse().getContentAsString();
         JSONAssert.assertEquals(expectedJson, jsonResult, true);
     }
@@ -135,10 +135,10 @@ class PublicAppController_firestationArea_Test {
     //@ValueSource(strings = { "toto", "" })
     void getFirestation_NotFound(String station) throws Exception {
         //***********GIVEN*************
-        FirestationRTO firestationRTO = null;
+        FirestationAreaRTO firestationAreaRTO = null;
 
         when(firestationAreaService.getFirestationArea(station)).
-                thenReturn(firestationRTO);
+                thenReturn(firestationAreaRTO);
         //Mock Injection in Object tested
         publicAppController.firestationAreaService = firestationAreaService;
 

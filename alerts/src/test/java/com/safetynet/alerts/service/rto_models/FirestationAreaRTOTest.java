@@ -17,9 +17,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class FirestationRTOTest {
+class FirestationAreaRTOTest {
 
-    private FirestationRTO firestationRTO;
+    private FirestationAreaRTO firestationAreaRTO;
 
     private Person person;
 
@@ -64,19 +64,19 @@ class FirestationRTOTest {
         assertEquals(3, personInfoRTOList.size());
 
         //WHEN
-        firestationRTO = new FirestationRTO(personInfoRTOList);
+        firestationAreaRTO = new FirestationAreaRTO(personInfoRTOList);
 
         //THEN
         //*********************************
         //Test Content of PersonInfoRTO Map
         //*********************************
-        Map<String, List<IPersonInfoRTO>> personInfoRTOMapResult = firestationRTO.getPersonInfoRTOMap();
+        Map<String, List<IPersonInfoRTO>> personInfoRTOMapResult = firestationAreaRTO.getPersonInfoRTOMap();
         assertNotNull(personInfoRTOMapResult);
         assertEquals(personInfoRTOList, personInfoRTOMapResult.get("PERSONS"));
         //*********************************
         //Test Content of HumanCategory Map
         //*********************************
-        Map<IPersonInfoRTO.HumanCategory, Long> humanCategoryMapResult = firestationRTO.getHumanCategoryMap();
+        Map<IPersonInfoRTO.HumanCategory, Long> humanCategoryMapResult = firestationAreaRTO.getHumanCategoryMap();
         assertNotNull(humanCategoryMapResult);
         assertEquals(1, humanCategoryMapResult.get(IPersonInfoRTO.HumanCategory.ADULTS));
         assertEquals(2, humanCategoryMapResult.get(IPersonInfoRTO.HumanCategory.CHILDREN));
@@ -87,7 +87,7 @@ class FirestationRTOTest {
     void constructorParamNull_Exception() {
         //WHEN-THEN
         Exception exception = assertThrows(NullPointerException.class, ()-> {
-            firestationRTO = new FirestationRTO(null);
+            firestationAreaRTO = new FirestationAreaRTO(null);
         });
         assertTrue(exception.getMessage().contains(
                 "personInfoRTOList is marked non-null but is null"));
