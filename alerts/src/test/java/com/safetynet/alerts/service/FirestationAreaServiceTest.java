@@ -242,7 +242,7 @@ class FirestationAreaServiceTest {
 
     @Order(3)
     @Test
-    void getChildAlert_NullParam() {
+    void getFirestationArea_NullParam() {
         //WHEN-THEN
         Exception exception = assertThrows(NullPointerException.class, () -> {
             firestationAreaService.getFirestationArea(null);
