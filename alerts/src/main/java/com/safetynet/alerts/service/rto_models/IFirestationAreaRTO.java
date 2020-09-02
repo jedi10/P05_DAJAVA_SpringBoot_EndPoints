@@ -1,5 +1,8 @@
 package com.safetynet.alerts.service.rto_models;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -10,3 +13,5 @@ public interface IFirestationAreaRTO {
 
     java.util.Map<IPersonInfoRTO.HumanCategory, Long> getHumanCategoryMap();
 }
+
+//https://www.logicbig.com/tutorials/misc/jackson/json-type-info-with-logical-type-name.html
