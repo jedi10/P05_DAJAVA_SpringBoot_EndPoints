@@ -92,8 +92,9 @@ public class PersonInfoRTO implements IPersonInfoRTO {
     }
 
     @Override
-    public void setAge(LocalDate birthdate) {
-        this.age = Period.between(birthdate, LocalDate.now()).getYears();
+    public void setAge(LocalDate birthDate) {
+        this.age = Period.between(birthDate, LocalDate.now()).getYears();
+        this.setHumanCategory();
         //https://www.baeldung.com/java-get-age
     }
 
@@ -130,7 +131,6 @@ public class PersonInfoRTO implements IPersonInfoRTO {
             this.setEmail(person.getEmail());
             this.setBirthdate(medicalRecord.getBirthdate());
             this.setAge(medicalRecord.getBirthdate());
-            this.setHumanCategory();
             this.setMedications(medicalRecord.getMedications());
             this.setAllergies(medicalRecord.getAllergies());
     }
