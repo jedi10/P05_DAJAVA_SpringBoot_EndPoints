@@ -160,7 +160,7 @@ class PublicAppController_firestationArea_Test {
                 .andReturn();
 
         //***********************************************************
-        //**************CHECK MOCK INVOCATION at start***************
+        //**************CHECK MOCK INVOCATION at end***************
         //***********************************************************
         verify(firestationAreaService, Mockito.times(1))
                 .getFirestationArea(station);
