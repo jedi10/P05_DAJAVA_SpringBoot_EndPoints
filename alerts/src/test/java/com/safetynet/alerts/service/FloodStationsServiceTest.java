@@ -82,10 +82,19 @@ class FloodStationsServiceTest {
     void tearDown() {
     }
 
-    @Test
-    void getFloddStations_OK() {
+    static Stream<Arguments> stationData() {
+        return Stream.of(
+                //All stations exist in data
+                Arguments.of(Arrays.asList("3", "4")),
+                //One station doesn't exist in data
+                Arguments.of(Arrays.asList("1", "2", "5"))
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("stationData")
+    void getFloodStations_OK(List<String> stationNumberList) {
         //GIVEN
-        List<String> stationNumberList = List.of("3","4");
         //*********************check data used in test*****************************
         assertNotNull(this.personList,
                 "PersonList is Null: we need it for further tests");
@@ -156,6 +165,7 @@ class FloodStationsServiceTest {
 
     static Stream<Arguments> stationNoExistData() {
         return Stream.of(
+                //All stations listed here don't exist in data.
                 Arguments.of(Arrays.asList("0", "404"))
         );
     }
