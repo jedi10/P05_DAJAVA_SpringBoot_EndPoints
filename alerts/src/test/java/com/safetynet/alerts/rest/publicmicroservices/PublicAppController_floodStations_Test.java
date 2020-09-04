@@ -86,9 +86,19 @@ class PublicAppController_floodStations_Test {
         mockMvc = null;
     }
 
+    static Stream<Arguments> stationData() {
+        return Stream.of(
+                //All stations exist in data
+                Arguments.of(Arrays.asList("2","3", "4")),
+                //One station doesn't exist in data
+                Arguments.of(Arrays.asList("1", "2", "5"))
+        );
+    }
+
     @Order(1)
-    @Test
-    void getFloodStations_Ok() throws Exception {
+    @ParameterizedTest
+    @MethodSource("stationData")
+    void getFloodStations_Ok(List<String> stationNumberList) throws Exception {
         //***********GIVEN*************
         medicationList.add("aznol:350mg"); medicationList.add("hydrapermazol:100mg");
         allergiesList.add("nillacilan");
@@ -101,20 +111,21 @@ class PublicAppController_floodStations_Test {
         expectedResult.put(person1.getAddress(), personInfoRTOList);
 
         //Mock Configuration
-        when(floodStationsService.getFloodStations(List.of("3","4"))).thenReturn(expectedResult);
+        when(floodStationsService.getFloodStations(stationNumberList)).thenReturn(expectedResult);
         //Mock Injection in Object tested
         publicAppController.floodStationsService = floodStationsService;
 
-        String urlTemplate = String.format("%s%s,%s",
+        String urlTemplate = String.format("%s%s,%s,%s",
                 "/flood/stations/",
-                "3",
-                "4");
+                stationNumberList.get(0),
+                stationNumberList.get(1),
+                stationNumberList.get(2));
         MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get(urlTemplate)
                 .accept(MediaType.APPLICATION_JSON_VALUE);
         //***********************************************************
         //**************CHECK MOCK INVOCATION at start***************
         //***********************************************************
-        verify(floodStationsService, Mockito.never()).getFloodStations(List.of("3","4"));
+        verify(floodStationsService, Mockito.never()).getFloodStations(stationNumberList);
 
         //**************WHEN-THEN****************************
         //mockMvc.perform(builder).andDo(print());
@@ -128,7 +139,7 @@ class PublicAppController_floodStations_Test {
         //**************CHECK MOCK INVOCATION at end***************
         //*********************************************************
         verify(floodStationsService, Mockito.times(1))
-                .getFloodStations(List.of("3","4"));
+                .getFloodStations(stationNumberList);
 
         //*********************************************************
         //**************CHECK RESPONSE CONTENT*********************
