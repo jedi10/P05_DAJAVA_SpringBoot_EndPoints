@@ -36,6 +36,9 @@ public class PublicAppController {
     @Autowired
     FirestationAreaService firestationAreaService;
 
+    @Autowired
+    FloodStationsService floodStationsService;
+
 
     /**
      * redirection to getPerson Admin EndPoint Controller
@@ -162,6 +165,25 @@ public class PublicAppController {
         IFirestationAreaRTO objectResult = firestationAreaService.getFirestationArea(station);
         if(null == objectResult){
             log.warn("Fetching Empty Data for station: '{}'", station);
+            return ResponseEntity.notFound().build();
+        }
+        return new ResponseEntity<>(objectResult, HttpStatus.OK);
+    }
+
+    /**
+     * getFloodStations public EndPoint Controller
+     * @see com.safetynet.alerts.service.FloodStationsService#getFloodStations(List)
+     * @param stations stations number list
+     * @param httpResponse response
+     */
+    @GetMapping(value = "/flood/stations/{stations}")
+    public ResponseEntity<?> getFloodStations(@PathVariable("stations") List<String> stations,
+                                                HttpServletResponse httpResponse)  {
+        log.info("Fetching List of all persons in the area of responsibilities of stations: '{}' grouped by address", stations);
+
+        Map<String, List<IPersonInfoRTO>> objectResult = floodStationsService.getFloodStations(stations);
+        if(null == objectResult){
+            log.warn("Fetching Empty Data for stations: '{}'", stations);
             return ResponseEntity.notFound().build();
         }
         return new ResponseEntity<>(objectResult, HttpStatus.OK);
