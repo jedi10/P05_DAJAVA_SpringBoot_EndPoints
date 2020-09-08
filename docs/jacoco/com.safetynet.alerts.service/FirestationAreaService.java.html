@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FirestationAreaService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">alerts</a> &gt; <a href="index.source.html" class="el_package">com.safetynet.alerts.service</a> &gt; <span class="el_source">FirestationAreaService.java</span></div><h1>FirestationAreaService.java</h1><pre class="source lang-java linenums">package com.safetynet.alerts.service;
+
+import com.safetynet.alerts.dao.IFirestationDAO;
+import com.safetynet.alerts.dao.IMedicalRecordDAO;
+import com.safetynet.alerts.dao.IPersonDAO;
+import com.safetynet.alerts.models.Firestation;
+import com.safetynet.alerts.models.MedicalRecord;
+import com.safetynet.alerts.models.Person;
+import com.safetynet.alerts.service.rto_models.FirestationAreaRTO;
+import com.safetynet.alerts.service.rto_models.IFirestationAreaRTO;
+import com.safetynet.alerts.service.rto_models.IPersonInfoRTO;
+import com.safetynet.alerts.service.rto_models.PersonInfoRTO;
+import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+/**
+ * &lt;b&gt;List all persons in the area of responsibilities of station given with children and adults counter&lt;/b&gt;
+ */
+<span class="fc" id="L23">@Slf4j</span>
+@Component
+public class FirestationAreaService {
+
+    final
+    IPersonDAO personDAO;
+
+    final
+    IMedicalRecordDAO medicalRecordDAO;
+
+    final
+    IFirestationDAO firestationDAO;
+
+    public FirestationAreaService(IPersonDAO personDAO, IMedicalRecordDAO medicalRecordDAO,
+<span class="fc" id="L37">                                  IFirestationDAO firestationDAO) {</span>
+<span class="fc" id="L38">        this.personDAO = personDAO;</span>
+<span class="fc" id="L39">        this.medicalRecordDAO = medicalRecordDAO;</span>
+<span class="fc" id="L40">        this.firestationDAO = firestationDAO;</span>
+<span class="fc" id="L41">    }</span>
+
+<span class="fc bfc" id="L43" title="All 2 branches covered.">    public IFirestationAreaRTO getFirestationArea(@NonNull String firestation){</span>
+<span class="fc" id="L44">        IFirestationAreaRTO firestationAreaRTO = null;</span>
+        //Get Address List linked with firestation number
+<span class="fc" id="L46">        List&lt;Firestation&gt; firestationList = firestationDAO.findAll();</span>
+<span class="fc" id="L47">        List&lt;String&gt; firestationAddressListResult = firestationList.stream()</span>
+<span class="fc" id="L48">                .filter(e-&gt; e.getStation().equalsIgnoreCase(firestation))</span>
+<span class="fc" id="L49">                .map(Firestation::getAddress)</span>
+<span class="fc" id="L50">                .collect(Collectors.toList());</span>
+
+<span class="fc bfc" id="L52" title="All 2 branches covered.">        if (!firestationAddressListResult.isEmpty()) {</span>
+            //Get Persons List having all address finded
+<span class="fc" id="L54">            List&lt;Person&gt; personList = personDAO.findAll();</span>
+<span class="fc" id="L55">            List&lt;MedicalRecord&gt; medicalRecordList = medicalRecordDAO.findAll();</span>
+<span class="fc" id="L56">            List&lt;IPersonInfoRTO&gt; personInfoRTOListFull =</span>
+<span class="fc" id="L57">                    PersonInfoRTO.buildPersonInfoRTOList(personList, medicalRecordList);</span>
+<span class="fc" id="L58">            List&lt;IPersonInfoRTO&gt; personInfoRTOListFiltered = personInfoRTOListFull.stream()</span>
+<span class="fc" id="L59">                    .filter(e-&gt; firestationAddressListResult.contains(e.getAddress()))</span>
+<span class="fc" id="L60">                    .collect(Collectors.toList());</span>
+<span class="pc bpc" id="L61" title="1 of 2 branches missed.">            if (!personInfoRTOListFiltered.isEmpty()){</span>
+                //Results are treated to be exposed in a view
+<span class="fc" id="L63">               firestationAreaRTO = new FirestationAreaRTO(personInfoRTOListFiltered);</span>
+            }
+        }
+<span class="fc" id="L66">        return firestationAreaRTO;</span>
+    }
+}
+
+
+//https://www.baeldung.com/java-groupingby-collector
+//https://www.concretepage.com/java/java-8/java-stream-count
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

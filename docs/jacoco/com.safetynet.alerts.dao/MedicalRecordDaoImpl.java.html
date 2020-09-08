@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MedicalRecordDaoImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">alerts</a> &gt; <a href="index.source.html" class="el_package">com.safetynet.alerts.dao</a> &gt; <span class="el_source">MedicalRecordDaoImpl.java</span></div><h1>MedicalRecordDaoImpl.java</h1><pre class="source lang-java linenums">package com.safetynet.alerts.dao;
+
+import com.safetynet.alerts.models.MedicalRecord;
+import com.safetynet.alerts.utils.Jackson;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.stereotype.Repository;
+
+import java.io.IOException;
+import java.util.List;
+
+/**
+ * &lt;b&gt;Load and Manage MedicalRecord Type Data&lt;/b&gt;
+ */
+@Repository
+public class MedicalRecordDaoImpl extends DaoImpl implements IMedicalRecordDAO {
+
+<span class="fc" id="L18">    @Getter</span>
+<span class="fc" id="L19">    @Setter</span>
+    private List&lt;MedicalRecord&gt; medicalRecordList;
+
+    public MedicalRecordDaoImpl(RootFile rootFile) throws IOException {
+<span class="fc" id="L23">        super(rootFile);</span>
+        try {
+<span class="fc" id="L25">            this.medicalRecordList = Jackson.convertJsonRootDataToJava(</span>
+<span class="fc" id="L26">                    this.getRootFile().getBytes(),</span>
+                    &quot;medicalrecords&quot;,
+                    MedicalRecord.class);
+<span class="fc" id="L29">        } catch (IOException e) {</span>
+<span class="fc" id="L30">            throw new IOException(e);</span>
+<span class="fc" id="L31">        }</span>
+<span class="fc" id="L32">    }</span>
+
+
+    @Override
+    public List&lt;MedicalRecord&gt; findAll() {
+<span class="fc" id="L37">        return medicalRecordList;</span>
+    }
+
+    @Override
+    public MedicalRecord findByName(String firstName, String lastName) {
+<span class="fc" id="L42">        return medicalRecordList.stream()</span>
+<span class="fc" id="L43">                .filter(x -&gt; {</span>
+<span class="fc bfc" id="L44" title="All 2 branches covered.">                    return firstName.toLowerCase().equals(</span>
+<span class="fc" id="L45">                                    x.getFirstName().toLowerCase()) &amp;&amp;</span>
+<span class="pc bpc" id="L46" title="1 of 2 branches missed.">                            lastName.toLowerCase().equals(</span>
+<span class="fc" id="L47">                                    x.getLastName().toLowerCase());</span>
+                        })
+<span class="fc" id="L49">                .findAny()    // If 'findAny' then return found</span>
+<span class="fc" id="L50">                .orElse(null);</span>
+        //https://mkyong.com/java8/java-8-streams-filter-examples/
+    }
+
+    private boolean isPresent(MedicalRecord medicalRecord){
+<span class="fc" id="L55">        return medicalRecordList.stream()</span>
+<span class="fc" id="L56">                .anyMatch((p)-&gt; {</span>
+<span class="fc" id="L57">                    return p.equals(medicalRecord);}</span>
+                );
+        //https://www.baeldung.com/java-streams-find-list-items
+    }
+
+    @Override
+    public MedicalRecord save(MedicalRecord medicalRecord) {
+<span class="fc" id="L64">        MedicalRecord result = null;</span>
+<span class="pc bpc" id="L65" title="1 of 2 branches missed.">        if(!isPresent(medicalRecord)) {</span>
+<span class="fc" id="L66">            medicalRecordList.add(medicalRecord);</span>
+<span class="fc" id="L67">            result = medicalRecord;</span>
+        }
+<span class="fc" id="L69">        return result;</span>
+    }
+
+    @Override
+    public MedicalRecord update(MedicalRecord medicalRecord) {
+<span class="fc" id="L74">        MedicalRecord result= null;</span>
+<span class="fc bfc" id="L75" title="All 2 branches covered.">        if(isPresent(medicalRecord)){</span>
+<span class="fc" id="L76">            medicalRecordList.replaceAll(p -&gt;</span>
+            {
+<span class="fc bfc" id="L78" title="All 2 branches covered.">                if (p.equals(medicalRecord)) {</span>
+<span class="fc" id="L79">                    return medicalRecord;</span>
+                } else {
+<span class="fc" id="L81">                    return p;}</span>
+            });
+            //https://www.programiz.com/java-programming/library/arraylist/replaceall
+<span class="fc" id="L84">            result = medicalRecord;</span>
+        }
+<span class="fc" id="L86">        return result;</span>
+    }
+
+    @Override
+    public boolean delete(MedicalRecord medicalRecord) {
+<span class="fc" id="L91">        return medicalRecordList.remove(medicalRecord);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

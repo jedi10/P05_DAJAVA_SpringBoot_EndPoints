@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CustomErrorController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">alerts</a> &gt; <a href="index.source.html" class="el_package">com.safetynet.alerts.rest</a> &gt; <span class="el_source">CustomErrorController.java</span></div><h1>CustomErrorController.java</h1><pre class="source lang-java linenums">package com.safetynet.alerts.rest;
+
+import com.safetynet.alerts.models.CustomErrorResponse;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.error.ErrorAttributeOptions;
+import org.springframework.boot.web.servlet.error.ErrorAttributes;
+import org.springframework.boot.web.servlet.error.ErrorController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.ServletWebRequest;
+import org.springframework.web.context.request.WebRequest;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
+
+/**
+ * &lt;b&gt;Custom Error Controller With JSON Response&lt;/b&gt;
+ *
+ * @author Jedi10
+ * @since 25.06.2020
+ */
+<span class="fc" id="L27">@Slf4j</span>
+@RestController
+@RequestMapping(&quot;/&quot;)
+public class CustomErrorController implements ErrorController {
+
+<span class="fc" id="L32">    public CustomErrorController() {}</span>
+
+    @Autowired
+    ErrorAttributes errorAttributes ;
+
+    @GetMapping(value = &quot;error&quot;, produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity&lt;CustomErrorResponse&gt; handleError(HttpServletRequest request, HttpServletResponse response) {
+<span class="fc" id="L39">        Object status = request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);</span>
+<span class="fc" id="L40">        log.error(&quot;Error with status code &quot; + status + &quot; happened. &quot;);</span>
+<span class="fc" id="L41">        CustomErrorResponse customErrorResponse = new CustomErrorResponse(response.getStatus(), getErrorAttributes(request));</span>
+
+<span class="fc" id="L43">        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(customErrorResponse);</span>
+    }
+
+    @Override
+    public String getErrorPath() {
+<span class="fc" id="L48">        return &quot;/error&quot;;</span>
+    }
+
+    private Map&lt;String, Object&gt; getErrorAttributes(HttpServletRequest request) {
+<span class="fc" id="L52">        WebRequest webRequest = new ServletWebRequest(request);</span>
+<span class="fc" id="L53">        return errorAttributes.getErrorAttributes(webRequest, ErrorAttributeOptions.defaults());</span>
+    }
+}
+
+
+
+//https://www.baeldung.com/spring-boot-custom-error-page
+//https://spring.io/blog/2013/11/01/exception-handling-in-spring-mvc
+//JSON Error Response https://gist.github.com/jonikarppinen/662c38fb57a23de61c8b
+//https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#boot-features-error-handling
+//https://stackoverflow.com/questions/25356781/spring-boot-remove-whitelabel-error-page
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

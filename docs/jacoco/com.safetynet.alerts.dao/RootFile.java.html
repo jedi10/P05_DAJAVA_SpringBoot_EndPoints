@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RootFile.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">alerts</a> &gt; <a href="index.source.html" class="el_package">com.safetynet.alerts.dao</a> &gt; <span class="el_source">RootFile.java</span></div><h1>RootFile.java</h1><pre class="source lang-java linenums">package com.safetynet.alerts.dao;
+
+import com.safetynet.alerts.configuration.AlertsProperties;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.stereotype.Repository;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
+/**
+ * &lt;b&gt;Manage JSON File properties&lt;/b&gt;
+ * &lt;p&gt;place where we store data related to json file given&lt;/p&gt;
+ */
+@Repository
+public class RootFile implements IRootFile {
+
+<span class="fc" id="L20">    @Getter</span>
+<span class="fc" id="L21">    @Setter</span>
+    private String path;
+
+<span class="fc" id="L24">    @Getter</span>
+<span class="fc" id="L25">    @Setter</span>
+    private byte[] bytes = null;
+
+    /**
+     * &lt;b&gt;Constructor&lt;/b&gt;
+     * @param alertsProperties All Custom properties of App (json File Path)
+     */
+<span class="fc" id="L32">    public RootFile(AlertsProperties alertsProperties) {</span>
+<span class="fc" id="L33">        this.path = alertsProperties.getJsonFilePath();</span>
+        try {
+<span class="fc" id="L35">            setBytesWithPath(false);</span>
+<span class="fc" id="L36">        } catch (IOException e) {</span>
+<span class="fc" id="L37">            e.printStackTrace();</span>
+<span class="fc" id="L38">        }</span>
+<span class="fc" id="L39">    }</span>
+
+    /**
+     * init fileBytes array
+     */
+    @Override
+    public void setBytesWithPath(boolean forceSetting) throws IOException {
+        try {
+<span class="fc bfc" id="L47" title="All 4 branches covered.">            if (this.bytes == null || forceSetting){</span>
+<span class="fc" id="L48">                String fileString = Files.readString(Paths.get(this.getPath()));</span>
+<span class="fc" id="L49">                this.bytes = fileString.getBytes(StandardCharsets.UTF_8);</span>
+                //this.bytes = Files.readAllBytes(Paths.get(this.getPath()));
+            }
+<span class="fc" id="L52">        } catch (IOException e) {</span>
+<span class="fc" id="L53">            throw new IOException(&quot;File don't exist: check the file path&quot;, e);</span>
+<span class="fc" id="L54">        }</span>
+<span class="fc" id="L55">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

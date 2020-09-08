@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FireAddressService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">alerts</a> &gt; <a href="index.source.html" class="el_package">com.safetynet.alerts.service</a> &gt; <span class="el_source">FireAddressService.java</span></div><h1>FireAddressService.java</h1><pre class="source lang-java linenums">package com.safetynet.alerts.service;
+
+import com.safetynet.alerts.dao.IFirestationDAO;
+import com.safetynet.alerts.dao.IMedicalRecordDAO;
+import com.safetynet.alerts.dao.IPersonDAO;
+import com.safetynet.alerts.models.Firestation;
+import com.safetynet.alerts.models.MedicalRecord;
+import com.safetynet.alerts.models.Person;
+import com.safetynet.alerts.service.rto_models.IPersonInfoRTO;
+import com.safetynet.alerts.service.rto_models.PersonInfoRTO;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+/**
+ * &lt;b&gt;List all persons located under address given and the Firestation responsible&lt;/b&gt;
+ */
+<span class="fc" id="L23">@Slf4j</span>
+@Component
+public class FireAddressService {
+
+    final
+    IPersonDAO personDAO;
+
+    final
+    IMedicalRecordDAO medicalRecordDAO;
+
+    final
+    IFirestationDAO firestationDAO;
+
+<span class="fc" id="L36">    public FireAddressService(IPersonDAO personDAO, IMedicalRecordDAO medicalRecordDAO, IFirestationDAO firestationDAO) {</span>
+<span class="fc" id="L37">        this.personDAO = personDAO;</span>
+<span class="fc" id="L38">        this.medicalRecordDAO = medicalRecordDAO;</span>
+<span class="fc" id="L39">        this.firestationDAO = firestationDAO;</span>
+<span class="fc" id="L40">    }</span>
+
+
+    public Map&lt;String, List&gt; getFireAndPersonsWithAddress(String address) {
+<span class="fc" id="L44">        Map&lt;String, List&gt; result = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L45">        List&lt;IPersonInfoRTO&gt; personInfoRTOList = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L46">        List&lt;String&gt; fireStationNumber = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L47" title="All 2 branches covered.">        if (null != address){</span>
+<span class="fc" id="L48">            Firestation firestation = firestationDAO.findByAddress(address);</span>
+<span class="fc bfc" id="L49" title="All 2 branches covered.">            if ( null != firestation){</span>
+<span class="fc" id="L50">                fireStationNumber.add(firestation.getStation());</span>
+            }
+
+<span class="fc" id="L53">            List&lt;Person&gt; personList = personDAO.findAll();</span>
+<span class="fc" id="L54">            List&lt;MedicalRecord&gt; medicalRecordList = medicalRecordDAO.findAll();</span>
+<span class="fc" id="L55">            List&lt;IPersonInfoRTO&gt; personInfoRTOListFull = PersonInfoRTO.buildPersonInfoRTOList(personList, medicalRecordList);</span>
+<span class="pc bpc" id="L56" title="1 of 2 branches missed.">            if (!personInfoRTOListFull.isEmpty()){</span>
+<span class="fc" id="L57">                personInfoRTOList = personInfoRTOListFull.stream()</span>
+<span class="fc" id="L58">                        .filter(e-&gt; e.getAddress().equalsIgnoreCase(address))</span>
+<span class="fc" id="L59">                        .collect(Collectors.toList());</span>
+            }
+        }
+<span class="fc" id="L62">        result.put(&quot;Persons&quot;, personInfoRTOList);</span>
+<span class="fc" id="L63">        result.put(&quot;Firestation&quot;, fireStationNumber);</span>
+<span class="fc" id="L64">        return result;</span>
+    }
+}
+
+
+
+//https://www.codeflow.site/fr/article/java-hashmap
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PersonInfoService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">alerts</a> &gt; <a href="index.source.html" class="el_package">com.safetynet.alerts.service</a> &gt; <span class="el_source">PersonInfoService.java</span></div><h1>PersonInfoService.java</h1><pre class="source lang-java linenums">package com.safetynet.alerts.service;
+
+import com.safetynet.alerts.dao.IMedicalRecordDAO;
+import com.safetynet.alerts.dao.IPersonDAO;
+import com.safetynet.alerts.models.MedicalRecord;
+import com.safetynet.alerts.models.Person;
+import com.safetynet.alerts.service.rto_models.IPersonInfoRTO;
+import com.safetynet.alerts.service.rto_models.PersonInfoRTO;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+/**
+ * &lt;b&gt;Give all information on a Person selected by first Name and last Name&lt;/b&gt;
+ */
+<span class="fc" id="L20">@Slf4j</span>
+@Component
+public class PersonInfoService {
+
+    final
+    IPersonDAO personDAO;
+
+    final
+    IMedicalRecordDAO medicalRecordDAO;
+
+<span class="fc" id="L30">    public PersonInfoService(IPersonDAO personDAO, IMedicalRecordDAO medicalRecordDAO) {</span>
+
+<span class="fc" id="L32">        this.personDAO = personDAO;</span>
+<span class="fc" id="L33">        this.medicalRecordDAO = medicalRecordDAO;</span>
+<span class="fc" id="L34">    }</span>
+
+    String firstName;
+
+    String lastName;
+
+    List&lt;IPersonInfoRTO&gt; personInfoRTOList;
+
+    public List&lt;IPersonInfoRTO&gt; getPersonInfo(String firstName, String lastName) {
+<span class="fc" id="L43">        List&lt;IPersonInfoRTO&gt; result = new ArrayList&lt;&gt;();</span>
+<span class="pc bpc" id="L44" title="1 of 4 branches missed.">        if (firstName != null &amp;&amp; lastName != null) {</span>
+            //Debounce functionality
+<span class="fc bfc" id="L46" title="All 2 branches covered.">            if (firstName.equals(this.firstName) &amp;&amp;</span>
+<span class="pc bpc" id="L47" title="2 of 4 branches missed.">                    lastName.equals(this.lastName) &amp;&amp;</span>
+                    this.personInfoRTOList != null) {
+<span class="fc" id="L49">                result = this.personInfoRTOList;</span>
+            } else {
+<span class="fc" id="L51">                this.firstName = firstName;</span>
+<span class="fc" id="L52">                this.lastName = lastName;</span>
+<span class="fc" id="L53">                this.personInfoRTOList = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L54">                List&lt;Person&gt; personList = personDAO.findAll();</span>
+<span class="fc" id="L55">                List&lt;MedicalRecord&gt; medicalRecordList = medicalRecordDAO.findAll();</span>
+<span class="fc" id="L56">                List&lt;IPersonInfoRTO&gt; personInfoRTOFull =  PersonInfoRTO.buildPersonInfoRTOList(personList, medicalRecordList);</span>
+                //Filtering
+                //Put the perfect Match in Result List
+<span class="fc" id="L59">                IPersonInfoRTO personInfoRTOPerfectResult = personInfoRTOFull.stream()</span>
+<span class="fc" id="L60">                        .filter(o -&gt;</span>
+<span class="fc bfc" id="L61" title="All 2 branches covered.">                                    o.getFirstName().equalsIgnoreCase(firstName) &amp;&amp;</span>
+<span class="pc bpc" id="L62" title="1 of 2 branches missed.">                                    o.getLastName().equalsIgnoreCase(lastName))</span>
+<span class="fc" id="L63">                        .findAny()</span>
+<span class="fc" id="L64">                        .orElse(null);</span>
+                //https://www.baeldung.com/find-list-element-java
+<span class="fc bfc" id="L66" title="All 2 branches covered.">                if (null != personInfoRTOPerfectResult){</span>
+<span class="fc" id="L67">                    personInfoRTOFull.remove(personInfoRTOPerfectResult);</span>
+<span class="fc" id="L68">                    this.personInfoRTOList.add(personInfoRTOPerfectResult);</span>
+                }
+                //Put Last Name Match in Result List
+<span class="fc" id="L71">                List&lt;IPersonInfoRTO&gt; personInfoRTOListSameName = personInfoRTOFull.stream()</span>
+<span class="fc" id="L72">                        .filter(o -&gt;  o.getLastName().equalsIgnoreCase(lastName))</span>
+<span class="fc" id="L73">                        .collect(Collectors.toList());</span>
+<span class="fc" id="L74">                this.personInfoRTOList.addAll(personInfoRTOListSameName);</span>
+
+<span class="fc" id="L76">                result = this.personInfoRTOList;</span>
+            }
+        }
+<span class="fc" id="L79">        return result;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

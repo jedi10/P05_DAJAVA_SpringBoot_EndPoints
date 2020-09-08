@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FirestationAreaRTO.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">alerts</a> &gt; <a href="index.source.html" class="el_package">com.safetynet.alerts.service.rto_models</a> &gt; <span class="el_source">FirestationAreaRTO.java</span></div><h1>FirestationAreaRTO.java</h1><pre class="source lang-java linenums">package com.safetynet.alerts.service.rto_models;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.safetynet.alerts.models.MedicalRecord;
+import lombok.Getter;
+import lombok.NonNull;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+/**
+ * &lt;b&gt;RTO Class used by FirestationArea Service&lt;/b&gt;
+ * &lt;p&gt;Give a presentation of list of IPersonInfoRTO&lt;/p&gt;
+ * &lt;ul&gt;
+ *     &lt;li&gt;add a counter for children and adults&lt;/li&gt;
+ *     &lt;li&gt;in case counter is on zero, we show it anyway&lt;/li&gt;
+ * &lt;/ul&gt;
+ * @see com.safetynet.alerts.service.FirestationAreaService
+ */
+public class FirestationAreaRTO implements IFirestationAreaRTO {
+
+<span class="fc" id="L25">    @Getter</span>
+    @JsonProperty(&quot;FIRESTATION AREA&quot;)
+    private Map&lt;String, List&lt;IPersonInfoRTO&gt;&gt; personInfoRTOMap;
+
+<span class="fc" id="L29">    @Getter</span>
+    @JsonProperty(&quot;COUNTER&quot;)
+    private Map&lt;IPersonInfoRTO.HumanCategory, Long&gt; humanCategoryMap;
+
+<span class="fc bfc" id="L33" title="All 2 branches covered.">    public FirestationAreaRTO(@NonNull List&lt;IPersonInfoRTO&gt; personInfoRTOList) {</span>
+<span class="fc" id="L34">        personInfoRTOMap = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L35">        personInfoRTOMap.put(&quot;PERSONS&quot;, personInfoRTOList);</span>
+<span class="fc" id="L36">        this.setHumanCategoryMap(personInfoRTOList);</span>
+<span class="fc" id="L37">    }</span>
+    private void setHumanCategoryMap(List&lt;IPersonInfoRTO&gt; personInfoRTOList){
+<span class="fc" id="L39">        humanCategoryMap = personInfoRTOList.stream().collect(</span>
+<span class="fc" id="L40">                Collectors.groupingBy(</span>
+<span class="fc" id="L41">                        IPersonInfoRTO::getHumanCategory, Collectors.counting()</span>
+                )
+        );
+<span class="fc" id="L44">        humanCategoryMap.putIfAbsent(IPersonInfoRTO.HumanCategory.CHILDREN, 0L);</span>
+<span class="fc" id="L45">        humanCategoryMap.putIfAbsent(IPersonInfoRTO.HumanCategory.ADULTS, 0L);</span>
+<span class="fc" id="L46">    }</span>
+}
+
+//https://mkyong.com/java8/java-8-collectors-groupingby-and-mapping-example
+//https://www.concretepage.com/java/java-8/java-stream-count
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

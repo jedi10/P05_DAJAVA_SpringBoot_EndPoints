@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Firestation.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">alerts</a> &gt; <a href="index.source.html" class="el_package">com.safetynet.alerts.models</a> &gt; <span class="el_source">Firestation.java</span></div><h1>Firestation.java</h1><pre class="source lang-java linenums">package com.safetynet.alerts.models;
+
+import lombok.Getter;
+import lombok.Setter;
+
+import java.util.Objects;
+
+public class Firestation {
+
+<span class="fc" id="L10">    @Getter</span>
+<span class="fc" id="L11">    @Setter</span>
+    private String address;
+
+<span class="fc" id="L14">    @Getter</span>
+<span class="fc" id="L15">    @Setter</span>
+    private String station;
+
+    /**
+     * Constructor
+     * @param address address
+     * @param station station number (String)
+     */
+<span class="fc" id="L23">    public Firestation(String address, String station) {</span>
+<span class="fc" id="L24">        this.address = address;</span>
+<span class="fc" id="L25">        this.station = station;</span>
+<span class="fc" id="L26">    }</span>
+
+    /**
+     * Constructor
+     */
+<span class="fc" id="L31">    public Firestation(){}</span>
+
+    @Override
+    public boolean equals(Object o) {
+<span class="fc bfc" id="L35" title="All 2 branches covered.">        if (this == o) return true;</span>
+<span class="pc bpc" id="L36" title="2 of 4 branches missed.">        if (o == null || getClass() != o.getClass()) return false;</span>
+<span class="fc" id="L37">        Firestation that = (Firestation) o;</span>
+<span class="fc" id="L38">        return  Objects.equals(</span>
+<span class="fc" id="L39">                    address.toLowerCase(), that.address.toLowerCase());</span>
+    }
+
+    @Override
+    public int hashCode() {
+<span class="fc" id="L44">        return Objects.hash(address);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>
