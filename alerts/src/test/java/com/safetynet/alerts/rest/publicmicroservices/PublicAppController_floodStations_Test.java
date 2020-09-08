@@ -3,13 +3,16 @@ package com.safetynet.alerts.rest.publicmicroservices;
 import com.safetynet.alerts.models.MedicalRecord;
 import com.safetynet.alerts.models.Person;
 import com.safetynet.alerts.service.FirestationAreaService;
+import com.safetynet.alerts.service.FloodStationsService;
 import com.safetynet.alerts.service.rto_models.FirestationAreaRTO;
 import com.safetynet.alerts.service.rto_models.IFirestationAreaRTO;
 import com.safetynet.alerts.service.rto_models.IPersonInfoRTO;
 import com.safetynet.alerts.service.rto_models.PersonInfoRTO;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.Spy;
@@ -24,15 +27,18 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Stream;
 
 import static com.safetynet.alerts.utils.Jackson.convertJavaToJson;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
@@ -40,7 +46,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class PublicAppController_firestationArea_Test {
+class PublicAppController_floodStations_Test {
 
     @Autowired
     public MockMvc mockMvc;
@@ -49,7 +55,7 @@ class PublicAppController_firestationArea_Test {
     public PublicAppController publicAppController;
 
     @Mock
-    public FirestationAreaService firestationAreaService;
+    public FloodStationsService floodStationsService;
 
     @Spy
     public List<IPersonInfoRTO> personInfoRTOList = new ArrayList<>();
@@ -80,9 +86,19 @@ class PublicAppController_firestationArea_Test {
         mockMvc = null;
     }
 
+    static Stream<Arguments> stationData() {
+        return Stream.of(
+                //All stations exist in data
+                Arguments.of(Arrays.asList("2","3", "4")),
+                //One station doesn't exist in data
+                Arguments.of(Arrays.asList("1", "2", "5"))
+        );
+    }
+
     @Order(1)
-    @Test
-    void getFireStation_Ok() throws Exception {
+    @ParameterizedTest
+    @MethodSource("stationData")
+    void getFloodStations_Ok(List<String> stationNumberList) throws Exception {
         //***********GIVEN*************
         medicationList.add("aznol:350mg"); medicationList.add("hydrapermazol:100mg");
         allergiesList.add("nillacilan");
@@ -91,68 +107,77 @@ class PublicAppController_firestationArea_Test {
 
         personInfoRTOList.add(new PersonInfoRTO(person1, medicalRecord1));
 
-        IFirestationAreaRTO firestationAreaRTO = new FirestationAreaRTO(personInfoRTOList);
+        Map<String, List<IPersonInfoRTO>> expectedResult = new HashMap<>();
+        expectedResult.put(person1.getAddress(), personInfoRTOList);
 
-        when(firestationAreaService.getFirestationArea("3")).
-                thenReturn(firestationAreaRTO);
+        //Mock Configuration
+        when(floodStationsService.getFloodStations(stationNumberList)).thenReturn(expectedResult);
         //Mock Injection in Object tested
-        publicAppController.firestationAreaService = firestationAreaService;
+        publicAppController.floodStationsService = floodStationsService;
 
-        String urlTemplate = String.format("%s%s",
-                "/firestationarea/",
-                "3");
+        String urlTemplate = String.format("%s%s,%s,%s",
+                "/flood/stations/",
+                stationNumberList.get(0),
+                stationNumberList.get(1),
+                stationNumberList.get(2));
         MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get(urlTemplate)
                 .accept(MediaType.APPLICATION_JSON_VALUE);
         //***********************************************************
         //**************CHECK MOCK INVOCATION at start***************
         //***********************************************************
-        verify(firestationAreaService, Mockito.never()).getFirestationArea("3");
+        verify(floodStationsService, Mockito.never()).getFloodStations(stationNumberList);
 
         //**************WHEN-THEN****************************
+        //mockMvc.perform(builder).andDo(print());
        MvcResult mvcResult = mockMvc.perform(builder)//.andDo(print());
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(content().string(containsString(person1.getEmail())))
-                //.andExpect(jsonPath("$.[1].[0].ADULTS").value(1))
+                //.andExpect(jsonPath("$.[0].[0].lastName").value(person1.getLastName()))
                 .andReturn();
         //*********************************************************
         //**************CHECK MOCK INVOCATION at end***************
         //*********************************************************
-        verify(firestationAreaService, Mockito.times(1)).getFirestationArea("3");
+        verify(floodStationsService, Mockito.times(1))
+                .getFloodStations(stationNumberList);
 
         //*********************************************************
         //**************CHECK RESPONSE CONTENT*********************
         //*********************************************************
         //*****************Check with JSON*************************
         String expectedJson = null;
-        expectedJson = convertJavaToJson(firestationAreaRTO);
+        expectedJson = convertJavaToJson(expectedResult);
         String jsonResult = mvcResult.getResponse().getContentAsString();
         JSONAssert.assertEquals(expectedJson, jsonResult, true);
     }
 
+    static Stream<Arguments> stationNoExistData() {
+        return Stream.of(
+                //All stations listed here don't exist in data.
+                Arguments.of(List.of("0", "404"))
+        );
+    }
     @Order(2)
     @ParameterizedTest
-    @CsvSource({"0"})
+    @MethodSource("stationNoExistData")
     //@ValueSource(strings = { "toto", "" })
-    void getFirestation_NotFound(String station) throws Exception {
+    void getFloodStations_NotFound(List<String> stations) throws Exception {
         //***********GIVEN*************
-        IFirestationAreaRTO firestationAreaRTO = null;
-
-        when(firestationAreaService.getFirestationArea(station)).
-                thenReturn(firestationAreaRTO);
+        //Mock Configuration
+        when(floodStationsService.getFloodStations(anyList())).thenReturn(null);
         //Mock Injection in Object tested
-        publicAppController.firestationAreaService = firestationAreaService;
+        publicAppController.floodStationsService = floodStationsService;
 
-        String urlTemplate = String.format("%s%s",
-                "/firestationarea/",
-                station);
+        String urlTemplate = String.format("%s%s,%s",
+                "/flood/stations/",
+                stations.get(0),
+                stations.get(1));
         MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get(urlTemplate)
                 .accept(MediaType.APPLICATION_JSON_VALUE);
         //***********************************************************
         //**************CHECK MOCK INVOCATION at start***************
         //***********************************************************
-        verify(firestationAreaService, Mockito.never())
-                .getFirestationArea(station);
+        verify(floodStationsService, Mockito.never()).getFloodStations(stations);
 
         //**************WHEN-THEN****************************
         MvcResult mvcResult = mockMvc.perform(builder)//.andDo(print());
@@ -162,8 +187,8 @@ class PublicAppController_firestationArea_Test {
         //***********************************************************
         //**************CHECK MOCK INVOCATION at end***************
         //***********************************************************
-        verify(firestationAreaService, Mockito.times(1))
-                .getFirestationArea(station);
+        verify(floodStationsService, Mockito.times(1))
+                .getFloodStations(stations);
 
         //*********************************************************
         //**************CHECK RESPONSE CONTENT*********************

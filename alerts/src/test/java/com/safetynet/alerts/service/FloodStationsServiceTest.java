@@ -12,28 +12,36 @@ import com.safetynet.alerts.service.rto_models.PersonInfoRTO;
 import com.safetynet.alerts.utils.Jackson;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.NullSource;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import static java.util.stream.Collectors.groupingBy;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class FirestationAreaServiceTest {
+class FloodStationsServiceTest {
 
     @Autowired
-    private FirestationAreaService firestationAreaService;
+    private FloodStationsService floodStationsService;
 
     @Mock
     IPersonDAO personDAO;
@@ -52,9 +60,8 @@ class FirestationAreaServiceTest {
 
     private List<Firestation> firestationList;
 
-
     @BeforeEach
-    void setUp() throws Exception {
+    void setUp() throws IOException {
         String fileString = Files.readString(Paths.get("src/test/resources/testData.json"));
         byte[] fileBytes = fileString.getBytes(StandardCharsets.UTF_8);
         this.personList = Jackson.convertJsonRootDataToJava(
@@ -75,10 +82,18 @@ class FirestationAreaServiceTest {
     void tearDown() {
     }
 
-    @Order(1)
+    static Stream<Arguments> stationData() {
+        return Stream.of(
+                //All stations exist in data
+                Arguments.of(Arrays.asList("3", "4")),
+                //One station doesn't exist in data
+                Arguments.of(Arrays.asList("1", "2", "5"))
+        );
+    }
+
     @ParameterizedTest
-    @CsvSource({"3","4"})
-    void getFirestationArea_Ok(String firestationNumber) {
+    @MethodSource("stationData")
+    void getFloodStations_OK(List<String> stationNumberList) {
         //GIVEN
         //*********************check data used in test*****************************
         assertNotNull(this.personList,
@@ -95,32 +110,16 @@ class FirestationAreaServiceTest {
 
         //*****************Get Address List linked to station number******************
         List<String> listAddressResult = this.firestationList.stream()
-                .filter(e-> e.getStation().equalsIgnoreCase(firestationNumber))
+                .filter(e-> stationNumberList.contains(e.getStation()))
+                .distinct()
                 .map(Firestation::getAddress)
                 .collect(Collectors.toList());
         //Filtering list
-        List<IPersonInfoRTO> expectedPersonRTOList = personInfoRTOList.stream()
+        Map<String,List<IPersonInfoRTO>> expectedPersonRTOMap = personInfoRTOList.stream()
                 .filter(o ->
                         listAddressResult.contains(o.getAddress())
                 )
-                .collect(Collectors.toList());
-
-        //*****************Get expected Persons List with Children******************
-        List<IPersonInfoRTO> expectedChildRTOList = personInfoRTOList.stream()
-                .filter(o ->
-                        listAddressResult.contains(o.getAddress()) &&
-                                o.getHumanCategory().equals(IPersonInfoRTO.HumanCategory.CHILDREN)
-                )
-                .collect(Collectors.toList());
-
-        //*****************Get expected Persons List with Adults******************
-        List<IPersonInfoRTO> expectedAdultRTOList = personInfoRTOList.stream()
-                .filter(o ->
-                        listAddressResult.contains(o.getAddress()) &&
-                                o.getHumanCategory().equals(IPersonInfoRTO.HumanCategory.ADULTS)
-                )
-                .collect(Collectors.toList());
-
+                .collect(Collectors.groupingBy(IPersonInfoRTO::getAddress));
 
         //************************************************
         //Mocks Configuration
@@ -133,7 +132,7 @@ class FirestationAreaServiceTest {
         //DATA available via Mock DAO injection in Service
         //************************************************
         //Mock injection
-        firestationAreaService = new FirestationAreaService(
+        floodStationsService = new FloodStationsService(
                 this.personDAO,
                 this.medicalRecordDAO,
                 this.firestationDAO);
@@ -146,8 +145,8 @@ class FirestationAreaServiceTest {
         verify(firestationDAO, Mockito.never()).findAll();
 
         //WHEN
-        IFirestationAreaRTO objectListResult =
-                firestationAreaService.getFirestationArea(firestationNumber);
+        Map<String,List<IPersonInfoRTO>> objectListResult =
+                floodStationsService.getFloodStations(stationNumberList);
 
         //THEN
         //***********************************************************
@@ -158,29 +157,23 @@ class FirestationAreaServiceTest {
         verify(firestationDAO, Mockito.times(1)).findAll();
 
         assertNotNull(objectListResult);
-        assertNotNull(objectListResult.getPersonInfoRTOMap());
-        assertNotNull(objectListResult.getHumanCategoryMap());
         //********************************
         //Check Content for PersonRTO List
         //********************************
-        List<IPersonInfoRTO> personInfoRTOListResult = objectListResult.getPersonInfoRTOMap().get("PERSONS");
-        assertEquals(expectedPersonRTOList, personInfoRTOListResult);
-        //*******************************
-        //Check Children number
-        //*******************************
-        Long childrenNumberResult = objectListResult.getHumanCategoryMap().get(IPersonInfoRTO.HumanCategory.CHILDREN);
-        assertEquals(expectedChildRTOList.size(), childrenNumberResult);
-        //*******************************
-        //Check Adult number
-        //*******************************
-        Long adultNumberResult = objectListResult.getHumanCategoryMap().get(IPersonInfoRTO.HumanCategory.ADULTS);
-        assertEquals(expectedAdultRTOList.size(), adultNumberResult);
-
+        assertEquals(expectedPersonRTOMap, objectListResult);
     }
+
+    static Stream<Arguments> stationNoExistData() {
+        return Stream.of(
+                //All stations listed here don't exist in data.
+                Arguments.of(Arrays.asList("0", "404"))
+        );
+    }
+
     @Order(2)
     @ParameterizedTest
-    @CsvSource({"0"})
-    void getFirestationArea_NoStationAddress(String firestationNumber) {
+    @MethodSource("stationNoExistData")
+    void getFloodStations_NoStationAddress(List<String> stationNumberList) {
         //GIVEN
         //*********************check data used in test*****************************
         assertNotNull(this.personList,
@@ -196,8 +189,10 @@ class FirestationAreaServiceTest {
         personInfoRTOList =  PersonInfoRTO.buildPersonInfoRTOList(this.personList, this.medicalRecordList);
 
         //*****************Get Address List linked to station number******************
+        //*****************Get Address List linked to station number******************
         List<String> listAddressResult = this.firestationList.stream()
-                .filter(e-> e.getStation().equalsIgnoreCase(firestationNumber))
+                .filter(e-> stationNumberList.contains(e.getStation()))
+                .distinct()
                 .map(Firestation::getAddress)
                 .collect(Collectors.toList());
         assertTrue(listAddressResult.isEmpty());
@@ -213,7 +208,7 @@ class FirestationAreaServiceTest {
         //DATA available via Mock DAO injection in Service
         //************************************************
         //Mock injection
-        firestationAreaService = new FirestationAreaService(
+        floodStationsService = new FloodStationsService(
                 this.personDAO,
                 this.medicalRecordDAO,
                 this.firestationDAO);
@@ -226,8 +221,8 @@ class FirestationAreaServiceTest {
         verify(firestationDAO, Mockito.never()).findAll();
 
         //WHEN
-        IFirestationAreaRTO objectListResult =
-                firestationAreaService.getFirestationArea(firestationNumber);
+        Map<String,List<IPersonInfoRTO>> objectListResult =
+                floodStationsService.getFloodStations(stationNumberList);
 
         //THEN
         //***********************************************************
@@ -241,14 +236,15 @@ class FirestationAreaServiceTest {
     }
 
     @Order(3)
-    @Test
-    void getFirestationArea_NullParam() {
+    @ParameterizedTest
+    @NullSource
+    void getFloodStations_NullParam(List<String> stationNumberList) {
         //WHEN-THEN
         Exception exception = assertThrows(NullPointerException.class, () -> {
-            firestationAreaService.getFirestationArea(null);
+            floodStationsService.getFloodStations(stationNumberList);
         });
         assertTrue(exception.getMessage().contains(
-                "firestation is marked non-null but is null"));
+                "stationNumberList is marked non-null but is null"));
 
         verify(personDAO, Mockito.never()).findAll();
         verify(medicalRecordDAO, Mockito.never()).findAll();
