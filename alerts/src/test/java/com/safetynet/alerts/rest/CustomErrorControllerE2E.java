@@ -21,11 +21,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
- * Integration Test for Custom Error Controller
+ * End to End Test for Custom Error Controller
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class CustomErrorControllerIT {
+class CustomErrorControllerE2E {
 
     private final String URL_TO_TEST = "/wrongurl";
 
