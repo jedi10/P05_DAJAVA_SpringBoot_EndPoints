@@ -21,8 +21,7 @@ import java.util.Map;
 import static java.util.stream.Collectors.groupingBy;
 
 /**
- *  <b>ChildAlert Service</b>
- *  <p>give a list of Children located at address given (with all adults too)</p>
+ *  <b>List Children located at address given (with all adults too)</b>
  */
 @Slf4j
 @Component

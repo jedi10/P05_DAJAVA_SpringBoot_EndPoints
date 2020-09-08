@@ -17,6 +17,9 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * <b>List all persons in the area of responsibilities of station given with children and adults counter</b>
+ */
 @Slf4j
 @Component
 public class FirestationAreaService {

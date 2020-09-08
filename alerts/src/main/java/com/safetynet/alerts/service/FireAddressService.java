@@ -17,6 +17,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * <b>List all persons located under address given and the Firestation responsible</b>
+ */
 @Slf4j
 @Component
 public class FireAddressService {

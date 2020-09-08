@@ -9,6 +9,9 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * <b>List Email of all persons living in city given</b>
+ */
 @Slf4j
 @Component
 public class CommunityEmailService {

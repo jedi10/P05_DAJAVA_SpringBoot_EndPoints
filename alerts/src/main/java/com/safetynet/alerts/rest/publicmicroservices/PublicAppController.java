@@ -14,6 +14,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * <b>Public END-POINTS</b>
+ * <p>All EndPoints give response in JSON</p>
+ */
 @Slf4j
 @RestController
 public class PublicAppController {
@@ -41,7 +45,7 @@ public class PublicAppController {
 
 
     /**
-     * redirection to getPerson Admin EndPoint Controller
+     * <b>redirection to getPerson Admin EndPoint Controller</b>
      * @see AdminPersonController#getPerson(String, String)
      * @param firstName firstName
      * @param lastName lastName
@@ -56,11 +60,13 @@ public class PublicAppController {
     }
 
     /**
-     * getPersonInfo public EndPoint Controller
+     * <b>getPersonInfo public EndPoint Controller</b>
+     * <p>Return all information on a Person with first Name and last Name given</p>
      * @see PersonInfoService#getPersonInfo(String, String)
      * @param firstName firstName
      * @param lastName lastName
      * @param httpResponse response
+     * @return ResponseEntity with a List of IPersonInfoRTO as content
      */
     @GetMapping(value = "/personinfo/{firstName}&{lastName}")
     public ResponseEntity<?> getPersonInfo(@PathVariable("firstName") String firstName, @PathVariable("lastName") String lastName,
@@ -76,10 +82,12 @@ public class PublicAppController {
     }
 
     /**
-     * getCommunityEmail public EndPoint Controller
+     * <b>getCommunityEmail public EndPoint Controller</b>
+     * <p>Return Email of all persons living in city given</p>
      * @see CommunityEmailService#getCommunityEmail(String)
      * @param city city
      * @param httpResponse response
+     * @return ResponseEntity with a List of mail as content
      */
     @GetMapping(value = "/communityemail/{city}")
     public ResponseEntity<?> getCommunityEmail(@PathVariable("city") String city,
@@ -95,10 +103,12 @@ public class PublicAppController {
     }
 
     /**
-     * getPhoneAlert public EndPoint Controller
+     * <b>getPhoneAlert public EndPoint Controller</b>
+     * <p>Return Phone of all persons under responsibility of station given</p>
      * @see PhoneAlertService#getPhoneAlert(String)
      * @param station Firestation number
      * @param httpResponse response
+     * @return ResponseEntity with a List of tel number as content
      */
     @GetMapping(value = "/phonealert/{station}")
     public ResponseEntity<?> getPhoneAlert(@PathVariable("station") String station,
@@ -114,10 +124,12 @@ public class PublicAppController {
     }
 
     /**
-     * getFire public EndPoint Controller
+     * <b>getFire public EndPoint Controller</b>
+     * <p>Return a List of all persons located under address given and the Firestation responsible</p>
      * @see FireAddressService#getFireAndPersonsWithAddress(String)
      * @param address firestation address
      * @param httpResponse response
+     * @return ResponseEntity with a Map as content
      */
     @GetMapping(value = "/fire/{address}")
     public ResponseEntity<?> getFireAndPersons(@PathVariable("address") String address,
@@ -133,10 +145,16 @@ public class PublicAppController {
     }
 
     /**
-     * getChildAlert public EndPoint Controller
+     * <b>getChildAlert public EndPoint Controller</b>
+     * <p>Return a List of all children located under address given and the adults living with them</p>
+     * <ul>
+     *     <li>no content is returned when no children</li>
+     * </ul>
+     *
      * @see com.safetynet.alerts.service.ChildAlertService#getChildAlert(String)
      * @param address child address
      * @param httpResponse response
+     * @return ResponseEntity with a Map as content
      */
     @GetMapping(value = "/childalert/{address}")
     public ResponseEntity<?> getChildAlert(@PathVariable("address") String address,
@@ -152,10 +170,12 @@ public class PublicAppController {
     }
 
     /**
-     * getFirestationArea public EndPoint Controller
+     * <b>getFirestationArea public EndPoint Controller</b>
+     * <p>return a List of all persons in the area of responsibilities of station given with children and adults counter</p>
      * @see com.safetynet.alerts.service.FirestationAreaService#getFirestationArea(String)
      * @param station station number
      * @param httpResponse response
+     * @return ResponseEntity with a IFirestationRTO as Content
      */
     @GetMapping(value = "/firestationarea/{station}")
     public ResponseEntity<?> getFirestationArea(@PathVariable("station") String station,
@@ -171,10 +191,12 @@ public class PublicAppController {
     }
 
     /**
-     * getFloodStations public EndPoint Controller
+     * <b>getFloodStations public EndPoint Controller</b>
+     * <p>return a List of all persons in the area of responsibilities of stations given grouped by address</p>
      * @see com.safetynet.alerts.service.FloodStationsService#getFloodStations(List)
      * @param stations stations number list
      * @param httpResponse response
+     * @return ResponseEntity with a Map as content
      */
     @GetMapping(value = "/flood/stations/{stations}")
     public ResponseEntity<?> getFloodStations(@PathVariable("stations") List<String> stations,

@@ -142,7 +142,7 @@ public class PersonInfoRTO implements IPersonInfoRTO {
      * <p>person and medicalrecord have to have same first and last name</p>
      * @param personList personList
      * @param medicalRecordList medicalRecordList
-     * @return
+     * @return List IPersonInfoRTO
      */
     public static List<IPersonInfoRTO> buildPersonInfoRTOList(List<Person> personList, List<MedicalRecord> medicalRecordList) {
         List<IPersonInfoRTO> personInfoRTOList = new ArrayList<>();

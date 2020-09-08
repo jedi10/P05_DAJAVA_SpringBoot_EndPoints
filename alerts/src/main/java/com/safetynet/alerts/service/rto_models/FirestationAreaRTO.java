@@ -11,6 +11,15 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * <b>RTO Class used by FirestationArea Service</b>
+ * <p>Give a presentation of list of IPersonInfoRTO</p>
+ * <ul>
+ *     <li>add a counter for children and adults</li>
+ *     <li>in case counter is on zero, we show it anyway</li>
+ * </ul>
+ * @see com.safetynet.alerts.service.FirestationAreaService
+ */
 public class FirestationAreaRTO implements IFirestationAreaRTO {
 
     @Getter

@@ -14,6 +14,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * <b>Give all information on a Person selected by first Name and last Name</b>
+ */
 @Slf4j
 @Component
 public class PersonInfoService {

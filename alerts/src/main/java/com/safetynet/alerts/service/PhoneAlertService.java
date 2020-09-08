@@ -13,8 +13,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * <b>PhoneAlert Service</b>
- * <p>give a list of tel number of people located in firestation area</p>
+ * <b>List phone number of all people located in firestation area</b>
  */
 @Slf4j
 @Component

@@ -16,6 +16,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * <b>List all persons in the area of responsibilities of stations given grouped by address</b>
+ */
 @Slf4j
 @Component
 public class FloodStationsService {
