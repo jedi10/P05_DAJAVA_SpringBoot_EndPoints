@@ -3,4 +3,7 @@ com.safetynet.alerts.configuration
 com.safetynet.alerts.dao
 com.safetynet.alerts.models
 com.safetynet.alerts.rest
+com.safetynet.alerts.rest.publicmicroservices
+com.safetynet.alerts.service
+com.safetynet.alerts.service.rto_models
 com.safetynet.alerts.utils
