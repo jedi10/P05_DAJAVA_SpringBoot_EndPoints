@@ -58,6 +58,7 @@ class TraceRequestFilterIT {
         assertEquals(200, result.getStatusCodeValue());
     }
 
+    /*
     @Disabled
     @Test
     public void actuatorHttpTraceEmptyEndPointContentResponse() throws Exception {
@@ -71,7 +72,7 @@ class TraceRequestFilterIT {
         String expectedJson = "{traces:[null]}";
         //assertEquals(expectedString, content);
         JSONAssert.assertEquals(expectedJson, content, true);
-    }
+    }*/
 }
 
 // org.skyscreamer.jsonassert.JSONAssert;

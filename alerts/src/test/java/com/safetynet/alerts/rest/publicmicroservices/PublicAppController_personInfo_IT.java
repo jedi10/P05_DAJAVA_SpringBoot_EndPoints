@@ -238,6 +238,7 @@ class PublicAppController_personInfo_IT {
         verify(medicalRecordDAO, Mockito.times(1)).findAll();
     }
 
+    /*
     static Stream<Arguments> nullEmptyNames() {
         return Stream.of(
                 Arguments.of(null, null),
@@ -281,7 +282,7 @@ class PublicAppController_personInfo_IT {
         //*********************************************************
         verify(personDAO, Mockito.never()).findByName(firstName, lastName);
         verify(medicalRecordDAO, Mockito.never()).findByName(firstName, lastName);
-    }
+    }*/
 
 }
 

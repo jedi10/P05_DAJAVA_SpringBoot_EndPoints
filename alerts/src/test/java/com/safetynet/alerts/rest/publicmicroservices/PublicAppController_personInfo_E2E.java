@@ -189,6 +189,7 @@ class PublicAppController_personInfo_E2E {
         assertNull(resultJavaObject);
     }
 
+    /*
     static Stream<Arguments> nullEmptyNames() {
         return Stream.of(
                 Arguments.of(null, null),
@@ -217,7 +218,7 @@ class PublicAppController_personInfo_E2E {
 
         List<PersonInfoRTO> resultJavaObject = result.getBody();
         assertNull(resultJavaObject);
-    }
+    }*/
 }
 
 

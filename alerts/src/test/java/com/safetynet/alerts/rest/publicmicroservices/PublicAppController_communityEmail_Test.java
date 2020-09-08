@@ -173,6 +173,7 @@ class PublicAppController_communityEmail_Test {
         assertTrue(mvcResult.getResponse().getContentAsString().isEmpty());
     }
 
+    /*
     @Disabled//this test is useless
     @Order(3)
     @Test
@@ -209,7 +210,7 @@ class PublicAppController_communityEmail_Test {
         assertTrue(mvcResult.getResponse().getContentAsString().isEmpty());
 
         //https://www.baeldung.com/java-avoid-null-check
-    }
+    }*/
 }
 
 
