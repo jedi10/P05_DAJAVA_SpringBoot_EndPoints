@@ -110,8 +110,8 @@ public class PublicAppController {
      * @param httpResponse response
      * @return ResponseEntity with a List of tel number as content
      */
-    @GetMapping(value = "/phonealert/{station}")
-    public ResponseEntity<?> getPhoneAlert(@PathVariable("station") String station,
+    @GetMapping(value = "/phonealert/{firestation}")
+    public ResponseEntity<?> getPhoneAlert(@PathVariable("firestation") String station,
                                            HttpServletResponse httpResponse)  {
         log.info("Fetching Phone of all persons under responsibility of station:  '{}'", station);
 
@@ -177,8 +177,8 @@ public class PublicAppController {
      * @param httpResponse response
      * @return ResponseEntity with a IFirestationRTO as Content
      */
-    @GetMapping(value = "/firestationarea/{station}")
-    public ResponseEntity<?> getFirestationArea(@PathVariable("station") String station,
+    @GetMapping(value = "/firestationarea/{stationNumber}")
+    public ResponseEntity<?> getFirestationArea(@PathVariable("stationNumber") String station,
                                            HttpServletResponse httpResponse)  {
         log.info("Fetching List of all persons in the area of responsibilities of station: '{}' with children and adults counter", station);
 
