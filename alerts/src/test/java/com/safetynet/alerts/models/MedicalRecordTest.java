@@ -85,7 +85,7 @@ class MedicalRecordTest {
         //****Check List is not null********
         //*************************************
         assertNotNull(dataFromObject,
-                "Constructor Without List set to Null MedicalRecord Medications properties");
+                "Constructor Without Medications List have to create an empty List");
         //*******************************************
         //****Check List is Arraylist Type********
         //*******************************************
@@ -93,7 +93,8 @@ class MedicalRecordTest {
         //*******************************
         //****Check List is Empty********
         //*******************************
-        assertTrue(dataFromObject.isEmpty());
+        assertTrue(dataFromObject.isEmpty(),
+                "Constructor Without Medications List have to create an empty List");
     }
 
     @Order(5)
@@ -111,7 +112,7 @@ class MedicalRecordTest {
         //****Check List is not null********
         //*************************************
         assertNotNull(dataFromObject,
-                "Constructor Without List set to Null MedicalRecord Allergies properties");
+                "Constructor Without Allergies List have to create an empty List");
         //*******************************************
         //****Check List is Arraylist Type********
         //*******************************************
@@ -119,7 +120,8 @@ class MedicalRecordTest {
         //*******************************
         //****Check List is Empty********
         //*******************************
-        assertTrue(dataFromObject.isEmpty());
+        assertTrue(dataFromObject.isEmpty(),
+                "Constructor Without Allergies List have to create an empty List");
     }
 
     @Order(6)
@@ -186,7 +188,8 @@ class MedicalRecordTest {
         //*******************************
         //****Check List is Empty********
         //*******************************
-        assertTrue(medicalRecord.getMedications().isEmpty());
+        assertTrue(medicalRecord.getMedications().isEmpty(),
+                "Medications setter allows Null but have to create an empty list");
     }
 
     @Order(10)
@@ -207,8 +210,9 @@ class MedicalRecordTest {
         //THEN
         assertNotNull(medicalRecord.getAllergies(),
                 "Null Given instead of List is stored in MedicalRecord Allergies properties");
-        assertTrue(medicalRecord.getMedications() instanceof ArrayList);
-        assertTrue(medicalRecord.getMedications().isEmpty());
+        assertTrue(medicalRecord.getAllergies() instanceof ArrayList);
+        assertTrue(medicalRecord.getAllergies().isEmpty(),
+                "Allergies setter allows Null but have to create an empty list");
     }
 }
 

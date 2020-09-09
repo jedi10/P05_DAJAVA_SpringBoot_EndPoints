@@ -97,9 +97,11 @@ public class MedicalRecord {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        MedicalRecord that = (MedicalRecord) o;
-        return firstName.equals(that.firstName) &&
-                lastName.equals(that.lastName);
+        MedicalRecord medicalRecord = (MedicalRecord) o;
+        return Objects.equals(
+                        firstName.toLowerCase(), medicalRecord.firstName.toLowerCase()) &&
+                Objects.equals(
+                        lastName.toLowerCase(), medicalRecord.lastName.toLowerCase());
     }
 
     @Override

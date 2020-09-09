@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PersonInfoRTO.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">alerts</a> &gt; <a href="index.source.html" class="el_package">com.safetynet.alerts.service.rto_models</a> &gt; <span class="el_source">PersonInfoRTO.java</span></div><h1>PersonInfoRTO.java</h1><pre class="source lang-java linenums">package com.safetynet.alerts.service.rto_models;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.safetynet.alerts.models.MedicalRecord;
+import com.safetynet.alerts.models.Person;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.time.LocalDate;
+import java.time.Period;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+/**
+ * &lt;b&gt;Result Transfert Object Model for Person Info EndPoint&lt;/b&gt;
+ * &lt;p&gt;Fusion of all informations we have about a person&lt;/p&gt;
+ */
+public class PersonInfoRTO implements IPersonInfoRTO {
+<span class="fc" id="L21">    @Getter</span>
+<span class="fc" id="L22">    @Setter</span>
+    private String firstName;
+
+<span class="fc" id="L25">    @Getter</span>
+<span class="fc" id="L26">    @Setter</span>
+    private String lastName;
+
+<span class="fc" id="L29">    @Getter</span>
+<span class="fc" id="L30">    @Setter</span>
+    private String address;
+
+<span class="fc" id="L33">    @Getter</span>
+<span class="fc" id="L34">    @Setter</span>
+    private String city;
+
+<span class="fc" id="L37">    @Getter</span>
+<span class="fc" id="L38">    @Setter</span>
+    private Integer zip;
+
+<span class="fc" id="L41">    @Getter</span>
+<span class="fc" id="L42">    @Setter</span>
+    private String phone;
+
+<span class="fc" id="L45">    @Getter</span>
+<span class="fc" id="L46">    @Setter</span>
+    private String email;
+
+<span class="nc" id="L49">    @Getter</span>
+<span class="fc" id="L50">    @Setter</span>
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = &quot;MM/dd/yyyy&quot;)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private LocalDate birthdate;
+
+<span class="fc" id="L55">    @Getter</span>
+    private Integer age;
+
+<span class="fc" id="L58">    @Getter</span>
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private HumanCategory humanCategory;
+
+<span class="fc" id="L62">    @Getter</span>
+    private List&lt;String&gt; medications;
+
+<span class="fc" id="L65">    @Getter</span>
+    private List&lt;String&gt; allergies;
+
+    /**
+     * &lt;p&gt;new instance of List will be created with content given&lt;/p&gt;
+     * &lt;p&gt;if Medications List is Null, an empty List will be created&lt;/p&gt;
+     * @param medications medications List
+     */
+    @Override
+    public void setMedications(List&lt;String&gt; medications){
+<span class="fc" id="L75">        this.medications = Optional.ofNullable(medications)</span>
+<span class="fc" id="L76">                .stream()</span>
+<span class="fc" id="L77">                .flatMap(Collection::stream)</span>
+<span class="fc" id="L78">                .collect(Collectors.toList());</span>
+<span class="fc" id="L79">    }</span>
+
+    /**
+     * &lt;p&gt;new instance of List will be created with content given&lt;/p&gt;
+     * &lt;p&gt;if Allergies List is Null, an empty List will be created&lt;/p&gt;
+     * @param allergies allergies List
+     */
+    @Override
+    public void setAllergies(List&lt;String&gt; allergies){
+<span class="fc" id="L88">        this.allergies = Optional.ofNullable(allergies)</span>
+<span class="fc" id="L89">                .map(List::stream)</span>
+<span class="fc" id="L90">                .orElseGet(Stream::empty)</span>
+<span class="fc" id="L91">                .collect(Collectors.toList());</span>
+<span class="fc" id="L92">    }</span>
+
+    @Override
+    public void setAge(LocalDate birthDate) {
+<span class="fc" id="L96">        this.age = Period.between(birthDate, LocalDate.now()).getYears();</span>
+<span class="fc" id="L97">        this.setHumanCategory();</span>
+        //https://www.baeldung.com/java-get-age
+<span class="fc" id="L99">    }</span>
+
+    @Override
+    public void setHumanCategory(){
+<span class="pc bpc" id="L103" title="1 of 2 branches missed.">        if (null != this.age) {</span>
+<span class="fc bfc" id="L104" title="All 2 branches covered.">            if (this.age &gt; 18){</span>
+<span class="fc" id="L105">                this.humanCategory = HumanCategory.ADULTS;</span>
+            } else {
+<span class="fc" id="L107">                this.humanCategory = HumanCategory.CHILDREN;</span>
+            }
+        }
+<span class="fc" id="L110">    }</span>
+
+    /**
+     * &lt;b&gt;Constructor PersonInfoRTO&lt;/b&gt;
+     * &lt;p&gt;First and last name of Person and MedicalRecord have to be the same&lt;/p&gt;
+     * &lt;ul&gt;
+     *    &lt;li&gt;if one param is null, return an exception&lt;/li&gt;
+     *    &lt;li&gt;if first name and last name of param (person, medicalrecord) are not the same, return an exception&lt;/li&gt;
+     * &lt;/ul&gt;
+     * @param person person Model
+     * @param medicalRecord medicalRecord model
+     * @throws Exception exception with message
+     */
+<span class="fc" id="L123">    public PersonInfoRTO(Person person, MedicalRecord medicalRecord) throws Exception {</span>
+<span class="fc" id="L124">            checkDataConstructor(person, medicalRecord);</span>
+<span class="fc" id="L125">            this.setFirstName(person.getFirstName());</span>
+<span class="fc" id="L126">            this.setLastName(person.getLastName());</span>
+<span class="fc" id="L127">            this.setAddress(person.getAddress());</span>
+<span class="fc" id="L128">            this.setCity(person.getCity());</span>
+<span class="fc" id="L129">            this.setZip(person.getZip());</span>
+<span class="fc" id="L130">            this.setPhone(person.getPhone());</span>
+<span class="fc" id="L131">            this.setEmail(person.getEmail());</span>
+<span class="fc" id="L132">            this.setBirthdate(medicalRecord.getBirthdate());</span>
+<span class="fc" id="L133">            this.setAge(medicalRecord.getBirthdate());</span>
+<span class="fc" id="L134">            this.setMedications(medicalRecord.getMedications());</span>
+<span class="fc" id="L135">            this.setAllergies(medicalRecord.getAllergies());</span>
+<span class="fc" id="L136">    }</span>
+
+<span class="fc" id="L138">    public PersonInfoRTO() {}</span>
+
+    /**
+     * &lt;b&gt;Factory: build PersonInfoRTO List&lt;/b&gt;
+     * &lt;p&gt;person and medicalrecord have to have same first and last name&lt;/p&gt;
+     * @param personList personList
+     * @param medicalRecordList medicalRecordList
+     * @return List IPersonInfoRTO
+     */
+    public static List&lt;IPersonInfoRTO&gt; buildPersonInfoRTOList(List&lt;Person&gt; personList, List&lt;MedicalRecord&gt; medicalRecordList) {
+<span class="fc" id="L148">        List&lt;IPersonInfoRTO&gt; personInfoRTOList = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L149">        personList.forEach(</span>
+<span class="fc" id="L150">                e -&gt; { List&lt;MedicalRecord&gt; medRecFilters = medicalRecordList.stream()</span>
+<span class="fc bfc" id="L151" title="All 2 branches covered.">                        .filter(med -&gt; med.getFirstName().equalsIgnoreCase(e.getFirstName()) &amp;&amp;</span>
+<span class="fc bfc" id="L152" title="All 2 branches covered.">                                        med.getLastName().equalsIgnoreCase(e.getLastName()))</span>
+<span class="fc" id="L153">                        .collect(Collectors.toList());</span>
+<span class="fc bfc" id="L154" title="All 2 branches covered.">                    if(!medRecFilters.isEmpty()){</span>
+                        try {
+<span class="fc" id="L156">                            PersonInfoRTO personInfoRTO = new PersonInfoRTO(e, medRecFilters.get(0));</span>
+<span class="fc" id="L157">                            personInfoRTOList.add(personInfoRTO);</span>
+<span class="nc" id="L158">                        } catch (Exception ex) {</span>
+<span class="nc" id="L159">                            ex.printStackTrace();</span>
+<span class="fc" id="L160">                        }</span>
+                    }
+<span class="fc" id="L162">                }</span>
+        );
+<span class="fc" id="L164">        return personInfoRTOList;</span>
+    }
+
+    @Override
+    public boolean equals(Object o) {
+<span class="fc bfc" id="L169" title="All 2 branches covered.">        if (this == o) return true;</span>
+<span class="pc bpc" id="L170" title="2 of 4 branches missed.">        if (o == null || getClass() != o.getClass()) return false;</span>
+<span class="fc" id="L171">        PersonInfoRTO that = (PersonInfoRTO) o;</span>
+<span class="pc bpc" id="L172" title="1 of 2 branches missed.">        return Objects.equals(</span>
+<span class="fc" id="L173">                firstName.toLowerCase(), that.firstName.toLowerCase()) &amp;&amp;</span>
+<span class="pc bpc" id="L174" title="1 of 2 branches missed.">                Objects.equals(</span>
+<span class="fc" id="L175">                        lastName.toLowerCase(), that.lastName.toLowerCase());</span>
+    }
+
+    @Override
+    public int hashCode() {
+<span class="nc" id="L180">        return Objects.hash(firstName, lastName);</span>
+    }
+
+}
+
+
+//https://stackoverflow.com/questions/14708386/want-to-hide-some-fields-of-an-object-that-are-being-mapped-to-json-by-jackson
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

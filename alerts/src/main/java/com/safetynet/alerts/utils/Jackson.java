@@ -119,6 +119,7 @@ public class Jackson {
 
             //expectedJavaObject = mapper.readValue(listFromJson, new TypeReference<ArrayList<T>>(){});// T is inoperative !!!
             //System.out.println("expectedJavaObject = " + expectedJavaObject.toString());
+            //https://stackoverflow.com/questions/19333106/jsonmappingexception-out-of-start-array-token
         } catch (IOException e) {
             throw new IOException("unexpected data: check data", e);
         }
@@ -184,6 +185,7 @@ public class Jackson {
         }
         return result;
         //https://www.baeldung.com/java-deep-copy
+        //https://www.baeldung.com/java-copy-list-to-another
     }
 
 }

@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Jackson.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">alerts</a> &gt; <a href="index.source.html" class="el_package">com.safetynet.alerts.utils</a> &gt; <span class="el_source">Jackson.java</span></div><h1>Jackson.java</h1><pre class="source lang-java linenums">package com.safetynet.alerts.utils;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.json.JsonWriteFeature;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
+import com.safetynet.alerts.configuration.AlertsProperties;
+import com.safetynet.alerts.dao.IDAO;
+import org.apache.tomcat.util.json.JSONParser;
+import org.apache.tomcat.util.json.ParseException;
+
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.chrono.IsoChronology;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.format.ResolverStyle;
+import java.time.format.SignStyle;
+import java.util.ArrayList;
+import java.util.List;
+
+import static java.time.temporal.ChronoField.*;
+
+/**
+ * &lt;b&gt;Tools based on Jackson API&lt;/b&gt;
+ * @author Jedy10
+ */
+<span class="nc" id="L38">public class Jackson {</span>
+
+<span class="fc" id="L40">    private static ObjectMapper mapper = new ObjectMapper()</span>
+<span class="fc" id="L41">            .registerModule(new SimpleModule().addSerializer(</span>
+                    new LocalDateSerializer(new DateTimeFormatterBuilder()
+<span class="fc" id="L43">                            .appendValue(MONTH_OF_YEAR, 2)</span>
+<span class="fc" id="L44">                            .appendLiteral('-')</span>
+<span class="fc" id="L45">                            .appendValue(DAY_OF_MONTH, 2)</span>
+<span class="fc" id="L46">                            .appendLiteral('-')</span>
+<span class="fc" id="L47">                            .appendValue(YEAR, 4, 10, SignStyle.EXCEEDS_PAD)</span>
+<span class="fc" id="L48">                            .toFormatter())))</span>
+<span class="fc" id="L49">            .registerModule(new SimpleModule().addDeserializer(LocalDate.class,</span>
+                    new LocalDateDeserializer(new DateTimeFormatterBuilder()
+<span class="fc" id="L51">                            .appendValue(MONTH_OF_YEAR, 2)</span>
+<span class="fc" id="L52">                            .appendLiteral('-')</span>
+<span class="fc" id="L53">                            .appendValue(DAY_OF_MONTH, 2)</span>
+<span class="fc" id="L54">                            .appendLiteral('-')</span>
+<span class="fc" id="L55">                            .appendValue(YEAR, 4, 10, SignStyle.EXCEEDS_PAD)</span>
+<span class="fc" id="L56">                            .toFormatter())));</span>
+            //.configure(JsonWriteFeature.ESCAPE_NON_ASCII.mappedFeature(), true);
+            //https://stackoverflow.com/questions/23121765/write-objectnode-to-json-string-with-utf-8-characters-to-escaped-ascii
+
+    /**
+     * &lt;b&gt;Convert Json data to ArrayList of Object&lt;/b&gt;
+     * &lt;p&gt;Search in Bytes Array the List of Object from the given type&lt;/p&gt;
+     * @param fileByte bytes of the file
+     * @param listWrapperName name of list in json file
+     * @param workingClass name of argument
+     * @param &lt;T&gt; Type of Object we are working on
+     * @return List of Object expected
+     * @throws IOException Exception Throws
+     */
+    public static &lt;T&gt; List&lt;T&gt; convertJsonRootDataToJava(byte[] fileByte , String listWrapperName, Class&lt;T&gt; workingClass) throws IOException {
+<span class="fc" id="L71">        List&lt;T&gt; expectedJavaObject = null;</span>
+        //String className = workingClass.getSimpleName();
+        try {
+            //Class&lt;?&gt; c = Class.forName(&quot;Person&quot;);
+            //read json file data to String
+            //byte[] jsonData = Files.readAllBytes(Paths.get(jsonFilePath));
+
+            //*******************************
+            //Transform Json Data in JsonNode
+<span class="fc" id="L80">            JsonNode rootNode = mapper.readTree(fileByte);</span>
+            //*****************************
+            //Get specific part of the data
+<span class="fc" id="L83">            JsonNode objectWantedNode = rootNode.path(listWrapperName);</span>
+<span class="fc" id="L84">            String listFromJson = objectWantedNode.toString();</span>
+            //**********************
+            //Convert in Java Object
+<span class="fc" id="L87">            expectedJavaObject = mapper.readValue(listFromJson, mapper.getTypeFactory().constructCollectionType(ArrayList.class, workingClass));</span>
+            //expectedJavaObject = mapper.readValue(listFromJson, new TypeReference&lt;ArrayList&lt;T&gt;&gt;(){});// T is inoperative !!!
+            //System.out.println(&quot;expectedJavaObject = &quot; + expectedJavaObject.toString());
+<span class="fc" id="L90">        } catch (IOException e) {</span>
+<span class="fc" id="L91">            throw new IOException(&quot;unexpected file data: check File associate with RootFile&quot;, e);</span>
+<span class="fc" id="L92">        }</span>
+<span class="fc" id="L93">        return expectedJavaObject;</span>
+        //https://stackoverflow.com/questions/44589381/how-to-convert-json-string-into-list-of-java-object
+        //https://thepracticaldeveloper.com/2018/07/31/java-and-json-jackson-serialization-with-objectmapper/#json-serialization-with-java
+
+        //https://blog.codota.com/how-to-convert-a-java-object-into-a-json-string/
+        //https://mkyong.com/java/jackson-how-to-parse-json/
+        //https://www.journaldev.com/2324/jackson-json-java-parser-api-example-tutorial
+        //https://mkyong.com/java/how-to-check-if-a-file-exists-in-java/
+        //String staticJsonData = &quot;{\&quot;persons\&quot;: [  { \&quot;firstName\&quot;:\&quot;John\&quot;, \&quot;lastName\&quot;:\&quot;Boyd\&quot;, \&quot;address\&quot;:\&quot;1509 Culver St\&quot;, \&quot;city\&quot;:\&quot;Culver\&quot;, \&quot;zip\&quot;:\&quot;97451\&quot;, \&quot;phone\&quot;:\&quot;841-874-6512\&quot;, \&quot;email\&quot;:\&quot;jaboyd@email.com\&quot; },{ \&quot;firstName\&quot;:\&quot;Jacob\&quot;, \&quot;lastName\&quot;:\&quot;Boyd\&quot;, \&quot;address\&quot;:\&quot;1509 Culver St\&quot;, \&quot;city\&quot;:\&quot;Culver\&quot;, \&quot;zip\&quot;:\&quot;97451\&quot;, \&quot;phone\&quot;:\&quot;841-874-6513\&quot;, \&quot;email\&quot;:\&quot;drk@email.com\&quot; }]}&quot;;
+    }
+
+    /**
+     * &lt;b&gt;Convert Json data to ArrayList of Object&lt;/b&gt;
+     * &lt;p&gt;Search in Bytes Array the List of Object from the given type&lt;/p&gt;
+     * @param fileByte bytes of the file
+     * @param workingClass name of argument
+     * @param &lt;T&gt; Type of Object we are working on
+     * @return List of Object expected
+     * @throws IOException Exception Throws
+     */
+    public static &lt;T&gt; List&lt;T&gt; convertJsonListToJava(byte[] fileByte , Class&lt;T&gt; workingClass) throws IOException {
+<span class="nc" id="L114">        List&lt;T&gt; expectedJavaObject = null;</span>
+        try {
+            //**********************
+            //Convert in Java Object
+<span class="nc" id="L118">            expectedJavaObject = mapper.readValue(fileByte, mapper.getTypeFactory().constructCollectionType(ArrayList.class, workingClass));</span>
+
+            //expectedJavaObject = mapper.readValue(listFromJson, new TypeReference&lt;ArrayList&lt;T&gt;&gt;(){});// T is inoperative !!!
+            //System.out.println(&quot;expectedJavaObject = &quot; + expectedJavaObject.toString());
+            //https://stackoverflow.com/questions/19333106/jsonmappingexception-out-of-start-array-token
+<span class="nc" id="L123">        } catch (IOException e) {</span>
+<span class="nc" id="L124">            throw new IOException(&quot;unexpected data: check data&quot;, e);</span>
+<span class="nc" id="L125">        }</span>
+<span class="nc" id="L126">        return expectedJavaObject;</span>
+        }
+
+    /**
+     * &lt;b&gt;Convert Json data to ArrayList of Object&lt;/b&gt;
+     * &lt;p&gt;Search in Bytes Array the List of Object from the given type&lt;/p&gt;
+     * @param fileByte bytes of the file
+     * @param workingClass name of argument
+     * @param &lt;T&gt; Type of Object we are working on
+     * @return Object expected
+     * @throws IOException Exception Throws
+     */
+    public static &lt;T&gt; T convertJsonToJava(byte[] fileByte , Class&lt;T&gt; workingClass) throws IOException {
+<span class="nc" id="L139">        T expectedJavaObject = null;</span>
+        try {
+            //**********************
+            //Convert in Java Object
+<span class="nc" id="L143">            expectedJavaObject = mapper.readValue(fileByte, workingClass);</span>
+            //expectedJavaObject = mapper.readValue(listFromJson, new TypeReference&lt;ArrayList&lt;T&gt;&gt;(){});// T is inoperative !!!
+            //System.out.println(&quot;expectedJavaObject = &quot; + expectedJavaObject.toString());
+<span class="nc" id="L146">        } catch (IOException e) {</span>
+<span class="nc" id="L147">            throw new IOException(&quot;unexpected data: check data&quot;, e);</span>
+<span class="nc" id="L148">        }</span>
+<span class="nc" id="L149">        return expectedJavaObject;</span>
+    }
+
+    /**
+     * &lt;b&gt;Convert java Object to Json&lt;/b&gt;
+     * @param javaObject java Object
+     * @return JSON string
+     */
+    public static String convertJavaToJson(Object javaObject){
+<span class="fc" id="L158">        String expectedJson = null;</span>
+        try {
+<span class="fc" id="L160">            expectedJson = mapper.writeValueAsString(javaObject);</span>
+            //System.out.println(&quot;ResultingJSONstring = &quot; + expectedJson);
+            //System.out.println(json);
+            //https://blog.codota.com/how-to-convert-a-java-object-into-a-json-string/
+<span class="nc" id="L164">        } catch (</span>
+                JsonProcessingException e) {
+<span class="nc" id="L166">                    e.printStackTrace();</span>
+<span class="fc" id="L167">        }</span>
+<span class="fc" id="L168">        return expectedJson;</span>
+    }
+
+    /**
+     * &lt;b&gt;Make a deep copy of an object&lt;/b&gt;
+     * &lt;p&gt;object have to implement default constructor&lt;/p&gt;
+     * @param object object to copy
+     * @param responseClass name of response
+     * @param &lt;T&gt; Type of Class
+     * @return deep copy
+     */
+    public static &lt;T&gt; T deepCopy(Object object, Class&lt;T&gt; responseClass) {
+<span class="fc" id="L180">        T result = null;</span>
+        try {
+<span class="fc" id="L182">            result = mapper.readValue(mapper.writeValueAsString(object), responseClass);</span>
+<span class="nc" id="L183">        } catch (JsonProcessingException e) {</span>
+<span class="nc" id="L184">            e.printStackTrace();</span>
+<span class="fc" id="L185">        }</span>
+<span class="fc" id="L186">        return result;</span>
+        //https://www.baeldung.com/java-deep-copy
+        //https://www.baeldung.com/java-copy-list-to-another
+    }
+
+}
+
+
+//https://thepracticaldeveloper.com/2018/07/31/java-and-json-jackson-serialization-with-objectmapper/
+//https://www.baeldung.com/jackson-serialize-dates
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AdminPersonController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">alerts</a> &gt; <a href="index.source.html" class="el_package">com.safetynet.alerts.rest</a> &gt; <span class="el_source">AdminPersonController.java</span></div><h1>AdminPersonController.java</h1><pre class="source lang-java linenums">package com.safetynet.alerts.rest;
+
+import com.safetynet.alerts.dao.IPersonDAO;
+import com.safetynet.alerts.models.Person;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import org.springframework.web.util.UriComponentsBuilder;
+
+import java.net.URI;
+import java.util.List;
+
+/**
+ * &lt;b&gt;CRUD ENDPOINTS for Person&lt;/b&gt;
+ */
+<span class="fc" id="L22">@Slf4j</span>
+@RestController
+@RequestMapping(&quot;/person&quot;)
+<span class="fc" id="L25">public class AdminPersonController {</span>
+
+    @Autowired
+    public IPersonDAO personDAO;
+
+    /**
+     * List of Persons
+     * Not requested by client but useful to test
+     * @return list of persons
+     */
+    @RequestMapping(value = &quot;/&quot;, method = RequestMethod.GET,
+            produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity&lt;List&lt;Person&gt;&gt; getAllPersons() {
+<span class="fc" id="L38">        List&lt;Person&gt; persons = personDAO.findAll();</span>
+<span class="fc" id="L39">        log.info(&quot;Fetching Person List&quot;);</span>
+<span class="fc bfc" id="L40" title="All 2 branches covered.">        if (persons.isEmpty()) {</span>
+<span class="fc" id="L41">            log.warn(&quot;Person List is empty&quot;);</span>
+<span class="fc" id="L42">            return new ResponseEntity(HttpStatus.NO_CONTENT);</span>
+        }
+<span class="fc" id="L44">        return new ResponseEntity&lt;List&lt;Person&gt;&gt;(persons, HttpStatus.OK);</span>
+    }
+
+
+    @GetMapping(value = &quot;/{firstName}&amp;{lastName}&quot;)
+    public ResponseEntity&lt;?&gt; getPerson(@PathVariable(&quot;firstName&quot;) String firstName, @PathVariable(&quot;lastName&quot;) String lastName ) {
+<span class="fc" id="L50">        log.info(&quot;Fetching Person with first Name '{}' and last Name '{}'&quot;, firstName, lastName );</span>
+
+<span class="fc" id="L52">        Person person = personDAO.findByName(firstName, lastName);</span>
+<span class="fc bfc" id="L53" title="All 2 branches covered.">        if(person == null){</span>
+<span class="fc" id="L54">            log.warn(&quot;Fetching Person Aborted: {} {} not found&quot;, firstName, lastName);</span>
+<span class="fc" id="L55">            return ResponseEntity.notFound().build();</span>
+        }
+
+<span class="fc" id="L58">        return new ResponseEntity&lt;Person&gt;(person, HttpStatus.OK);</span>
+    }
+
+    @PostMapping(value = &quot;/&quot;)
+    public ResponseEntity&lt;?&gt; createPerson(@RequestBody Person person) {
+<span class="fc" id="L63">        log.info(&quot;Creating Person : {}&quot;, person);</span>
+
+<span class="fc" id="L65">        Person result = personDAO.save(person);</span>
+
+<span class="fc bfc" id="L67" title="All 2 branches covered.">        if (result == null){</span>
+<span class="fc" id="L68">            log.warn(&quot;Creating Person Aborted: {} {} already exist&quot;, person.getFirstName(), person.getLastName());</span>
+<span class="fc" id="L69">            return ResponseEntity.status(HttpStatus.CONFLICT).build();</span>
+        }
+
+        //HttpHeaders headers = new HttpHeaders();
+        //injection in param : UriComponentsBuilder ucBuilder
+        //headers.setLocation(ucBuilder.path(&quot;/person/{firstName}&amp;{lastName}&quot;).buildAndExpand(person.getFirstName(), person.getLastName()).toUri());
+        //return new ResponseEntity&lt;String&gt;(headers, HttpStatus.CREATED);
+        URI location = ServletUriComponentsBuilder
+<span class="fc" id="L77">                .fromCurrentRequest()</span>
+<span class="fc" id="L78">                .path(&quot;/{firstName}&amp;{lastName}&quot;)</span>
+<span class="fc" id="L79">                .buildAndExpand(person.getFirstName(), person.getLastName())</span>
+<span class="fc" id="L80">                .toUri();</span>
+<span class="fc" id="L81">        return ResponseEntity.created(location).build();</span>
+    }
+
+    @PutMapping(value = &quot;/&quot;)
+    public ResponseEntity&lt;?&gt; updatePerson(@RequestBody Person person) {
+<span class="fc" id="L86">        log.info(&quot;Updating Person with first Name '{}' and last Name '{}'&quot;, person.getFirstName(), person.getLastName());</span>
+
+<span class="fc" id="L88">        Person result = personDAO.update(person);</span>
+
+<span class="fc bfc" id="L90" title="All 2 branches covered.">        if (result == null){</span>
+<span class="fc" id="L91">            log.warn(&quot;Updating Person Aborted: {} {} not found&quot;, person.getFirstName(), person.getLastName());</span>
+<span class="fc" id="L92">            return ResponseEntity.notFound().build();</span>
+        }
+
+<span class="fc" id="L95">        return new ResponseEntity&lt;Person&gt;(person, HttpStatus.OK);</span>
+    }
+
+    @DeleteMapping(value = &quot;/{firstName}&amp;{lastName}&quot;)
+    public ResponseEntity&lt;?&gt; deletePerson(@PathVariable(&quot;firstName&quot;) String firstName, @PathVariable(&quot;lastName&quot;) String lastName) {
+<span class="fc" id="L100">        log.info(&quot;Fetching &amp; Deleting User with first Name '{}' and last Name '{}'&quot;, firstName, lastName );</span>
+
+<span class="fc" id="L102">        Person person = personDAO.findByName(firstName, lastName);</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">        if(person == null){</span>
+<span class="fc" id="L104">            log.warn(&quot;Deleting Person Aborted: {} {} not found&quot;, firstName, lastName);</span>
+<span class="fc" id="L105">            return ResponseEntity.notFound().build();</span>
+        }
+<span class="fc" id="L107">        personDAO.delete(person);</span>
+<span class="fc" id="L108">        return new ResponseEntity&lt;Person&gt;(HttpStatus.OK);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

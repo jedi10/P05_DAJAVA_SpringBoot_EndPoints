@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>IPersonInfoRTO.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">alerts</a> &gt; <a href="index.source.html" class="el_package">com.safetynet.alerts.service.rto_models</a> &gt; <span class="el_source">IPersonInfoRTO.java</span></div><h1>IPersonInfoRTO.java</h1><pre class="source lang-java linenums">package com.safetynet.alerts.service.rto_models;
+
+import com.safetynet.alerts.models.MedicalRecord;
+import com.safetynet.alerts.models.Person;
+
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
+
+public interface IPersonInfoRTO {
+    void setMedications(List&lt;String&gt; medications);
+
+    void setAllergies(List&lt;String&gt; allergies);
+
+    /**
+     * &lt;b&gt;Check that Person and MedicalRecord Model are relative to the same person&lt;/b&gt;
+     * @param person person Model
+     * @param medicalRecord medicalRecord model
+     * @return boolean true if check is ok
+     * @throws Exception throw an Exception with a message
+     */
+    default boolean checkDataConstructor(Person person, MedicalRecord medicalRecord) throws Exception {
+<span class="fc" id="L23">        boolean result = false;</span>
+<span class="fc bfc" id="L24" title="All 4 branches covered.">        if (person != null &amp;&amp; medicalRecord != null){</span>
+<span class="fc bfc" id="L25" title="All 2 branches covered.">            if (Objects.equals(</span>
+<span class="fc" id="L26">                        person.getFirstName(), medicalRecord.getFirstName()) &amp;&amp;</span>
+<span class="pc bpc" id="L27" title="1 of 2 branches missed.">                Objects.equals(</span>
+<span class="fc" id="L28">                        person.getLastName(), medicalRecord.getLastName())){</span>
+<span class="fc" id="L29">                result = true;</span>
+            } else {
+<span class="fc" id="L31">                throw new Exception(</span>
+                        &quot;PersonInfo constructor param (person, medicalRecord) need the same firstname and lastname properties&quot;);
+            }
+        } else {
+<span class="fc" id="L35">            throw new Exception(</span>
+                    &quot;PersonInfo constructor need not Null person and medicalRecord&quot;);
+        }
+<span class="fc" id="L38">        return result;</span>
+    }
+
+    String getFirstName();
+
+    String getLastName();
+
+    String getAddress();
+
+    String getCity();
+
+    Integer getZip();
+
+    String getPhone();
+
+    String getEmail();
+
+    java.time.LocalDate getBirthdate();
+
+    Integer getAge();
+
+    HumanCategory getHumanCategory();
+
+    List&lt;String&gt; getMedications();
+
+    List&lt;String&gt; getAllergies();
+
+    void setFirstName(String firstName);
+
+    void setLastName(String lastName);
+
+    void setAddress(String address);
+
+    void setCity(String city);
+
+    void setZip(Integer zip);
+
+    void setPhone(String phone);
+
+    void setEmail(String email);
+
+    void setBirthdate(java.time.LocalDate birthdate);
+
+    void setAge(java.time.LocalDate birthdate);
+
+    void setHumanCategory();
+
+<span class="fc" id="L85">    Comparator&lt;IPersonInfoRTO&gt; comparator = Comparator.comparing(IPersonInfoRTO::getLastName).thenComparing(IPersonInfoRTO::getFirstName);</span>
+
+<span class="fc" id="L87">    enum HumanCategory {</span>
+<span class="fc" id="L88">        CHILDREN(&quot;Children&quot;),</span>
+<span class="fc" id="L89">        ADULTS(&quot;Adults&quot;);</span>
+
+        private final String label;
+
+<span class="fc" id="L93">        HumanCategory(String label) {</span>
+<span class="fc" id="L94">            this.label = label;</span>
+<span class="fc" id="L95">        }</span>
+
+        public String getLabel() {
+<span class="nc" id="L98">            return label;</span>
+        }
+    }
+}
+
+//https://www.baeldung.com/java-static-default-methods
+//https://reversecoding.net/java-8-comparator-how-to-sort-a-list/
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ChildAlertService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">alerts</a> &gt; <a href="index.source.html" class="el_package">com.safetynet.alerts.service</a> &gt; <span class="el_source">ChildAlertService.java</span></div><h1>ChildAlertService.java</h1><pre class="source lang-java linenums">package com.safetynet.alerts.service;
+
+import com.safetynet.alerts.dao.IMedicalRecordDAO;
+import com.safetynet.alerts.dao.IPersonDAO;
+import com.safetynet.alerts.models.MedicalRecord;
+import com.safetynet.alerts.models.Person;
+import com.safetynet.alerts.service.rto_models.IPersonInfoRTO;
+import com.safetynet.alerts.service.rto_models.PersonInfoRTO;
+import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+
+import static java.util.stream.Collectors.groupingBy;
+
+/**
+ *  &lt;b&gt;List Children located at address given (with all adults too)&lt;/b&gt;
+ */
+<span class="fc" id="L26">@Slf4j</span>
+@Component
+public class ChildAlertService {
+
+    final
+    IPersonDAO personDAO;
+
+    final
+    IMedicalRecordDAO medicalRecordDAO;
+
+<span class="fc" id="L36">    public ChildAlertService(IPersonDAO personDAO, IMedicalRecordDAO medicalRecordDAO) {</span>
+<span class="fc" id="L37">        this.personDAO = personDAO;</span>
+<span class="fc" id="L38">        this.medicalRecordDAO = medicalRecordDAO;</span>
+<span class="fc" id="L39">    }</span>
+
+<span class="fc bfc" id="L41" title="All 2 branches covered.">    public Map&lt;IPersonInfoRTO.HumanCategory, List&lt;IPersonInfoRTO&gt;&gt; getChildAlert(@NonNull String address){</span>
+
+<span class="fc" id="L43">        Map&lt;IPersonInfoRTO.HumanCategory, List&lt;IPersonInfoRTO&gt;&gt; result = null;</span>
+        //Search Data
+<span class="fc" id="L45">        List&lt;Person&gt; personList = personDAO.findAll();</span>
+<span class="fc" id="L46">        List&lt;MedicalRecord&gt; medicalRecordList = medicalRecordDAO.findAll();</span>
+        //Build RTO Object
+<span class="fc" id="L48">        List&lt;IPersonInfoRTO&gt; personInfoRTOList =</span>
+<span class="fc" id="L49">                PersonInfoRTO.buildPersonInfoRTOList(personList, medicalRecordList);</span>
+        //List Filtering and Build a Map grouping by HumanCategory
+<span class="fc" id="L51">        Map&lt;IPersonInfoRTO.HumanCategory, List&lt;IPersonInfoRTO&gt;&gt; resultTemp = personInfoRTOList.stream()</span>
+<span class="fc" id="L52">                .filter(o -&gt; address.equalsIgnoreCase(o.getAddress()))</span>
+<span class="fc" id="L53">                .collect(groupingBy(IPersonInfoRTO::getHumanCategory));</span>
+        //Return result only when we have at least one Child
+<span class="fc bfc" id="L55" title="All 2 branches covered.">        if(null != resultTemp.get(IPersonInfoRTO.HumanCategory.CHILDREN)){</span>
+<span class="fc" id="L56">            result = resultTemp;</span>
+        } else {
+            //If no child, Empty HashMap
+<span class="fc" id="L59">            result = new HashMap&lt;&gt;();</span>
+        }
+
+<span class="fc" id="L62">        return result;</span>
+    }
+}
+
+
+//https://www.baeldung.com/java-groupingby-collector
+// https://grokonez.com/java/java-8/how-to-use-java-8-stream-collectors-groupingby-examples
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

@@ -11,7 +11,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 /**
- * <b>Manage Application File properties</b>
+ * <b>Manage JSON File properties</b>
+ * <p>place where we store data related to json file given</p>
  */
 @Repository
 public class RootFile implements IRootFile {
@@ -26,7 +27,7 @@ public class RootFile implements IRootFile {
 
     /**
      * <b>Constructor</b>
-     * @param alertsProperties All Custom properties of App
+     * @param alertsProperties All Custom properties of App (json File Path)
      */
     public RootFile(AlertsProperties alertsProperties) {
         this.path = alertsProperties.getJsonFilePath();
