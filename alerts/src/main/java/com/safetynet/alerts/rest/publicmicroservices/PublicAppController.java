@@ -86,6 +86,19 @@ public class PublicAppController {
     }
 
     /**
+     * <b>redirection to getPersonInfo EndPoint Controller</b>
+     * @param firstName firstName
+     * @param lastName lastName
+     * @param httpResponse response
+     * @throws Exception exception
+     */
+    @GetMapping(value = "/personInfo")
+    public void redirectGetPersonInfo(@RequestParam String firstName, @RequestParam String lastName,
+                                  HttpServletResponse httpResponse) throws Exception {
+        httpResponse.sendRedirect("/personinfo/"+firstName+"&"+lastName);
+    }
+
+    /**
      * <b>getCommunityEmail public EndPoint Controller</b>
      * <p>Return Email of all persons living in city given</p>
      * @see CommunityEmailService#getCommunityEmail(String)
