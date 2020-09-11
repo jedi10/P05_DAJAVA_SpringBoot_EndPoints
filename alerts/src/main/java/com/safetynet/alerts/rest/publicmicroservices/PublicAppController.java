@@ -62,6 +62,10 @@ public class PublicAppController {
     /**
      * <b>getPersonInfo public EndPoint Controller</b>
      * <p>Return all information on a Person with first Name and last Name given</p>
+     * <ul>
+     *     <li>Result contains one person with same first name and last name</li>
+     *     <li>Result contains also people who have the same last Name</li>
+     * </ul>
      * @see PersonInfoService#getPersonInfo(String, String)
      * @param firstName firstName
      * @param lastName lastName

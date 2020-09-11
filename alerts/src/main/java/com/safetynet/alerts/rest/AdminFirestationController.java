@@ -91,7 +91,7 @@ public class AdminFirestationController {
     }
 
     @DeleteMapping(value = "/{address}")
-    public ResponseEntity<?> deletePerson(@PathVariable("address") String address) {
+    public ResponseEntity<?> deleteFirestation(@PathVariable("address") String address) {
         log.info("Fetching & Deleting Firestation with Address {}", address );
 
         Firestation firestation = firestationDAO.findByAddress(address);

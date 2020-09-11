@@ -73,7 +73,7 @@ class AdminFirestationControllerTest {
     }
 
     @Test
-    void getAllPFirestations() throws Exception {
+    void getAllFirestations() throws Exception {
         //***********GIVEN*************
         MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get(rootURL)
                 .accept(MediaType.APPLICATION_JSON_VALUE);
