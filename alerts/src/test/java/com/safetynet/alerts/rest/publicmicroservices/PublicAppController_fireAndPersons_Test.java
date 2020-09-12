@@ -21,7 +21,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.web.util.UriUtils;
 
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -83,6 +85,25 @@ class PublicAppController_fireAndPersons_Test {
     }
 
     @Order(1)
+    @ParameterizedTest
+    @CsvSource({"47 Gricham Road"})
+    void redirectGetFireAndPersons(String address) throws Exception {
+        //GIVEN
+        String urlTemplate = String.format("%s%s",
+                "/fire?",
+                "address="+ UriUtils.encode(address, StandardCharsets.UTF_8));
+        //URLEncoder.encode(city, StandardCharsets.UTF_8));
+        String expectedUrl = String.format("%s%s",
+                "/fire/",
+                UriUtils.encode(address, StandardCharsets.UTF_8));
+        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get(urlTemplate);
+        //WHEN
+        mockMvc.perform(builder)//.andDo(print());
+                .andExpect(status().isFound())
+                .andExpect(redirectedUrl(expectedUrl));
+    }
+
+    @Order(2)
     @Test
     void getFireAndPersons_Ok() throws Exception {
         //***********GIVEN*************
@@ -135,7 +156,7 @@ class PublicAppController_fireAndPersons_Test {
         JSONAssert.assertEquals(expectedJson, jsonResult, true);
     }
 
-    @Order(2)
+    @Order(3)
     @ParameterizedTest
     @CsvSource({"10 trafalgar square","X"})
     //@ValueSource(strings = { "toto", "" })

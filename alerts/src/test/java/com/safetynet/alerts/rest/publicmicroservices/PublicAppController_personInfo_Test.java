@@ -103,6 +103,26 @@ class PublicAppController_personInfo_Test {
     }
 
     @Order(2)
+    @ParameterizedTest
+    @CsvSource({"julia,roberts"})
+    void redirectGetPersonInfo(String firstName, String lastName) throws Exception {
+        //GIVEN
+        String urlTemplate = String.format("%s%s&%s",
+                "/personInfo?",
+                "firstName=" + firstName,
+                "lastName=" + lastName);
+        String expectedUrl = String.format("%s%s&%s",
+                "/personinfo/",
+                firstName,
+                lastName);
+        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get(urlTemplate);
+        //WHEN
+        mockMvc.perform(builder)//.andDo(print());
+                .andExpect(status().isFound())
+                .andExpect(redirectedUrl(expectedUrl));
+    }
+
+    @Order(3)
     @Test
     void getPersonInfo_Ok() throws Exception {
         //***********GIVEN*************
@@ -152,7 +172,7 @@ class PublicAppController_personInfo_Test {
         JSONAssert.assertEquals(expectedJson, mvcResult.getResponse().getContentAsString(), true);
     }
 
-    @Order(3)
+    @Order(4)
     @ParameterizedTest
     @CsvSource({"toto,riri","toto,''", "'',''"})
     //@ValueSource(strings = { "toto", "" })
@@ -198,7 +218,7 @@ class PublicAppController_personInfo_Test {
     }
 
     @Disabled//this test is useless
-    @Order(4)
+    @Order(5)
     @ParameterizedTest
     @MethodSource("nullEmptyNames")
     void getPersonInfo_NullCase(String firstName, String lastName) throws Exception {

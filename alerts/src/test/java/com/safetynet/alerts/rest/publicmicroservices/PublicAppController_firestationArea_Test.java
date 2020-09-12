@@ -22,7 +22,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.web.util.UriUtils;
 
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -81,8 +83,27 @@ class PublicAppController_firestationArea_Test {
     }
 
     @Order(1)
+    @ParameterizedTest
+    @CsvSource({"3"})
+    void redirectGetFireStationArea(String station) throws Exception {
+        //GIVEN
+        String urlTemplate = String.format("%s%s",
+                "/firestation?",
+                "stationNumber="+ UriUtils.encode(station, StandardCharsets.UTF_8));
+        //URLEncoder.encode(city, StandardCharsets.UTF_8));
+        String expectedUrl = String.format("%s%s",
+                "/firestationarea/",
+                UriUtils.encode(station, StandardCharsets.UTF_8));
+        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get(urlTemplate);
+        //WHEN
+        mockMvc.perform(builder)//.andDo(print());
+                .andExpect(status().isFound())
+                .andExpect(redirectedUrl(expectedUrl));
+    }
+
+    @Order(2)
     @Test
-    void getFireStation_Ok() throws Exception {
+    void getFireStationArea_Ok() throws Exception {
         //***********GIVEN*************
         medicationList.add("aznol:350mg"); medicationList.add("hydrapermazol:100mg");
         allergiesList.add("nillacilan");
@@ -130,11 +151,11 @@ class PublicAppController_firestationArea_Test {
         JSONAssert.assertEquals(expectedJson, jsonResult, true);
     }
 
-    @Order(2)
+    @Order(3)
     @ParameterizedTest
     @CsvSource({"0"})
     //@ValueSource(strings = { "toto", "" })
-    void getFirestation_NotFound(String station) throws Exception {
+    void getFirestationArea_NotFound(String station) throws Exception {
         //***********GIVEN*************
         IFirestationAreaRTO firestationAreaRTO = null;
 

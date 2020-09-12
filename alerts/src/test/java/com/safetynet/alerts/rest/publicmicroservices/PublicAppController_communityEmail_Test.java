@@ -26,8 +26,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.web.util.UriUtils;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -94,8 +96,25 @@ class PublicAppController_communityEmail_Test {
         mockMvc = null;
     }
 
-
     @Order(1)
+    @ParameterizedTest
+    @CsvSource({"Beverly Hills"})
+    void redirectGetCommunityEmail(String city) throws Exception {
+        //GIVEN
+        String urlTemplate = String.format("%s%s",
+                "/communityEmail?",
+                "city="+ UriUtils.encode(city, StandardCharsets.UTF_8));
+        //URLEncoder.encode(city, StandardCharsets.UTF_8));
+        String expectedUrl = String.format("%s%s",
+                "/communityemail/",
+                UriUtils.encode(city, StandardCharsets.UTF_8));
+        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get(urlTemplate);
+        //WHEN
+        mockMvc.perform(builder)//.andDo(print());
+                .andExpect(status().isFound())
+                .andExpect(redirectedUrl(expectedUrl));
+    }
+    @Order(2)
     @ParameterizedTest
     @ValueSource(strings = {"cityName"})
     void getCommunityEmail_Ok(String city) throws Exception {
@@ -137,7 +156,7 @@ class PublicAppController_communityEmail_Test {
         assertThat(expectedMailList).isEqualTo(resultJavaObject);
     }
 
-    @Order(2)
+    @Order(3)
     @ParameterizedTest
     @ValueSource(strings = {"cityName"})
     void getCommunityEmail_NotFound(String city) throws Exception {
@@ -175,7 +194,7 @@ class PublicAppController_communityEmail_Test {
 
     /*
     @Disabled//this test is useless
-    @Order(3)
+    @Order(4)
     @Test
     void getCommunityEmail_NullCase() throws Exception {
         //***********GIVEN*************

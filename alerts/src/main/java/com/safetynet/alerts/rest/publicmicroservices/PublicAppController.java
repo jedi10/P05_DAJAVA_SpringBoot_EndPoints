@@ -86,6 +86,19 @@ public class PublicAppController {
     }
 
     /**
+     * <b>redirection to getPersonInfo EndPoint Controller</b>
+     * @param firstName firstName
+     * @param lastName lastName
+     * @param httpResponse response
+     * @throws Exception exception
+     */
+    @GetMapping(value = "/personInfo")
+    public void redirectGetPersonInfo(@RequestParam String firstName, @RequestParam String lastName,
+                                  HttpServletResponse httpResponse) throws Exception {
+        httpResponse.sendRedirect("/personinfo/"+firstName+"&"+lastName);
+    }
+
+    /**
      * <b>getCommunityEmail public EndPoint Controller</b>
      * <p>Return Email of all persons living in city given</p>
      * @see CommunityEmailService#getCommunityEmail(String)
@@ -104,6 +117,18 @@ public class PublicAppController {
             return ResponseEntity.notFound().build();
         }
         return new ResponseEntity<List<String>>(mailList, HttpStatus.OK);
+    }
+
+    /**
+     * <b>redirection to getCommunityEmail EndPoint Controller</b>
+     * @param city cityName
+     * @param httpResponse response
+     * @throws Exception exception
+     */
+    @GetMapping(value = "/communityEmail")
+    public void redirectGetPersonInfo(@RequestParam String city,
+                                      HttpServletResponse httpResponse) throws Exception {
+        httpResponse.sendRedirect("/communityemail/"+city);
     }
 
     /**
@@ -128,6 +153,18 @@ public class PublicAppController {
     }
 
     /**
+     * <b>redirection to getPhoneAlert EndPoint Controller</b>
+     * @param firestation firestation number
+     * @param httpResponse response
+     * @throws Exception exception
+     */
+    @GetMapping(value = "/phoneAlert")
+    public void redirectGetPhoneAlert(@RequestParam String firestation,
+                                      HttpServletResponse httpResponse) throws Exception {
+        httpResponse.sendRedirect("/phonealert/"+ firestation);
+    }
+
+    /**
      * <b>getFire public EndPoint Controller</b>
      * <p>Return a List of all persons located under address given and the Firestation responsible</p>
      * @see FireAddressService#getFireAndPersonsWithAddress(String)
@@ -146,6 +183,18 @@ public class PublicAppController {
             return ResponseEntity.notFound().build();
         }
         return new ResponseEntity<Map<String, List>>(mapResult, HttpStatus.OK);
+    }
+
+    /**
+     * <b>redirection to getPhoneAlert EndPoint Controller</b>
+     * @param address address
+     * @param httpResponse response
+     * @throws Exception exception
+     */
+    @GetMapping(value = "/fire")
+    public void redirectGetFireAndPersons(@RequestParam String address,
+                                      HttpServletResponse httpResponse) throws Exception {
+        httpResponse.sendRedirect("/fire/"+ address);
     }
 
     /**
@@ -174,6 +223,18 @@ public class PublicAppController {
     }
 
     /**
+     * <b>redirection to getChildAlert EndPoint Controller</b>
+     * @param address address
+     * @param httpResponse response
+     * @throws Exception exception
+     */
+    @GetMapping(value = "/childAlert")
+    public void redirectGetChildAlert(@RequestParam String address,
+                                          HttpServletResponse httpResponse) throws Exception {
+        httpResponse.sendRedirect("/childalert/"+ address);
+    }
+
+    /**
      * <b>getFirestationArea public EndPoint Controller</b>
      * <p>return a List of all persons in the area of responsibilities of station given with children and adults counter</p>
      * @see com.safetynet.alerts.service.FirestationAreaService#getFirestationArea(String)
@@ -195,6 +256,18 @@ public class PublicAppController {
     }
 
     /**
+     * <b>redirection to getFirestationArea EndPoint Controller</b>
+     * @param stationNumber station number
+     * @param httpResponse response
+     * @throws Exception exception
+     */
+    @GetMapping(value = "/firestation")
+    public void redirectFirestationArea(@RequestParam String stationNumber,
+                                      HttpServletResponse httpResponse) throws Exception {
+        httpResponse.sendRedirect("/firestationarea/"+ stationNumber);
+    }
+
+    /**
      * <b>getFloodStations public EndPoint Controller</b>
      * <p>return a List of all persons in the area of responsibilities of stations given grouped by address</p>
      * @see com.safetynet.alerts.service.FloodStationsService#getFloodStations(List)
@@ -213,5 +286,17 @@ public class PublicAppController {
             return ResponseEntity.notFound().build();
         }
         return new ResponseEntity<>(objectResult, HttpStatus.OK);
+    }
+
+    /**
+     * <b>redirection to getFloodStations EndPoint Controller</b>
+     * @param stations List of station number
+     * @param httpResponse response
+     * @throws Exception exception
+     */
+    @GetMapping(value = "/flood/stations")
+    public void redirectFloodStations(@RequestParam String stations,
+                                        HttpServletResponse httpResponse) throws Exception {
+        httpResponse.sendRedirect("/flood/stations/"+ stations);
     }
 }
