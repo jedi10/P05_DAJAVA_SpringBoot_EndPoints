@@ -256,6 +256,18 @@ public class PublicAppController {
     }
 
     /**
+     * <b>redirection to getFirestationArea EndPoint Controller</b>
+     * @param stationNumber station number
+     * @param httpResponse response
+     * @throws Exception exception
+     */
+    @GetMapping(value = "/firestation")
+    public void redirectFirestationArea(@RequestParam String stationNumber,
+                                      HttpServletResponse httpResponse) throws Exception {
+        httpResponse.sendRedirect("/firestationarea/"+ stationNumber);
+    }
+
+    /**
      * <b>getFloodStations public EndPoint Controller</b>
      * <p>return a List of all persons in the area of responsibilities of stations given grouped by address</p>
      * @see com.safetynet.alerts.service.FloodStationsService#getFloodStations(List)
