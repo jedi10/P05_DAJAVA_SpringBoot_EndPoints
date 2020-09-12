@@ -186,6 +186,18 @@ public class PublicAppController {
     }
 
     /**
+     * <b>redirection to getPhoneAlert EndPoint Controller</b>
+     * @param address address
+     * @param httpResponse response
+     * @throws Exception exception
+     */
+    @GetMapping(value = "/fire")
+    public void redirectGetFireAndPersons(@RequestParam String address,
+                                      HttpServletResponse httpResponse) throws Exception {
+        httpResponse.sendRedirect("/fire/"+ address);
+    }
+
+    /**
      * <b>getChildAlert public EndPoint Controller</b>
      * <p>Return a List of all children located under address given and the adults living with them</p>
      * <ul>
