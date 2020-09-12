@@ -121,7 +121,7 @@ public class PublicAppController {
 
     /**
      * <b>redirection to getCommunityEmail EndPoint Controller</b>
-     * @param city firstName
+     * @param city cityName
      * @param httpResponse response
      * @throws Exception exception
      */
@@ -150,6 +150,18 @@ public class PublicAppController {
             return ResponseEntity.notFound().build();
         }
         return new ResponseEntity<List<String>>(phoneList, HttpStatus.OK);
+    }
+
+    /**
+     * <b>redirection to getPhoneAlert EndPoint Controller</b>
+     * @param firestation firestation number
+     * @param httpResponse response
+     * @throws Exception exception
+     */
+    @GetMapping(value = "/phoneAlert")
+    public void redirectGetPhoneAlert(@RequestParam String firestation,
+                                      HttpServletResponse httpResponse) throws Exception {
+        httpResponse.sendRedirect("/phonealert/"+ firestation);
     }
 
     /**
