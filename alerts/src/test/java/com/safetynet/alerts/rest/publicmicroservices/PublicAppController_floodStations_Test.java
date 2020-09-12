@@ -25,7 +25,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.web.util.UriUtils;
 
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Stream;
@@ -98,6 +100,27 @@ class PublicAppController_floodStations_Test {
     @Order(1)
     @ParameterizedTest
     @MethodSource("stationData")
+    void redirectGetFloodStations(List<String> stationList) throws Exception {
+        //GIVEN
+        String urlTemplate = String.format("%s%s",
+                "/flood/station?",
+                "stations="+ stationList);
+        //URLEncoder.encode(city, StandardCharsets.UTF_8));
+        String expectedUrl = String.format("%s%s",
+                "/flood/stations/",
+                stationList);
+        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get(urlTemplate);
+        //WHEN
+        mockMvc.perform(builder)//.andDo(print());
+                .andExpect(status().isFound())
+                .andExpect(redirectedUrl(expectedUrl));
+    }
+
+
+
+    @Order(2)
+    @ParameterizedTest
+    @MethodSource("stationData")
     void getFloodStations_Ok(List<String> stationNumberList) throws Exception {
         //***********GIVEN*************
         medicationList.add("aznol:350mg"); medicationList.add("hydrapermazol:100mg");
@@ -157,7 +180,7 @@ class PublicAppController_floodStations_Test {
                 Arguments.of(List.of("0", "404"))
         );
     }
-    @Order(2)
+    @Order(3)
     @ParameterizedTest
     @MethodSource("stationNoExistData")
     //@ValueSource(strings = { "toto", "" })
