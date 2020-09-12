@@ -223,6 +223,18 @@ public class PublicAppController {
     }
 
     /**
+     * <b>redirection to getChildAlert EndPoint Controller</b>
+     * @param address address
+     * @param httpResponse response
+     * @throws Exception exception
+     */
+    @GetMapping(value = "/childAlert")
+    public void redirectGetChildAlert(@RequestParam String address,
+                                          HttpServletResponse httpResponse) throws Exception {
+        httpResponse.sendRedirect("/childalert/"+ address);
+    }
+
+    /**
      * <b>getFirestationArea public EndPoint Controller</b>
      * <p>return a List of all persons in the area of responsibilities of station given with children and adults counter</p>
      * @see com.safetynet.alerts.service.FirestationAreaService#getFirestationArea(String)
