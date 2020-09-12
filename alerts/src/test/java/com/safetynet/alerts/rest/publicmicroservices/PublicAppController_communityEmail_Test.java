@@ -26,6 +26,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.web.util.UriUtils;
 
 import java.io.IOException;
 import java.net.URLEncoder;
@@ -102,11 +103,11 @@ class PublicAppController_communityEmail_Test {
         //GIVEN
         String urlTemplate = String.format("%s%s",
                 "/communityEmail?",
-                "city="+ URLEncoder.encode(city, StandardCharsets.UTF_8));
-        //UriUtils.encode(city, StandardCharsets.UTF_8));
-        String expectedUrl = String.format("%s%s&%s",
+                "city="+ UriUtils.encode(city, StandardCharsets.UTF_8));
+        //URLEncoder.encode(city, StandardCharsets.UTF_8));
+        String expectedUrl = String.format("%s%s",
                 "/communityemail/",
-                city);
+                UriUtils.encode(city, StandardCharsets.UTF_8));
         MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get(urlTemplate);
         //WHEN
         mockMvc.perform(builder)//.andDo(print());
