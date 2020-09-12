@@ -103,7 +103,7 @@ class PublicAppController_floodStations_Test {
     void redirectGetFloodStations(List<String> stationList) throws Exception {
         //GIVEN
         String urlTemplate = String.format("%s%s",
-                "/flood/station?",
+                "/flood/stations?",
                 "stations="+ stationList);
         //URLEncoder.encode(city, StandardCharsets.UTF_8));
         String expectedUrl = String.format("%s%s",

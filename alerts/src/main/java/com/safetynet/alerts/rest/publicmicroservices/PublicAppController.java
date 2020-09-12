@@ -287,4 +287,16 @@ public class PublicAppController {
         }
         return new ResponseEntity<>(objectResult, HttpStatus.OK);
     }
+
+    /**
+     * <b>redirection to getFloodStations EndPoint Controller</b>
+     * @param stations List of station number
+     * @param httpResponse response
+     * @throws Exception exception
+     */
+    @GetMapping(value = "/flood/stations")
+    public void redirectFloodStations(@RequestParam String stations,
+                                        HttpServletResponse httpResponse) throws Exception {
+        httpResponse.sendRedirect("/flood/stations/"+ stations);
+    }
 }
