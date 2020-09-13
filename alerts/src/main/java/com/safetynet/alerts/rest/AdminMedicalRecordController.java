@@ -42,8 +42,9 @@ public class AdminMedicalRecordController {
         return new ResponseEntity<List<MedicalRecord>>(medicalRecords, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/{firstName}&{lastName}")
-    public ResponseEntity<?> getMedicalRecord(@PathVariable("firstName") String firstName, @PathVariable("lastName") String lastName ) {
+    @GetMapping(value = "/{firstName}&{lastName}",
+            produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<MedicalRecord> getMedicalRecord(@PathVariable("firstName") String firstName, @PathVariable("lastName") String lastName ) {
         log.info("Fetching Medical Record with first Name '{}' and last Name '{}'", firstName, lastName );
 
         MedicalRecord medicalRecord = medicalRecordDAO.findByName(firstName, lastName);
@@ -74,8 +75,9 @@ public class AdminMedicalRecordController {
         return ResponseEntity.created(location).build();
     }
 
-    @PutMapping(value = "/")
-    public ResponseEntity<?> updateMedicalRecord(@RequestBody MedicalRecord medicalRecord) {
+    @PutMapping(value = "/",
+            produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<MedicalRecord> updateMedicalRecord(@RequestBody MedicalRecord medicalRecord) {
         log.info("Updating Medical Record with first Name '{}' and last Name '{}'",
                 medicalRecord.getFirstName(), medicalRecord.getLastName());
 
@@ -89,8 +91,9 @@ public class AdminMedicalRecordController {
         return new ResponseEntity<MedicalRecord>(medicalRecord, HttpStatus.OK);
     }
 
-    @DeleteMapping(value = "/{firstName}&{lastName}")
-    public ResponseEntity<?> deleteMedicalRecord(@PathVariable("firstName") String firstName, @PathVariable("lastName") String lastName) {
+    @DeleteMapping(value = "/{firstName}&{lastName}",
+            produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<MedicalRecord> deleteMedicalRecord(@PathVariable("firstName") String firstName, @PathVariable("lastName") String lastName) {
         log.info("Fetching & Deleting Medical Record with first Name '{}' and last Name '{}'", firstName, lastName );
 
         MedicalRecord medicalRecord = medicalRecordDAO.findByName(firstName, lastName);
