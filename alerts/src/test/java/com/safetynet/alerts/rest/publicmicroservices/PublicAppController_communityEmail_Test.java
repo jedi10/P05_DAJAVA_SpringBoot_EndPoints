@@ -19,6 +19,7 @@ import org.mockito.Mockito;
 
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -69,9 +70,12 @@ class PublicAppController_communityEmail_Test {
     List<Person> personList;
     List<String> expectedMailList;
 
+    @Value("${app.alerts.test-json-file-path}")
+    private String testJsonFilePath;
+
     @BeforeEach
     void setUp() throws Exception {
-        String fileString = Files.readString(Paths.get("src/test/resources/testData.json"));
+        String fileString = Files.readString(Paths.get(testJsonFilePath));
         byte[] fileBytes = fileString.getBytes(StandardCharsets.UTF_8);
         try {
             this.personList = Jackson.convertJsonRootDataToJava(

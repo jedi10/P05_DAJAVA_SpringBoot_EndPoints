@@ -7,6 +7,7 @@ import org.junit.jupiter.api.*;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.IOException;
@@ -32,6 +33,9 @@ class CommunityEmailServiceTest {
 
     List<Person> personList;
 
+    @Value("${app.alerts.test-json-file-path}")
+    private String testJsonFilePath;
+
     @BeforeAll
     void setUp() {
 
@@ -39,7 +43,7 @@ class CommunityEmailServiceTest {
 
     @BeforeEach
     void setUpEach() throws IOException {
-        String fileString = Files.readString(Paths.get("src/test/resources/testData.json"));
+        String fileString = Files.readString(Paths.get(testJsonFilePath));
         byte[] fileBytes = fileString.getBytes(StandardCharsets.UTF_8);
         try {
             this.personList = Jackson.convertJsonRootDataToJava(

@@ -16,6 +16,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.nio.charset.StandardCharsets;
@@ -52,10 +53,13 @@ class FirestationAreaServiceTest {
 
     private List<Firestation> firestationList;
 
+    @Value("${app.alerts.test-json-file-path}")
+    private String testJsonFilePath;
+
 
     @BeforeEach
     void setUp() throws Exception {
-        String fileString = Files.readString(Paths.get("src/test/resources/testData.json"));
+        String fileString = Files.readString(Paths.get(testJsonFilePath));
         byte[] fileBytes = fileString.getBytes(StandardCharsets.UTF_8);
         this.personList = Jackson.convertJsonRootDataToJava(
                 fileBytes,

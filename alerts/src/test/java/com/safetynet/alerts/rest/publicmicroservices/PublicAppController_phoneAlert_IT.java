@@ -10,6 +10,7 @@ import org.junit.jupiter.api.*;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -63,9 +64,12 @@ class PublicAppController_phoneAlert_IT {
 
     private List<Person> personList;
 
+    @Value("${app.alerts.test-json-file-path}")
+    private String testJsonFilePath;
+
     @BeforeAll()
     void setUp() throws IOException {
-        String fileString = Files.readString(Paths.get("src/test/resources/testData.json"));
+        String fileString = Files.readString(Paths.get(testJsonFilePath));
         fileBytes = fileString.getBytes(StandardCharsets.UTF_8);
     }
 
