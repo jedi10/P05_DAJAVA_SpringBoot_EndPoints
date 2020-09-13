@@ -21,6 +21,15 @@ public class AlertsProperties {
     @Setter
     @Getter
     private String jsonFilePath = "src/main/resources/data.json";
+
+    /**
+     * Test Server URL
+     * App need a server to launch execute End To End Tests
+     * application.properties can overcome this value
+     */
+    @Setter
+    @Getter
+    private String testServerUrlWithoutPort = "https://localhost:";
 }
 
 
