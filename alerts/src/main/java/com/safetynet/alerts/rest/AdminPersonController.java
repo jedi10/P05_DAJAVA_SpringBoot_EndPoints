@@ -45,8 +45,9 @@ public class AdminPersonController {
     }
 
 
-    @GetMapping(value = "/{firstName}&{lastName}")
-    public ResponseEntity<?> getPerson(@PathVariable("firstName") String firstName, @PathVariable("lastName") String lastName ) {
+    @GetMapping(value = "/{firstName}&{lastName}",
+            produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<Person> getPerson(@PathVariable("firstName") String firstName, @PathVariable("lastName") String lastName ) {
         log.info("Fetching Person with first Name '{}' and last Name '{}'", firstName, lastName );
 
         Person person = personDAO.findByName(firstName, lastName);
@@ -81,8 +82,9 @@ public class AdminPersonController {
         return ResponseEntity.created(location).build();
     }
 
-    @PutMapping(value = "/")
-    public ResponseEntity<?> updatePerson(@RequestBody Person person) {
+    @PutMapping(value = "/",
+            produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<Person> updatePerson(@RequestBody Person person) {
         log.info("Updating Person with first Name '{}' and last Name '{}'", person.getFirstName(), person.getLastName());
 
         Person result = personDAO.update(person);
@@ -95,8 +97,9 @@ public class AdminPersonController {
         return new ResponseEntity<Person>(person, HttpStatus.OK);
     }
 
-    @DeleteMapping(value = "/{firstName}&{lastName}")
-    public ResponseEntity<?> deletePerson(@PathVariable("firstName") String firstName, @PathVariable("lastName") String lastName) {
+    @DeleteMapping(value = "/{firstName}&{lastName}",
+            produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<Person> deletePerson(@PathVariable("firstName") String firstName, @PathVariable("lastName") String lastName) {
         log.info("Fetching & Deleting User with first Name '{}' and last Name '{}'", firstName, lastName );
 
         Person person = personDAO.findByName(firstName, lastName);

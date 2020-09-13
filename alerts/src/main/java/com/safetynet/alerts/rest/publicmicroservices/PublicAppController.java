@@ -4,9 +4,13 @@ import com.safetynet.alerts.rest.AdminPersonController;
 import com.safetynet.alerts.service.*;
 import com.safetynet.alerts.service.rto_models.IFirestationAreaRTO;
 import com.safetynet.alerts.service.rto_models.IPersonInfoRTO;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,6 +22,8 @@ import java.util.Map;
  * <b>Public END-POINTS</b>
  * <p>All EndPoints give response in JSON</p>
  */
+@Api(tags = {"Public App Controller"})
+@Tag(name = "Public App Controller", description = "Public End-Points")
 @Slf4j
 @RestController
 public class PublicAppController {
@@ -52,6 +58,7 @@ public class PublicAppController {
      * @param httpResponse response
      * @throws Exception exception
      */
+    @ApiOperation(value = "redirection to Person Admin End-Point")
     @RequestMapping(value = "/admin/personinfo/{firstName}&{lastName}", method = RequestMethod.GET)
     public void redirectGetPerson(@PathVariable("firstName") String firstName, @PathVariable("lastName") String lastName,
                                   HttpServletResponse httpResponse) throws Exception {
@@ -72,8 +79,10 @@ public class PublicAppController {
      * @param httpResponse response
      * @return ResponseEntity with a List of IPersonInfoRTO as content
      */
-    @GetMapping(value = "/personinfo/{firstName}&{lastName}")
-    public ResponseEntity<?> getPersonInfo(@PathVariable("firstName") String firstName, @PathVariable("lastName") String lastName,
+    @ApiOperation(value = "Return all information on Person with same first Name and last Name given and all persons with same last Name")
+    @GetMapping(value = "/personinfo/{firstName}&{lastName}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<List<IPersonInfoRTO>>
+            getPersonInfo(@PathVariable("firstName") String firstName, @PathVariable("lastName") String lastName,
                                   HttpServletResponse httpResponse) {
         log.info("Fetching Person with first Name '{}' and last Name '{}'", firstName, lastName );
 
@@ -92,6 +101,7 @@ public class PublicAppController {
      * @param httpResponse response
      * @throws Exception exception
      */
+    @ApiOperation(value = "redirection to PersonInfo End-Point")
     @GetMapping(value = "/personInfo")
     public void redirectGetPersonInfo(@RequestParam String firstName, @RequestParam String lastName,
                                   HttpServletResponse httpResponse) throws Exception {
@@ -106,8 +116,10 @@ public class PublicAppController {
      * @param httpResponse response
      * @return ResponseEntity with a List of mail as content
      */
-    @GetMapping(value = "/communityemail/{city}")
-    public ResponseEntity<?> getCommunityEmail(@PathVariable("city") String city,
+    @ApiOperation(value = "Return Email of all persons living in city given")
+    @GetMapping(value = "/communityemail/{city}",
+            produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<List<String>> getCommunityEmail(@PathVariable("city") String city,
                                                HttpServletResponse httpResponse)  {
         log.info("Fetching Email of all person living in city:  '{}'", city);
 
@@ -125,8 +137,9 @@ public class PublicAppController {
      * @param httpResponse response
      * @throws Exception exception
      */
+    @ApiOperation(value = "redirection to CommunityEmail End-Point")
     @GetMapping(value = "/communityEmail")
-    public void redirectGetPersonInfo(@RequestParam String city,
+    public void redirectGetCommunityEmail(@RequestParam String city,
                                       HttpServletResponse httpResponse) throws Exception {
         httpResponse.sendRedirect("/communityemail/"+city);
     }
@@ -139,8 +152,10 @@ public class PublicAppController {
      * @param httpResponse response
      * @return ResponseEntity with a List of tel number as content
      */
-    @GetMapping(value = "/phonealert/{firestation}")
-    public ResponseEntity<?> getPhoneAlert(@PathVariable("firestation") String station,
+    @ApiOperation(value = "Return Phone of all persons under responsibility of station given")
+    @GetMapping(value = "/phonealert/{firestation}",
+            produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<List<String>> getPhoneAlert(@PathVariable("firestation") String station,
                                            HttpServletResponse httpResponse)  {
         log.info("Fetching Phone of all persons under responsibility of station:  '{}'", station);
 
@@ -158,6 +173,7 @@ public class PublicAppController {
      * @param httpResponse response
      * @throws Exception exception
      */
+    @ApiOperation(value = "redirection to PhoneAlert End-Point")
     @GetMapping(value = "/phoneAlert")
     public void redirectGetPhoneAlert(@RequestParam String firestation,
                                       HttpServletResponse httpResponse) throws Exception {
@@ -172,8 +188,10 @@ public class PublicAppController {
      * @param httpResponse response
      * @return ResponseEntity with a Map as content
      */
-    @GetMapping(value = "/fire/{address}")
-    public ResponseEntity<?> getFireAndPersons(@PathVariable("address") String address,
+    @ApiOperation(value = "Return all persons located under address given and the Firestation responsible")
+    @GetMapping(value = "/fire/{address}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<Map<String, List>>
+            getFireAndPersons(@PathVariable("address") String address,
                                            HttpServletResponse httpResponse)  {
         log.info("Fetching List of all persons located under address: '{}' and the Firestation responsible", address);
 
@@ -191,6 +209,7 @@ public class PublicAppController {
      * @param httpResponse response
      * @throws Exception exception
      */
+    @ApiOperation(value = "redirection to FireAndPersons End-Point")
     @GetMapping(value = "/fire")
     public void redirectGetFireAndPersons(@RequestParam String address,
                                       HttpServletResponse httpResponse) throws Exception {
@@ -209,8 +228,10 @@ public class PublicAppController {
      * @param httpResponse response
      * @return ResponseEntity with a Map as content
      */
-    @GetMapping(value = "/childalert/{address}")
-    public ResponseEntity<?> getChildAlert(@PathVariable("address") String address,
+    @ApiOperation(value = "Return all children located under address given and the adults living with them")
+    @GetMapping(value = "/childalert/{address}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<Map<IPersonInfoRTO.HumanCategory, List<IPersonInfoRTO>>>
+            getChildAlert(@PathVariable("address") String address,
                                                HttpServletResponse httpResponse)  {
         log.info("Fetching List of all children located under address: '{}' and the adults living with them", address);
 
@@ -228,6 +249,7 @@ public class PublicAppController {
      * @param httpResponse response
      * @throws Exception exception
      */
+    @ApiOperation(value = "redirection to ChildAlert End-Point")
     @GetMapping(value = "/childAlert")
     public void redirectGetChildAlert(@RequestParam String address,
                                           HttpServletResponse httpResponse) throws Exception {
@@ -242,8 +264,10 @@ public class PublicAppController {
      * @param httpResponse response
      * @return ResponseEntity with a IFirestationRTO as Content
      */
-    @GetMapping(value = "/firestationarea/{stationNumber}")
-    public ResponseEntity<?> getFirestationArea(@PathVariable("stationNumber") String station,
+    @ApiOperation(value = "Return all persons in the area of responsibilities of station given with children and adults counter")
+    @GetMapping(value = "/firestationarea/{stationNumber}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<IFirestationAreaRTO>
+            getFirestationArea(@PathVariable("stationNumber") String station,
                                            HttpServletResponse httpResponse)  {
         log.info("Fetching List of all persons in the area of responsibilities of station: '{}' with children and adults counter", station);
 
@@ -261,6 +285,7 @@ public class PublicAppController {
      * @param httpResponse response
      * @throws Exception exception
      */
+    @ApiOperation(value = "redirection to FirestationArea End-Point")
     @GetMapping(value = "/firestation")
     public void redirectFirestationArea(@RequestParam String stationNumber,
                                       HttpServletResponse httpResponse) throws Exception {
@@ -275,8 +300,10 @@ public class PublicAppController {
      * @param httpResponse response
      * @return ResponseEntity with a Map as content
      */
-    @GetMapping(value = "/flood/stations/{stations}")
-    public ResponseEntity<?> getFloodStations(@PathVariable("stations") List<String> stations,
+    @ApiOperation(value = "Return all persons in the area of responsibilities of stations given grouped by address")
+    @GetMapping(value = "/flood/stations/{stations}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<Map<String, List<IPersonInfoRTO>>>
+            getFloodStations(@PathVariable("stations") List<String> stations,
                                                 HttpServletResponse httpResponse)  {
         log.info("Fetching List of all persons in the area of responsibilities of stations: '{}' grouped by address", stations);
 
@@ -294,7 +321,8 @@ public class PublicAppController {
      * @param httpResponse response
      * @throws Exception exception
      */
-    @GetMapping(value = "/flood/stations")
+    @ApiOperation(value = "redirection to FloodStations End-Point")
+    @GetMapping(value = "/flood/stations", params = {"stations"})
     public void redirectFloodStations(@RequestParam String stations,
                                         HttpServletResponse httpResponse) throws Exception {
         httpResponse.sendRedirect("/flood/stations/"+ stations);

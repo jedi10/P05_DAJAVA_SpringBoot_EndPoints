@@ -41,8 +41,9 @@ public class AdminFirestationController {
         return new ResponseEntity<List<Firestation>>(firestations, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/{address}")
-    public ResponseEntity<?> getFirestation(@PathVariable("address") String address ) {
+    @GetMapping(value = "/{address}",
+            produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<Firestation> getFirestation(@PathVariable("address") String address ) {
         log.info("Fetching Firestation with address  {} ", address);
 
         Firestation firestation = firestationDAO.findByAddress(address);
@@ -77,8 +78,9 @@ public class AdminFirestationController {
         return ResponseEntity.created(location).build();
     }
 
-    @PutMapping(value = "/")
-    public ResponseEntity<?> updateFirestation(@RequestBody Firestation firestation) {
+    @PutMapping(value = "/",
+            produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<Firestation> updateFirestation(@RequestBody Firestation firestation) {
         log.info("Updating Firestation with Address: {}", firestation.getAddress() );
 
         Firestation result = firestationDAO.update(firestation);
@@ -90,8 +92,9 @@ public class AdminFirestationController {
         return new ResponseEntity<Firestation>(firestation, HttpStatus.OK);
     }
 
-    @DeleteMapping(value = "/{address}")
-    public ResponseEntity<?> deleteFirestation(@PathVariable("address") String address) {
+    @DeleteMapping(value = "/{address}",
+            produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<Firestation> deleteFirestation(@PathVariable("address") String address) {
         log.info("Fetching & Deleting Firestation with Address {}", address );
 
         Firestation firestation = firestationDAO.findByAddress(address);
