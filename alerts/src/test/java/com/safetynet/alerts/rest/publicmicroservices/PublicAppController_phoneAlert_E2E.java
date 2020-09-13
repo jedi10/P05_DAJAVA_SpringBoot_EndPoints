@@ -9,6 +9,7 @@ import com.safetynet.alerts.service.rto_models.PersonInfoRTO;
 import org.junit.jupiter.api.*;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
@@ -51,6 +52,9 @@ class PublicAppController_phoneAlert_E2E {
     @Autowired
     IFirestationDAO firestationDAO;
 
+    @Value("${app.alerts.test-server-url-without-port}")
+    private String testServerUrlWithoutPort;
+
     @LocalServerPort
     private int port;
 
@@ -68,7 +72,7 @@ class PublicAppController_phoneAlert_E2E {
     @BeforeAll()
     void setUp() throws IOException {
         //***********GIVEN*************
-        this.baseURL = new URL("http://localhost:" + port + rootURL);
+        this.baseURL = new URL(this.testServerUrlWithoutPort + port + rootURL);
     }
 
     @BeforeEach

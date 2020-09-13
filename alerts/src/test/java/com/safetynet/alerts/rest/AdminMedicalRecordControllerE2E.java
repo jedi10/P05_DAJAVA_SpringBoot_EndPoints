@@ -3,6 +3,7 @@ package com.safetynet.alerts.rest;
 import com.safetynet.alerts.models.MedicalRecord;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
@@ -30,6 +31,9 @@ class AdminMedicalRecordControllerE2E {
 
     @Autowired
     private AdminMedicalRecordController adminMedicalRecordController;
+
+    @Value("${app.alerts.test-server-url-without-port}")
+    private String testServerUrlWithoutPort;
 
     @LocalServerPort
     private int port;
@@ -60,7 +64,7 @@ class AdminMedicalRecordControllerE2E {
     @BeforeAll
     void setUp() throws MalformedURLException {
         //***********GIVEN*************
-        this.baseURL = new URL("http://localhost:" + port + rootURL);
+        this.baseURL = new URL(this.testServerUrlWithoutPort + port + rootURL);
         this.headers = new HttpHeaders();
         this.headers.setContentType(MediaType.APPLICATION_JSON);
 

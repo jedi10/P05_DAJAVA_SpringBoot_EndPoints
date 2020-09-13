@@ -8,6 +8,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
@@ -36,6 +37,9 @@ class PublicAppController_communityEmail_E2E {
     @Autowired
     public IPersonDAO personDAO;
 
+    @Value("${app.alerts.test-server-url-without-port}")
+    private String testServerUrlWithoutPort;
+
     @LocalServerPort
     private int port;
 
@@ -52,7 +56,7 @@ class PublicAppController_communityEmail_E2E {
     @BeforeAll
     void setUp() throws MalformedURLException {
         //***********GIVEN*************
-        this.baseURL = new URL("http://localhost:" + port + rootURL);
+        this.baseURL = new URL(this.testServerUrlWithoutPort + port + rootURL);
         personList = personDAO.findAll();
     }
 

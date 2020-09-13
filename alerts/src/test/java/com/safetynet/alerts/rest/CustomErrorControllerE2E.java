@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
@@ -29,6 +30,9 @@ class CustomErrorControllerE2E {
 
     private final String URL_TO_TEST = "/wrongurl";
 
+    @Value("${app.alerts.test-server-url-without-port}")
+    private String testServerUrlWithoutPort;
+
     @LocalServerPort
     private int port;
 
@@ -40,7 +44,7 @@ class CustomErrorControllerE2E {
     @BeforeAll
     public void setUp() throws Exception {
         //****************GIVEN*****************
-        this.base = new URL("http://localhost:" + port + URL_TO_TEST);
+        this.base = new URL(this.testServerUrlWithoutPort + port + URL_TO_TEST);
     }
 
    @BeforeEach

@@ -4,6 +4,7 @@ import com.safetynet.alerts.models.Person;
 import com.safetynet.alerts.utils.Jackson;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
@@ -29,6 +30,9 @@ class AdminPersonControllerE2E {
     @Autowired
     private AdminPersonController adminPersonController;
 
+    @Value("${app.alerts.test-server-url-without-port}")
+    private String testServerUrlWithoutPort;
+
     @LocalServerPort
     private int port;
 
@@ -49,7 +53,7 @@ class AdminPersonControllerE2E {
     @BeforeAll
     void setUp() throws MalformedURLException {
         //***********GIVEN*************
-        this.baseURL = new URL("http://localhost:" + port + rootURL);
+        this.baseURL = new URL(this.testServerUrlWithoutPort + port + rootURL);
         this.headers = new HttpHeaders();
         this.headers.setContentType(MediaType.APPLICATION_JSON);
     }
