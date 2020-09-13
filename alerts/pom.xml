@@ -65,6 +65,8 @@
 			<version>3.0.0</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/io.springfox/springfox-swagger2
+		https://openclassrooms.com/fr/courses/4668056-construisez-des-microservices/5123565-documentez-votre-microservice-avec-swagger-2
+		https://www.baeldung.com/swagger-2-documentation-for-spring-rest-api
 		<dependency>
 			<groupId>io.springfox</groupId>
 			<artifactId>springfox-swagger2</artifactId>

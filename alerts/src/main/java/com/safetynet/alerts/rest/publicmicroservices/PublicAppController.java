@@ -7,6 +7,7 @@ import com.safetynet.alerts.service.rto_models.IPersonInfoRTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -72,8 +73,9 @@ public class PublicAppController {
      * @param httpResponse response
      * @return ResponseEntity with a List of IPersonInfoRTO as content
      */
-    @GetMapping(value = "/personinfo/{firstName}&{lastName}")
-    public ResponseEntity<?> getPersonInfo(@PathVariable("firstName") String firstName, @PathVariable("lastName") String lastName,
+    @GetMapping(value = "/personinfo/{firstName}&{lastName}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<List<IPersonInfoRTO>>
+            getPersonInfo(@PathVariable("firstName") String firstName, @PathVariable("lastName") String lastName,
                                   HttpServletResponse httpResponse) {
         log.info("Fetching Person with first Name '{}' and last Name '{}'", firstName, lastName );
 
@@ -106,8 +108,9 @@ public class PublicAppController {
      * @param httpResponse response
      * @return ResponseEntity with a List of mail as content
      */
-    @GetMapping(value = "/communityemail/{city}")
-    public ResponseEntity<?> getCommunityEmail(@PathVariable("city") String city,
+    @GetMapping(value = "/communityemail/{city}",
+            produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<List<String>> getCommunityEmail(@PathVariable("city") String city,
                                                HttpServletResponse httpResponse)  {
         log.info("Fetching Email of all person living in city:  '{}'", city);
 
@@ -139,8 +142,9 @@ public class PublicAppController {
      * @param httpResponse response
      * @return ResponseEntity with a List of tel number as content
      */
-    @GetMapping(value = "/phonealert/{firestation}")
-    public ResponseEntity<?> getPhoneAlert(@PathVariable("firestation") String station,
+    @GetMapping(value = "/phonealert/{firestation}",
+            produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<List<String>> getPhoneAlert(@PathVariable("firestation") String station,
                                            HttpServletResponse httpResponse)  {
         log.info("Fetching Phone of all persons under responsibility of station:  '{}'", station);
 
@@ -172,8 +176,9 @@ public class PublicAppController {
      * @param httpResponse response
      * @return ResponseEntity with a Map as content
      */
-    @GetMapping(value = "/fire/{address}")
-    public ResponseEntity<?> getFireAndPersons(@PathVariable("address") String address,
+    @GetMapping(value = "/fire/{address}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<Map<String, List>>
+            getFireAndPersons(@PathVariable("address") String address,
                                            HttpServletResponse httpResponse)  {
         log.info("Fetching List of all persons located under address: '{}' and the Firestation responsible", address);
 
@@ -209,8 +214,9 @@ public class PublicAppController {
      * @param httpResponse response
      * @return ResponseEntity with a Map as content
      */
-    @GetMapping(value = "/childalert/{address}")
-    public ResponseEntity<?> getChildAlert(@PathVariable("address") String address,
+    @GetMapping(value = "/childalert/{address}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<Map<IPersonInfoRTO.HumanCategory, List<IPersonInfoRTO>>>
+            getChildAlert(@PathVariable("address") String address,
                                                HttpServletResponse httpResponse)  {
         log.info("Fetching List of all children located under address: '{}' and the adults living with them", address);
 
@@ -242,8 +248,9 @@ public class PublicAppController {
      * @param httpResponse response
      * @return ResponseEntity with a IFirestationRTO as Content
      */
-    @GetMapping(value = "/firestationarea/{stationNumber}")
-    public ResponseEntity<?> getFirestationArea(@PathVariable("stationNumber") String station,
+    @GetMapping(value = "/firestationarea/{stationNumber}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<IFirestationAreaRTO>
+            getFirestationArea(@PathVariable("stationNumber") String station,
                                            HttpServletResponse httpResponse)  {
         log.info("Fetching List of all persons in the area of responsibilities of station: '{}' with children and adults counter", station);
 
@@ -275,8 +282,9 @@ public class PublicAppController {
      * @param httpResponse response
      * @return ResponseEntity with a Map as content
      */
-    @GetMapping(value = "/flood/stations/{stations}")
-    public ResponseEntity<?> getFloodStations(@PathVariable("stations") List<String> stations,
+    @GetMapping(value = "/flood/stations/{stations}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<Map<String, List<IPersonInfoRTO>>>
+            getFloodStations(@PathVariable("stations") List<String> stations,
                                                 HttpServletResponse httpResponse)  {
         log.info("Fetching List of all persons in the area of responsibilities of stations: '{}' grouped by address", stations);
 
