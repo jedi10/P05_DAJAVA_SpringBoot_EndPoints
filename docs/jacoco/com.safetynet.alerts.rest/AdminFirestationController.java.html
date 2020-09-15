@@ -41,27 +41,28 @@ import java.util.List;
 <span class="fc" id="L41">        return new ResponseEntity&lt;List&lt;Firestation&gt;&gt;(firestations, HttpStatus.OK);</span>
     }
 
-    @GetMapping(value = &quot;/{address}&quot;)
-    public ResponseEntity&lt;?&gt; getFirestation(@PathVariable(&quot;address&quot;) String address ) {
-<span class="fc" id="L46">        log.info(&quot;Fetching Firestation with address  {} &quot;, address);</span>
+    @GetMapping(value = &quot;/{address}&quot;,
+            produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity&lt;Firestation&gt; getFirestation(@PathVariable(&quot;address&quot;) String address ) {
+<span class="fc" id="L47">        log.info(&quot;Fetching Firestation with address  {} &quot;, address);</span>
 
-<span class="fc" id="L48">        Firestation firestation = firestationDAO.findByAddress(address);</span>
-<span class="fc bfc" id="L49" title="All 2 branches covered.">        if(firestation == null){</span>
-<span class="fc" id="L50">            log.warn(&quot;Fetching Firestation Aborted: address not found: {}&quot;, address);</span>
-<span class="fc" id="L51">            return ResponseEntity.notFound().build();</span>
+<span class="fc" id="L49">        Firestation firestation = firestationDAO.findByAddress(address);</span>
+<span class="fc bfc" id="L50" title="All 2 branches covered.">        if(firestation == null){</span>
+<span class="fc" id="L51">            log.warn(&quot;Fetching Firestation Aborted: address not found: {}&quot;, address);</span>
+<span class="fc" id="L52">            return ResponseEntity.notFound().build();</span>
         }
-<span class="fc" id="L53">        return new ResponseEntity&lt;Firestation&gt;(firestation, HttpStatus.OK);</span>
+<span class="fc" id="L54">        return new ResponseEntity&lt;Firestation&gt;(firestation, HttpStatus.OK);</span>
     }
 
     @PostMapping(value = &quot;/&quot;)
     public ResponseEntity&lt;?&gt; createFirestation(@RequestBody Firestation firestation) {
-<span class="fc" id="L58">        log.info(&quot;Creating Firestation : {}&quot;, firestation);</span>
+<span class="fc" id="L59">        log.info(&quot;Creating Firestation : {}&quot;, firestation);</span>
 
-<span class="fc" id="L60">        Firestation result = firestationDAO.save(firestation);</span>
+<span class="fc" id="L61">        Firestation result = firestationDAO.save(firestation);</span>
 
-<span class="fc bfc" id="L62" title="All 2 branches covered.">        if (result == null){</span>
-<span class="fc" id="L63">            log.warn(&quot;Creating Firestation Aborted: {} already exist&quot;, firestation.getAddress());</span>
-<span class="fc" id="L64">            return ResponseEntity.status(HttpStatus.CONFLICT).build();</span>
+<span class="fc bfc" id="L63" title="All 2 branches covered.">        if (result == null){</span>
+<span class="fc" id="L64">            log.warn(&quot;Creating Firestation Aborted: {} already exist&quot;, firestation.getAddress());</span>
+<span class="fc" id="L65">            return ResponseEntity.status(HttpStatus.CONFLICT).build();</span>
         }
 
         /**
@@ -70,37 +71,39 @@ import java.util.List;
         headers.setLocation(ucBuilder.path(&quot;/firestation/address&quot;).buildAndExpand(firestation.getAddress()).toUri());
         return new ResponseEntity&lt;String&gt;(headers, HttpStatus.CREATED);**/
         URI location = ServletUriComponentsBuilder
-<span class="fc" id="L73">                .fromCurrentRequest()</span>
-<span class="fc" id="L74">                .path(&quot;/{address}&quot;)</span>
-<span class="fc" id="L75">                .buildAndExpand(firestation.getAddress())</span>
-<span class="fc" id="L76">                .toUri();</span>
-<span class="fc" id="L77">        return ResponseEntity.created(location).build();</span>
+<span class="fc" id="L74">                .fromCurrentRequest()</span>
+<span class="fc" id="L75">                .path(&quot;/{address}&quot;)</span>
+<span class="fc" id="L76">                .buildAndExpand(firestation.getAddress())</span>
+<span class="fc" id="L77">                .toUri();</span>
+<span class="fc" id="L78">        return ResponseEntity.created(location).build();</span>
     }
 
-    @PutMapping(value = &quot;/&quot;)
-    public ResponseEntity&lt;?&gt; updateFirestation(@RequestBody Firestation firestation) {
-<span class="fc" id="L82">        log.info(&quot;Updating Firestation with Address: {}&quot;, firestation.getAddress() );</span>
+    @PutMapping(value = &quot;/&quot;,
+            produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity&lt;Firestation&gt; updateFirestation(@RequestBody Firestation firestation) {
+<span class="fc" id="L84">        log.info(&quot;Updating Firestation with Address: {}&quot;, firestation.getAddress() );</span>
 
-<span class="fc" id="L84">        Firestation result = firestationDAO.update(firestation);</span>
+<span class="fc" id="L86">        Firestation result = firestationDAO.update(firestation);</span>
 
-<span class="fc bfc" id="L86" title="All 2 branches covered.">        if (result == null){</span>
-<span class="fc" id="L87">            log.warn(&quot;Updating Firestation Aborted: Address {} not found&quot;, firestation.getAddress());</span>
-<span class="fc" id="L88">            return ResponseEntity.notFound().build();</span>
+<span class="fc bfc" id="L88" title="All 2 branches covered.">        if (result == null){</span>
+<span class="fc" id="L89">            log.warn(&quot;Updating Firestation Aborted: Address {} not found&quot;, firestation.getAddress());</span>
+<span class="fc" id="L90">            return ResponseEntity.notFound().build();</span>
         }
-<span class="fc" id="L90">        return new ResponseEntity&lt;Firestation&gt;(firestation, HttpStatus.OK);</span>
+<span class="fc" id="L92">        return new ResponseEntity&lt;Firestation&gt;(firestation, HttpStatus.OK);</span>
     }
 
-    @DeleteMapping(value = &quot;/{address}&quot;)
-    public ResponseEntity&lt;?&gt; deletePerson(@PathVariable(&quot;address&quot;) String address) {
-<span class="fc" id="L95">        log.info(&quot;Fetching &amp; Deleting Firestation with Address {}&quot;, address );</span>
+    @DeleteMapping(value = &quot;/{address}&quot;,
+            produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity&lt;Firestation&gt; deleteFirestation(@PathVariable(&quot;address&quot;) String address) {
+<span class="fc" id="L98">        log.info(&quot;Fetching &amp; Deleting Firestation with Address {}&quot;, address );</span>
 
-<span class="fc" id="L97">        Firestation firestation = firestationDAO.findByAddress(address);</span>
-<span class="fc bfc" id="L98" title="All 2 branches covered.">        if(firestation == null){</span>
-<span class="fc" id="L99">            log.warn(&quot;Deleting Firestation Aborted: Address &lt;&lt; {} &gt;&gt; not found&quot;, address);</span>
-<span class="fc" id="L100">            return ResponseEntity.notFound().build();</span>
+<span class="fc" id="L100">        Firestation firestation = firestationDAO.findByAddress(address);</span>
+<span class="fc bfc" id="L101" title="All 2 branches covered.">        if(firestation == null){</span>
+<span class="fc" id="L102">            log.warn(&quot;Deleting Firestation Aborted: Address &lt;&lt; {} &gt;&gt; not found&quot;, address);</span>
+<span class="fc" id="L103">            return ResponseEntity.notFound().build();</span>
         }
-<span class="fc" id="L102">        firestationDAO.delete(firestation);</span>
-<span class="fc" id="L103">        return new ResponseEntity&lt;Firestation&gt;(HttpStatus.OK);</span>
+<span class="fc" id="L105">        firestationDAO.delete(firestation);</span>
+<span class="fc" id="L106">        return new ResponseEntity&lt;Firestation&gt;(HttpStatus.OK);</span>
     }
 
 }

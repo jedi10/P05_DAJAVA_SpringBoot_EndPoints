@@ -3,6 +3,7 @@
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 
@@ -12,11 +13,12 @@ import java.util.Arrays;
  * Root of Alerts Application *
  */
 @SpringBootApplication
-<span class="fc" id="L15">public class AlertsApplication {</span>
+@EnableSwagger2
+<span class="fc" id="L17">public class AlertsApplication {</span>
 
 	public static void main(String[] args) {
-<span class="nc" id="L18">		SpringApplication.run(AlertsApplication.class, args);</span>
-<span class="nc" id="L19">	}</span>
+<span class="nc" id="L20">		SpringApplication.run(AlertsApplication.class, args);</span>
+<span class="nc" id="L21">	}</span>
 
 	/**
 	 * on console, give a list of all spring Boot Beans
@@ -25,17 +27,17 @@ import java.util.Arrays;
 	 */
 	@Bean
 	public CommandLineRunner commandLineRunner(ApplicationContext ctx) {
-<span class="fc" id="L28">		return args -&gt; {</span>
+<span class="fc" id="L30">		return args -&gt; {</span>
 
-<span class="fc" id="L30">			System.out.println(&quot;Let's inspect the beans provided by Spring Boot:&quot;);</span>
+<span class="fc" id="L32">			System.out.println(&quot;Let's inspect the beans provided by Spring Boot:&quot;);</span>
 
-<span class="fc" id="L32">			String[] beanNames = ctx.getBeanDefinitionNames();</span>
-<span class="fc" id="L33">			Arrays.sort(beanNames);</span>
-<span class="fc bfc" id="L34" title="All 2 branches covered.">			for (String beanName : beanNames) {</span>
-<span class="fc" id="L35">				System.out.println(beanName);</span>
+<span class="fc" id="L34">			String[] beanNames = ctx.getBeanDefinitionNames();</span>
+<span class="fc" id="L35">			Arrays.sort(beanNames);</span>
+<span class="fc bfc" id="L36" title="All 2 branches covered.">			for (String beanName : beanNames) {</span>
+<span class="fc" id="L37">				System.out.println(beanName);</span>
 			}
 
-<span class="fc" id="L38">		};</span>
+<span class="fc" id="L40">		};</span>
 	}
 
 }

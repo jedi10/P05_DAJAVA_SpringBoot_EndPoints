@@ -4,9 +4,13 @@ import com.safetynet.alerts.rest.AdminPersonController;
 import com.safetynet.alerts.service.*;
 import com.safetynet.alerts.service.rto_models.IFirestationAreaRTO;
 import com.safetynet.alerts.service.rto_models.IPersonInfoRTO;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,9 +22,11 @@ import java.util.Map;
  * &lt;b&gt;Public END-POINTS&lt;/b&gt;
  * &lt;p&gt;All EndPoints give response in JSON&lt;/p&gt;
  */
-<span class="fc" id="L21">@Slf4j</span>
+@Api(tags = {&quot;Public App Controller&quot;})
+@Tag(name = &quot;Public App Controller&quot;, description = &quot;Public End-Points&quot;)
+<span class="fc" id="L27">@Slf4j</span>
 @RestController
-<span class="fc" id="L23">public class PublicAppController {</span>
+<span class="fc" id="L29">public class PublicAppController {</span>
 
     @Autowired
     PersonInfoService personInfoService;
@@ -52,34 +58,55 @@ import java.util.Map;
      * @param httpResponse response
      * @throws Exception exception
      */
+    @ApiOperation(value = &quot;redirection to Person Admin End-Point&quot;)
     @RequestMapping(value = &quot;/admin/personinfo/{firstName}&amp;{lastName}&quot;, method = RequestMethod.GET)
     public void redirectGetPerson(@PathVariable(&quot;firstName&quot;) String firstName, @PathVariable(&quot;lastName&quot;) String lastName,
                                   HttpServletResponse httpResponse) throws Exception {
 
-<span class="fc" id="L59">        httpResponse.sendRedirect(&quot;/person/&quot;+firstName+&quot;&amp;&quot;+lastName);</span>
-<span class="fc" id="L60">    }</span>
+<span class="fc" id="L66">        httpResponse.sendRedirect(&quot;/person/&quot;+firstName+&quot;&amp;&quot;+lastName);</span>
+<span class="fc" id="L67">    }</span>
 
     /**
      * &lt;b&gt;getPersonInfo public EndPoint Controller&lt;/b&gt;
      * &lt;p&gt;Return all information on a Person with first Name and last Name given&lt;/p&gt;
+     * &lt;ul&gt;
+     *     &lt;li&gt;Result contains one person with same first name and last name&lt;/li&gt;
+     *     &lt;li&gt;Result contains also people who have the same last Name&lt;/li&gt;
+     * &lt;/ul&gt;
      * @see PersonInfoService#getPersonInfo(String, String)
      * @param firstName firstName
      * @param lastName lastName
      * @param httpResponse response
      * @return ResponseEntity with a List of IPersonInfoRTO as content
      */
-    @GetMapping(value = &quot;/personinfo/{firstName}&amp;{lastName}&quot;)
-    public ResponseEntity&lt;?&gt; getPersonInfo(@PathVariable(&quot;firstName&quot;) String firstName, @PathVariable(&quot;lastName&quot;) String lastName,
+    @ApiOperation(value = &quot;Return all information on Person with same first Name and last Name given and all persons with same last Name&quot;)
+    @GetMapping(value = &quot;/personinfo/{firstName}&amp;{lastName}&quot;, produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity&lt;List&lt;IPersonInfoRTO&gt;&gt;
+            getPersonInfo(@PathVariable(&quot;firstName&quot;) String firstName, @PathVariable(&quot;lastName&quot;) String lastName,
                                   HttpServletResponse httpResponse) {
-<span class="fc" id="L74">        log.info(&quot;Fetching Person with first Name '{}' and last Name '{}'&quot;, firstName, lastName );</span>
+<span class="fc" id="L87">        log.info(&quot;Fetching Person with first Name '{}' and last Name '{}'&quot;, firstName, lastName );</span>
 
-<span class="fc" id="L76">        List&lt;IPersonInfoRTO&gt; personInfoList = personInfoService.getPersonInfo(firstName, lastName);</span>
-<span class="fc bfc" id="L77" title="All 2 branches covered.">        if(personInfoList.isEmpty()){</span>
-<span class="fc" id="L78">            log.warn(&quot;Fetching Person Aborted: '{}' '{}' not found&quot;, firstName, lastName);</span>
-<span class="fc" id="L79">            return ResponseEntity.notFound().build();</span>
+<span class="fc" id="L89">        List&lt;IPersonInfoRTO&gt; personInfoList = personInfoService.getPersonInfo(firstName, lastName);</span>
+<span class="fc bfc" id="L90" title="All 2 branches covered.">        if(personInfoList.isEmpty()){</span>
+<span class="fc" id="L91">            log.warn(&quot;Fetching Person Aborted: '{}' '{}' not found&quot;, firstName, lastName);</span>
+<span class="fc" id="L92">            return ResponseEntity.notFound().build();</span>
         }
-<span class="fc" id="L81">        return new ResponseEntity&lt;List&lt;IPersonInfoRTO&gt;&gt;(personInfoList, HttpStatus.OK);</span>
+<span class="fc" id="L94">        return new ResponseEntity&lt;List&lt;IPersonInfoRTO&gt;&gt;(personInfoList, HttpStatus.OK);</span>
     }
+
+    /**
+     * &lt;b&gt;redirection to getPersonInfo EndPoint Controller&lt;/b&gt;
+     * @param firstName firstName
+     * @param lastName lastName
+     * @param httpResponse response
+     * @throws Exception exception
+     */
+    @ApiOperation(value = &quot;redirection to PersonInfo End-Point&quot;)
+    @GetMapping(value = &quot;/personInfo&quot;)
+    public void redirectGetPersonInfo(@RequestParam String firstName, @RequestParam String lastName,
+                                  HttpServletResponse httpResponse) throws Exception {
+<span class="fc" id="L108">        httpResponse.sendRedirect(&quot;/personinfo/&quot;+firstName+&quot;&amp;&quot;+lastName);</span>
+<span class="fc" id="L109">    }</span>
 
     /**
      * &lt;b&gt;getCommunityEmail public EndPoint Controller&lt;/b&gt;
@@ -89,18 +116,33 @@ import java.util.Map;
      * @param httpResponse response
      * @return ResponseEntity with a List of mail as content
      */
-    @GetMapping(value = &quot;/communityemail/{city}&quot;)
-    public ResponseEntity&lt;?&gt; getCommunityEmail(@PathVariable(&quot;city&quot;) String city,
+    @ApiOperation(value = &quot;Return Email of all persons living in city given&quot;)
+    @GetMapping(value = &quot;/communityemail/{city}&quot;,
+            produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity&lt;List&lt;String&gt;&gt; getCommunityEmail(@PathVariable(&quot;city&quot;) String city,
                                                HttpServletResponse httpResponse)  {
-<span class="fc" id="L95">        log.info(&quot;Fetching Email of all person living in city:  '{}'&quot;, city);</span>
+<span class="fc" id="L124">        log.info(&quot;Fetching Email of all person living in city:  '{}'&quot;, city);</span>
 
-<span class="fc" id="L97">        List&lt;String&gt; mailList = communityEmailService.getCommunityEmail(city);</span>
-<span class="fc bfc" id="L98" title="All 2 branches covered.">        if(mailList.isEmpty()){</span>
-<span class="fc" id="L99">            log.warn(&quot;Fetching Empty MailList for city: '{}'&quot;, city);</span>
-<span class="fc" id="L100">            return ResponseEntity.notFound().build();</span>
+<span class="fc" id="L126">        List&lt;String&gt; mailList = communityEmailService.getCommunityEmail(city);</span>
+<span class="fc bfc" id="L127" title="All 2 branches covered.">        if(mailList.isEmpty()){</span>
+<span class="fc" id="L128">            log.warn(&quot;Fetching Empty MailList for city: '{}'&quot;, city);</span>
+<span class="fc" id="L129">            return ResponseEntity.notFound().build();</span>
         }
-<span class="fc" id="L102">        return new ResponseEntity&lt;List&lt;String&gt;&gt;(mailList, HttpStatus.OK);</span>
+<span class="fc" id="L131">        return new ResponseEntity&lt;List&lt;String&gt;&gt;(mailList, HttpStatus.OK);</span>
     }
+
+    /**
+     * &lt;b&gt;redirection to getCommunityEmail EndPoint Controller&lt;/b&gt;
+     * @param city cityName
+     * @param httpResponse response
+     * @throws Exception exception
+     */
+    @ApiOperation(value = &quot;redirection to CommunityEmail End-Point&quot;)
+    @GetMapping(value = &quot;/communityEmail&quot;)
+    public void redirectGetCommunityEmail(@RequestParam String city,
+                                      HttpServletResponse httpResponse) throws Exception {
+<span class="fc" id="L144">        httpResponse.sendRedirect(&quot;/communityemail/&quot;+city);</span>
+<span class="fc" id="L145">    }</span>
 
     /**
      * &lt;b&gt;getPhoneAlert public EndPoint Controller&lt;/b&gt;
@@ -110,18 +152,33 @@ import java.util.Map;
      * @param httpResponse response
      * @return ResponseEntity with a List of tel number as content
      */
-    @GetMapping(value = &quot;/phonealert/{station}&quot;)
-    public ResponseEntity&lt;?&gt; getPhoneAlert(@PathVariable(&quot;station&quot;) String station,
+    @ApiOperation(value = &quot;Return Phone of all persons under responsibility of station given&quot;)
+    @GetMapping(value = &quot;/phonealert/{firestation}&quot;,
+            produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity&lt;List&lt;String&gt;&gt; getPhoneAlert(@PathVariable(&quot;firestation&quot;) String station,
                                            HttpServletResponse httpResponse)  {
-<span class="fc" id="L116">        log.info(&quot;Fetching Phone of all persons under responsibility of station:  '{}'&quot;, station);</span>
+<span class="fc" id="L160">        log.info(&quot;Fetching Phone of all persons under responsibility of station:  '{}'&quot;, station);</span>
 
-<span class="fc" id="L118">        List&lt;String&gt; phoneList = phoneAlertService.getPhoneAlert(station);</span>
-<span class="fc bfc" id="L119" title="All 2 branches covered.">        if(phoneList.isEmpty()){</span>
-<span class="fc" id="L120">            log.warn(&quot;Fetching Empty PhoneList for station: '{}'&quot;,station);</span>
-<span class="fc" id="L121">            return ResponseEntity.notFound().build();</span>
+<span class="fc" id="L162">        List&lt;String&gt; phoneList = phoneAlertService.getPhoneAlert(station);</span>
+<span class="fc bfc" id="L163" title="All 2 branches covered.">        if(phoneList.isEmpty()){</span>
+<span class="fc" id="L164">            log.warn(&quot;Fetching Empty PhoneList for station: '{}'&quot;,station);</span>
+<span class="fc" id="L165">            return ResponseEntity.notFound().build();</span>
         }
-<span class="fc" id="L123">        return new ResponseEntity&lt;List&lt;String&gt;&gt;(phoneList, HttpStatus.OK);</span>
+<span class="fc" id="L167">        return new ResponseEntity&lt;List&lt;String&gt;&gt;(phoneList, HttpStatus.OK);</span>
     }
+
+    /**
+     * &lt;b&gt;redirection to getPhoneAlert EndPoint Controller&lt;/b&gt;
+     * @param firestation firestation number
+     * @param httpResponse response
+     * @throws Exception exception
+     */
+    @ApiOperation(value = &quot;redirection to PhoneAlert End-Point&quot;)
+    @GetMapping(value = &quot;/phoneAlert&quot;)
+    public void redirectGetPhoneAlert(@RequestParam String firestation,
+                                      HttpServletResponse httpResponse) throws Exception {
+<span class="fc" id="L180">        httpResponse.sendRedirect(&quot;/phonealert/&quot;+ firestation);</span>
+<span class="fc" id="L181">    }</span>
 
     /**
      * &lt;b&gt;getFire public EndPoint Controller&lt;/b&gt;
@@ -131,18 +188,33 @@ import java.util.Map;
      * @param httpResponse response
      * @return ResponseEntity with a Map as content
      */
-    @GetMapping(value = &quot;/fire/{address}&quot;)
-    public ResponseEntity&lt;?&gt; getFireAndPersons(@PathVariable(&quot;address&quot;) String address,
+    @ApiOperation(value = &quot;Return all persons located under address given and the Firestation responsible&quot;)
+    @GetMapping(value = &quot;/fire/{address}&quot;, produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity&lt;Map&lt;String, List&gt;&gt;
+            getFireAndPersons(@PathVariable(&quot;address&quot;) String address,
                                            HttpServletResponse httpResponse)  {
-<span class="fc" id="L137">        log.info(&quot;Fetching List of all persons located under address: '{}' and the Firestation responsible&quot;, address);</span>
+<span class="fc" id="L196">        log.info(&quot;Fetching List of all persons located under address: '{}' and the Firestation responsible&quot;, address);</span>
 
-<span class="fc" id="L139">        Map&lt;String, List&gt; mapResult = fireAddressService.getFireAndPersonsWithAddress(address);</span>
-<span class="pc bpc" id="L140" title="1 of 4 branches missed.">        if(mapResult.get(&quot;Persons&quot;).isEmpty() &amp;&amp; mapResult.get(&quot;Firestation&quot;).isEmpty()){</span>
-<span class="fc" id="L141">            log.warn(&quot;Fetching Empty Map for Address: '{}'&quot;, address);</span>
-<span class="fc" id="L142">            return ResponseEntity.notFound().build();</span>
+<span class="fc" id="L198">        Map&lt;String, List&gt; mapResult = fireAddressService.getFireAndPersonsWithAddress(address);</span>
+<span class="pc bpc" id="L199" title="1 of 4 branches missed.">        if(mapResult.get(&quot;Persons&quot;).isEmpty() &amp;&amp; mapResult.get(&quot;Firestation&quot;).isEmpty()){</span>
+<span class="fc" id="L200">            log.warn(&quot;Fetching Empty Map for Address: '{}'&quot;, address);</span>
+<span class="fc" id="L201">            return ResponseEntity.notFound().build();</span>
         }
-<span class="fc" id="L144">        return new ResponseEntity&lt;Map&lt;String, List&gt;&gt;(mapResult, HttpStatus.OK);</span>
+<span class="fc" id="L203">        return new ResponseEntity&lt;Map&lt;String, List&gt;&gt;(mapResult, HttpStatus.OK);</span>
     }
+
+    /**
+     * &lt;b&gt;redirection to getPhoneAlert EndPoint Controller&lt;/b&gt;
+     * @param address address
+     * @param httpResponse response
+     * @throws Exception exception
+     */
+    @ApiOperation(value = &quot;redirection to FireAndPersons End-Point&quot;)
+    @GetMapping(value = &quot;/fire&quot;)
+    public void redirectGetFireAndPersons(@RequestParam String address,
+                                      HttpServletResponse httpResponse) throws Exception {
+<span class="fc" id="L216">        httpResponse.sendRedirect(&quot;/fire/&quot;+ address);</span>
+<span class="fc" id="L217">    }</span>
 
     /**
      * &lt;b&gt;getChildAlert public EndPoint Controller&lt;/b&gt;
@@ -156,18 +228,33 @@ import java.util.Map;
      * @param httpResponse response
      * @return ResponseEntity with a Map as content
      */
-    @GetMapping(value = &quot;/childalert/{address}&quot;)
-    public ResponseEntity&lt;?&gt; getChildAlert(@PathVariable(&quot;address&quot;) String address,
+    @ApiOperation(value = &quot;Return all children located under address given and the adults living with them&quot;)
+    @GetMapping(value = &quot;/childalert/{address}&quot;, produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity&lt;Map&lt;IPersonInfoRTO.HumanCategory, List&lt;IPersonInfoRTO&gt;&gt;&gt;
+            getChildAlert(@PathVariable(&quot;address&quot;) String address,
                                                HttpServletResponse httpResponse)  {
-<span class="fc" id="L162">        log.info(&quot;Fetching List of all children located under address: '{}' and the adults living with them&quot;, address);</span>
+<span class="fc" id="L236">        log.info(&quot;Fetching List of all children located under address: '{}' and the adults living with them&quot;, address);</span>
 
-<span class="fc" id="L164">        Map&lt;IPersonInfoRTO.HumanCategory, List&lt;IPersonInfoRTO&gt;&gt; mapResult = childAlertService.getChildAlert(address);</span>
-<span class="fc bfc" id="L165" title="All 2 branches covered.">        if(mapResult.isEmpty()){</span>
-<span class="fc" id="L166">            log.warn(&quot;Fetching Empty Map for Address: '{}'&quot;, address);</span>
-<span class="fc" id="L167">            return ResponseEntity.notFound().build();</span>
+<span class="fc" id="L238">        Map&lt;IPersonInfoRTO.HumanCategory, List&lt;IPersonInfoRTO&gt;&gt; mapResult = childAlertService.getChildAlert(address);</span>
+<span class="fc bfc" id="L239" title="All 2 branches covered.">        if(mapResult.isEmpty()){</span>
+<span class="fc" id="L240">            log.warn(&quot;Fetching Empty Map for Address: '{}'&quot;, address);</span>
+<span class="fc" id="L241">            return ResponseEntity.notFound().build();</span>
         }
-<span class="fc" id="L169">        return new ResponseEntity&lt;&gt;(mapResult, HttpStatus.OK);</span>
+<span class="fc" id="L243">        return new ResponseEntity&lt;&gt;(mapResult, HttpStatus.OK);</span>
     }
+
+    /**
+     * &lt;b&gt;redirection to getChildAlert EndPoint Controller&lt;/b&gt;
+     * @param address address
+     * @param httpResponse response
+     * @throws Exception exception
+     */
+    @ApiOperation(value = &quot;redirection to ChildAlert End-Point&quot;)
+    @GetMapping(value = &quot;/childAlert&quot;)
+    public void redirectGetChildAlert(@RequestParam String address,
+                                          HttpServletResponse httpResponse) throws Exception {
+<span class="fc" id="L256">        httpResponse.sendRedirect(&quot;/childalert/&quot;+ address);</span>
+<span class="fc" id="L257">    }</span>
 
     /**
      * &lt;b&gt;getFirestationArea public EndPoint Controller&lt;/b&gt;
@@ -177,18 +264,33 @@ import java.util.Map;
      * @param httpResponse response
      * @return ResponseEntity with a IFirestationRTO as Content
      */
-    @GetMapping(value = &quot;/firestationarea/{station}&quot;)
-    public ResponseEntity&lt;?&gt; getFirestationArea(@PathVariable(&quot;station&quot;) String station,
+    @ApiOperation(value = &quot;Return all persons in the area of responsibilities of station given with children and adults counter&quot;)
+    @GetMapping(value = &quot;/firestationarea/{stationNumber}&quot;, produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity&lt;IFirestationAreaRTO&gt;
+            getFirestationArea(@PathVariable(&quot;stationNumber&quot;) String station,
                                            HttpServletResponse httpResponse)  {
-<span class="fc" id="L183">        log.info(&quot;Fetching List of all persons in the area of responsibilities of station: '{}' with children and adults counter&quot;, station);</span>
+<span class="fc" id="L272">        log.info(&quot;Fetching List of all persons in the area of responsibilities of station: '{}' with children and adults counter&quot;, station);</span>
 
-<span class="fc" id="L185">        IFirestationAreaRTO objectResult = firestationAreaService.getFirestationArea(station);</span>
-<span class="fc bfc" id="L186" title="All 2 branches covered.">        if(null == objectResult){</span>
-<span class="fc" id="L187">            log.warn(&quot;Fetching Empty Data for station: '{}'&quot;, station);</span>
-<span class="fc" id="L188">            return ResponseEntity.notFound().build();</span>
+<span class="fc" id="L274">        IFirestationAreaRTO objectResult = firestationAreaService.getFirestationArea(station);</span>
+<span class="fc bfc" id="L275" title="All 2 branches covered.">        if(null == objectResult){</span>
+<span class="fc" id="L276">            log.warn(&quot;Fetching Empty Data for station: '{}'&quot;, station);</span>
+<span class="fc" id="L277">            return ResponseEntity.notFound().build();</span>
         }
-<span class="fc" id="L190">        return new ResponseEntity&lt;&gt;(objectResult, HttpStatus.OK);</span>
+<span class="fc" id="L279">        return new ResponseEntity&lt;&gt;(objectResult, HttpStatus.OK);</span>
     }
+
+    /**
+     * &lt;b&gt;redirection to getFirestationArea EndPoint Controller&lt;/b&gt;
+     * @param stationNumber station number
+     * @param httpResponse response
+     * @throws Exception exception
+     */
+    @ApiOperation(value = &quot;redirection to FirestationArea End-Point&quot;)
+    @GetMapping(value = &quot;/firestation&quot;)
+    public void redirectFirestationArea(@RequestParam String stationNumber,
+                                      HttpServletResponse httpResponse) throws Exception {
+<span class="fc" id="L292">        httpResponse.sendRedirect(&quot;/firestationarea/&quot;+ stationNumber);</span>
+<span class="fc" id="L293">    }</span>
 
     /**
      * &lt;b&gt;getFloodStations public EndPoint Controller&lt;/b&gt;
@@ -198,17 +300,32 @@ import java.util.Map;
      * @param httpResponse response
      * @return ResponseEntity with a Map as content
      */
-    @GetMapping(value = &quot;/flood/stations/{stations}&quot;)
-    public ResponseEntity&lt;?&gt; getFloodStations(@PathVariable(&quot;stations&quot;) List&lt;String&gt; stations,
+    @ApiOperation(value = &quot;Return all persons in the area of responsibilities of stations given grouped by address&quot;)
+    @GetMapping(value = &quot;/flood/stations/{stations}&quot;, produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity&lt;Map&lt;String, List&lt;IPersonInfoRTO&gt;&gt;&gt;
+            getFloodStations(@PathVariable(&quot;stations&quot;) List&lt;String&gt; stations,
                                                 HttpServletResponse httpResponse)  {
-<span class="fc" id="L204">        log.info(&quot;Fetching List of all persons in the area of responsibilities of stations: '{}' grouped by address&quot;, stations);</span>
+<span class="fc" id="L308">        log.info(&quot;Fetching List of all persons in the area of responsibilities of stations: '{}' grouped by address&quot;, stations);</span>
 
-<span class="fc" id="L206">        Map&lt;String, List&lt;IPersonInfoRTO&gt;&gt; objectResult = floodStationsService.getFloodStations(stations);</span>
-<span class="fc bfc" id="L207" title="All 2 branches covered.">        if(null == objectResult){</span>
-<span class="fc" id="L208">            log.warn(&quot;Fetching Empty Data for stations: '{}'&quot;, stations);</span>
-<span class="fc" id="L209">            return ResponseEntity.notFound().build();</span>
+<span class="fc" id="L310">        Map&lt;String, List&lt;IPersonInfoRTO&gt;&gt; objectResult = floodStationsService.getFloodStations(stations);</span>
+<span class="fc bfc" id="L311" title="All 2 branches covered.">        if(null == objectResult){</span>
+<span class="fc" id="L312">            log.warn(&quot;Fetching Empty Data for stations: '{}'&quot;, stations);</span>
+<span class="fc" id="L313">            return ResponseEntity.notFound().build();</span>
         }
-<span class="fc" id="L211">        return new ResponseEntity&lt;&gt;(objectResult, HttpStatus.OK);</span>
+<span class="fc" id="L315">        return new ResponseEntity&lt;&gt;(objectResult, HttpStatus.OK);</span>
     }
+
+    /**
+     * &lt;b&gt;redirection to getFloodStations EndPoint Controller&lt;/b&gt;
+     * @param stations List of station number
+     * @param httpResponse response
+     * @throws Exception exception
+     */
+    @ApiOperation(value = &quot;redirection to FloodStations End-Point&quot;)
+    @GetMapping(value = &quot;/flood/stations&quot;, params = {&quot;stations&quot;})
+    public void redirectFloodStations(@RequestParam String stations,
+                                        HttpServletResponse httpResponse) throws Exception {
+<span class="fc" id="L328">        httpResponse.sendRedirect(&quot;/flood/stations/&quot;+ stations);</span>
+<span class="fc" id="L329">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>
