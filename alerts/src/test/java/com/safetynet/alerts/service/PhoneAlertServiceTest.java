@@ -12,6 +12,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.IOException;
@@ -46,9 +47,12 @@ class PhoneAlertServiceTest {
 
     private byte[] fileBytes;
 
+    @Value("${app.alerts.test-json-file-path}")
+    private String testJsonFilePath;
+
     @BeforeAll()
     void setUp() throws IOException {
-        String fileString = Files.readString(Paths.get("src/test/resources/testData.json"));
+        String fileString = Files.readString(Paths.get(testJsonFilePath));
         fileBytes = fileString.getBytes(StandardCharsets.UTF_8);
     }
 

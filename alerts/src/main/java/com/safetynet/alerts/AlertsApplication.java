@@ -3,6 +3,7 @@ package com.safetynet.alerts;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 
@@ -12,6 +13,7 @@ import java.util.Arrays;
  * Root of Alerts Application *
  */
 @SpringBootApplication
+@EnableSwagger2
 public class AlertsApplication {
 
 	public static void main(String[] args) {

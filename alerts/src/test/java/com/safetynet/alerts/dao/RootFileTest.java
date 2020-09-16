@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.File;
@@ -27,16 +28,17 @@ class RootFileTest {
     @Mock
     private AlertsProperties alertsProperties;
 
-    private String rootFileName = "testData.json";
+    private final String rootFileName = "testData.json";
 
-    private String pathRepository = "src/test/resources/";
+    @Value("${app.alerts.test-json-file-path}")
+    private String testJsonFilePath;
 
     private byte[] byteStub = "{'zac':'learn'}".getBytes();
 
     @BeforeAll
     void setUp(){
         //GIVEN-WHEN
-        when(alertsProperties.getJsonFilePath()).thenReturn(pathRepository+rootFileName);
+        when(alertsProperties.getJsonFilePath()).thenReturn(testJsonFilePath);
         rootFile = new RootFile(alertsProperties);
         rootFile.setBytes(byteStub);
     }
@@ -53,7 +55,7 @@ class RootFileTest {
         assertNotNull(rootFile);
         assertNotNull(rootFile.getPath(),
                 "rootFile Path property should be filled and available by the getter accessor.");
-        assertEquals(pathRepository+rootFileName, rootFile.getPath(),
+        assertEquals(testJsonFilePath, rootFile.getPath(),
                 "the path in rootFile.path should contain the same path as the one given before the test");
     }
 
@@ -97,7 +99,7 @@ class RootFileTest {
         //Nothing should happen on Byte any more
         //**************************************
         //GIVEN
-        rootFile.setPath(pathRepository+rootFileName);
+        rootFile.setPath(testJsonFilePath);
         rootFile.setBytes(byteStub);
         //WHEN
         rootFile.setBytesWithPath(false);

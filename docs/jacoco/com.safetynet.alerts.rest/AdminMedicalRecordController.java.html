@@ -42,64 +42,67 @@ import java.util.List;
 <span class="fc" id="L42">        return new ResponseEntity&lt;List&lt;MedicalRecord&gt;&gt;(medicalRecords, HttpStatus.OK);</span>
     }
 
-    @GetMapping(value = &quot;/{firstName}&amp;{lastName}&quot;)
-    public ResponseEntity&lt;?&gt; getMedicalRecord(@PathVariable(&quot;firstName&quot;) String firstName, @PathVariable(&quot;lastName&quot;) String lastName ) {
-<span class="fc" id="L47">        log.info(&quot;Fetching Medical Record with first Name '{}' and last Name '{}'&quot;, firstName, lastName );</span>
+    @GetMapping(value = &quot;/{firstName}&amp;{lastName}&quot;,
+            produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity&lt;MedicalRecord&gt; getMedicalRecord(@PathVariable(&quot;firstName&quot;) String firstName, @PathVariable(&quot;lastName&quot;) String lastName ) {
+<span class="fc" id="L48">        log.info(&quot;Fetching Medical Record with first Name '{}' and last Name '{}'&quot;, firstName, lastName );</span>
 
-<span class="fc" id="L49">        MedicalRecord medicalRecord = medicalRecordDAO.findByName(firstName, lastName);</span>
-<span class="fc bfc" id="L50" title="All 2 branches covered.">        if(medicalRecord == null){</span>
-<span class="fc" id="L51">            log.warn(&quot;Fetching Medical Record Aborted: {} {} not found&quot;, firstName, lastName);</span>
-<span class="fc" id="L52">            return ResponseEntity.notFound().build();</span>
+<span class="fc" id="L50">        MedicalRecord medicalRecord = medicalRecordDAO.findByName(firstName, lastName);</span>
+<span class="fc bfc" id="L51" title="All 2 branches covered.">        if(medicalRecord == null){</span>
+<span class="fc" id="L52">            log.warn(&quot;Fetching Medical Record Aborted: {} {} not found&quot;, firstName, lastName);</span>
+<span class="fc" id="L53">            return ResponseEntity.notFound().build();</span>
         }
-<span class="fc" id="L54">        return new ResponseEntity&lt;MedicalRecord&gt;(medicalRecord, HttpStatus.OK);</span>
+<span class="fc" id="L55">        return new ResponseEntity&lt;MedicalRecord&gt;(medicalRecord, HttpStatus.OK);</span>
     }
 
     @PostMapping(value = &quot;/&quot;)
     public ResponseEntity&lt;?&gt; createMedicalRecord(@RequestBody MedicalRecord medicalRecord) {
-<span class="fc" id="L59">        log.info(&quot;Creating Medical Record : {}&quot;, medicalRecord);</span>
+<span class="fc" id="L60">        log.info(&quot;Creating Medical Record : {}&quot;, medicalRecord);</span>
 
-<span class="fc" id="L61">        MedicalRecord result = medicalRecordDAO.save(medicalRecord);</span>
+<span class="fc" id="L62">        MedicalRecord result = medicalRecordDAO.save(medicalRecord);</span>
 
-<span class="fc bfc" id="L63" title="All 2 branches covered.">        if (result == null){</span>
-<span class="fc" id="L64">            log.warn(&quot;Creating Medical Record Aborted: {} {} already exist&quot;,</span>
-<span class="fc" id="L65">                    medicalRecord.getFirstName(), medicalRecord.getLastName());</span>
-<span class="fc" id="L66">            return ResponseEntity.status(HttpStatus.CONFLICT).build();</span>
+<span class="fc bfc" id="L64" title="All 2 branches covered.">        if (result == null){</span>
+<span class="fc" id="L65">            log.warn(&quot;Creating Medical Record Aborted: {} {} already exist&quot;,</span>
+<span class="fc" id="L66">                    medicalRecord.getFirstName(), medicalRecord.getLastName());</span>
+<span class="fc" id="L67">            return ResponseEntity.status(HttpStatus.CONFLICT).build();</span>
         }
 
         URI location = ServletUriComponentsBuilder
-<span class="fc" id="L70">                .fromCurrentRequest()</span>
-<span class="fc" id="L71">                .path(&quot;/{firstName}&amp;{lastName}&quot;)</span>
-<span class="fc" id="L72">                .buildAndExpand(medicalRecord.getFirstName(), medicalRecord.getLastName())</span>
-<span class="fc" id="L73">                .toUri();</span>
-<span class="fc" id="L74">        return ResponseEntity.created(location).build();</span>
+<span class="fc" id="L71">                .fromCurrentRequest()</span>
+<span class="fc" id="L72">                .path(&quot;/{firstName}&amp;{lastName}&quot;)</span>
+<span class="fc" id="L73">                .buildAndExpand(medicalRecord.getFirstName(), medicalRecord.getLastName())</span>
+<span class="fc" id="L74">                .toUri();</span>
+<span class="fc" id="L75">        return ResponseEntity.created(location).build();</span>
     }
 
-    @PutMapping(value = &quot;/&quot;)
-    public ResponseEntity&lt;?&gt; updateMedicalRecord(@RequestBody MedicalRecord medicalRecord) {
-<span class="fc" id="L79">        log.info(&quot;Updating Medical Record with first Name '{}' and last Name '{}'&quot;,</span>
-<span class="fc" id="L80">                medicalRecord.getFirstName(), medicalRecord.getLastName());</span>
+    @PutMapping(value = &quot;/&quot;,
+            produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity&lt;MedicalRecord&gt; updateMedicalRecord(@RequestBody MedicalRecord medicalRecord) {
+<span class="fc" id="L81">        log.info(&quot;Updating Medical Record with first Name '{}' and last Name '{}'&quot;,</span>
+<span class="fc" id="L82">                medicalRecord.getFirstName(), medicalRecord.getLastName());</span>
 
-<span class="fc" id="L82">        MedicalRecord result = medicalRecordDAO.update(medicalRecord);</span>
+<span class="fc" id="L84">        MedicalRecord result = medicalRecordDAO.update(medicalRecord);</span>
 
-<span class="fc bfc" id="L84" title="All 2 branches covered.">        if (result == null){</span>
-<span class="fc" id="L85">            log.warn(&quot;Updating Medical Record Aborted: {} {} not found&quot;,</span>
-<span class="fc" id="L86">                    medicalRecord.getFirstName(), medicalRecord.getLastName());</span>
-<span class="fc" id="L87">            return ResponseEntity.notFound().build();</span>
+<span class="fc bfc" id="L86" title="All 2 branches covered.">        if (result == null){</span>
+<span class="fc" id="L87">            log.warn(&quot;Updating Medical Record Aborted: {} {} not found&quot;,</span>
+<span class="fc" id="L88">                    medicalRecord.getFirstName(), medicalRecord.getLastName());</span>
+<span class="fc" id="L89">            return ResponseEntity.notFound().build();</span>
         }
-<span class="fc" id="L89">        return new ResponseEntity&lt;MedicalRecord&gt;(medicalRecord, HttpStatus.OK);</span>
+<span class="fc" id="L91">        return new ResponseEntity&lt;MedicalRecord&gt;(medicalRecord, HttpStatus.OK);</span>
     }
 
-    @DeleteMapping(value = &quot;/{firstName}&amp;{lastName}&quot;)
-    public ResponseEntity&lt;?&gt; deleteMedicalRecord(@PathVariable(&quot;firstName&quot;) String firstName, @PathVariable(&quot;lastName&quot;) String lastName) {
-<span class="fc" id="L94">        log.info(&quot;Fetching &amp; Deleting Medical Record with first Name '{}' and last Name '{}'&quot;, firstName, lastName );</span>
+    @DeleteMapping(value = &quot;/{firstName}&amp;{lastName}&quot;,
+            produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity&lt;MedicalRecord&gt; deleteMedicalRecord(@PathVariable(&quot;firstName&quot;) String firstName, @PathVariable(&quot;lastName&quot;) String lastName) {
+<span class="fc" id="L97">        log.info(&quot;Fetching &amp; Deleting Medical Record with first Name '{}' and last Name '{}'&quot;, firstName, lastName );</span>
 
-<span class="fc" id="L96">        MedicalRecord medicalRecord = medicalRecordDAO.findByName(firstName, lastName);</span>
-<span class="fc bfc" id="L97" title="All 2 branches covered.">        if(medicalRecord == null){</span>
-<span class="fc" id="L98">            log.warn(&quot;Deleting Medical Record Aborted: {} {} not found&quot;, firstName, lastName);</span>
-<span class="fc" id="L99">            return ResponseEntity.notFound().build();</span>
+<span class="fc" id="L99">        MedicalRecord medicalRecord = medicalRecordDAO.findByName(firstName, lastName);</span>
+<span class="fc bfc" id="L100" title="All 2 branches covered.">        if(medicalRecord == null){</span>
+<span class="fc" id="L101">            log.warn(&quot;Deleting Medical Record Aborted: {} {} not found&quot;, firstName, lastName);</span>
+<span class="fc" id="L102">            return ResponseEntity.notFound().build();</span>
         }
-<span class="fc" id="L101">        medicalRecordDAO.delete(medicalRecord);</span>
-<span class="fc" id="L102">        return new ResponseEntity&lt;MedicalRecord&gt;(HttpStatus.OK);</span>
+<span class="fc" id="L104">        medicalRecordDAO.delete(medicalRecord);</span>
+<span class="fc" id="L105">        return new ResponseEntity&lt;MedicalRecord&gt;(HttpStatus.OK);</span>
     }
 
 }

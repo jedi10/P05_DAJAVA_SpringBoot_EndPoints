@@ -12,7 +12,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * <b>RTO Class used by FirestationArea Service</b>
+ * <b>Result Transfert Object (RTO) Model used by FirestationArea Service</b>
  * <p>Give a presentation of list of IPersonInfoRTO</p>
  * <ul>
  *     <li>add a counter for children and adults</li>

@@ -15,12 +15,30 @@ public class AlertsProperties {
 
     /**
      * Json File Path
-     * App need a file to load all Data at start
+     * App needs a file to load all Data at start
      * application.properties can overcome this value
      */
     @Setter
     @Getter
     private String jsonFilePath = "src/main/resources/data.json";
+
+    /**
+     * Test Json File Path
+     * App Test need a file to load all Data
+     * application.properties can overcome this value
+     */
+    @Setter
+    @Getter
+    private String testJsonFilePath = "src/test/resources/testData.json";
+
+    /**
+     * Test Server URL
+     * App need a server to launch execute End To End Tests
+     * application.properties can overcome this value
+     */
+    @Setter
+    @Getter
+    private String testServerUrlWithoutPort = "https://localhost:";
 }
 
 

@@ -14,8 +14,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * &lt;b&gt;Result Transfert Object Model for Person Info EndPoint&lt;/b&gt;
- * &lt;p&gt;Fusion of all informations we have about a person&lt;/p&gt;
+ * &lt;b&gt;Result Transfert Object (RTO) Model used by several services to feed public End-Points&lt;/b&gt;
+ * &lt;p&gt;Fusion of all information we have about a person (Person + MedicalRecord)&lt;/p&gt;
  */
 public class PersonInfoRTO implements IPersonInfoRTO {
 <span class="fc" id="L21">    @Getter</span>
@@ -66,7 +66,7 @@ public class PersonInfoRTO implements IPersonInfoRTO {
     private List&lt;String&gt; allergies;
 
     /**
-     * &lt;p&gt;new instance of List will be created with content given&lt;/p&gt;
+     * &lt;p&gt;A new instance of List will be created with content given&lt;/p&gt;
      * &lt;p&gt;if Medications List is Null, an empty List will be created&lt;/p&gt;
      * @param medications medications List
      */
@@ -79,7 +79,7 @@ public class PersonInfoRTO implements IPersonInfoRTO {
 <span class="fc" id="L79">    }</span>
 
     /**
-     * &lt;p&gt;new instance of List will be created with content given&lt;/p&gt;
+     * &lt;p&gt;A new instance of List will be created with content given&lt;/p&gt;
      * &lt;p&gt;if Allergies List is Null, an empty List will be created&lt;/p&gt;
      * @param allergies allergies List
      */
@@ -111,7 +111,7 @@ public class PersonInfoRTO implements IPersonInfoRTO {
 
     /**
      * &lt;b&gt;Constructor PersonInfoRTO&lt;/b&gt;
-     * &lt;p&gt;First and last name of Person and MedicalRecord have to be the same&lt;/p&gt;
+     * &lt;p&gt;First and Last Name of Person and MedicalRecord have to be the same&lt;/p&gt;
      * &lt;ul&gt;
      *    &lt;li&gt;if one param is null, return an exception&lt;/li&gt;
      *    &lt;li&gt;if first name and last name of param (person, medicalrecord) are not the same, return an exception&lt;/li&gt;

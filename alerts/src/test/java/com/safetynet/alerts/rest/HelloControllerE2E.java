@@ -2,6 +2,7 @@ package com.safetynet.alerts.rest;
 
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
@@ -14,6 +15,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class HelloControllerE2E {
 
+    @Value("${app.alerts.test-server-url-without-port}")
+    private String testServerUrlWithoutPort;
+
     @LocalServerPort
     private int port;
 
@@ -24,7 +28,8 @@ public class HelloControllerE2E {
 
     @BeforeAll
     public void setUp() throws Exception {
-        this.base = new URL("http://localhost:" + port + "/test/helloSpring");
+        this.base = new URL(this.testServerUrlWithoutPort + port +
+                "/test/helloSpring");
     }
 
     @Test

@@ -45,28 +45,29 @@ import java.util.List;
     }
 
 
-    @GetMapping(value = &quot;/{firstName}&amp;{lastName}&quot;)
-    public ResponseEntity&lt;?&gt; getPerson(@PathVariable(&quot;firstName&quot;) String firstName, @PathVariable(&quot;lastName&quot;) String lastName ) {
-<span class="fc" id="L50">        log.info(&quot;Fetching Person with first Name '{}' and last Name '{}'&quot;, firstName, lastName );</span>
+    @GetMapping(value = &quot;/{firstName}&amp;{lastName}&quot;,
+            produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity&lt;Person&gt; getPerson(@PathVariable(&quot;firstName&quot;) String firstName, @PathVariable(&quot;lastName&quot;) String lastName ) {
+<span class="fc" id="L51">        log.info(&quot;Fetching Person with first Name '{}' and last Name '{}'&quot;, firstName, lastName );</span>
 
-<span class="fc" id="L52">        Person person = personDAO.findByName(firstName, lastName);</span>
-<span class="fc bfc" id="L53" title="All 2 branches covered.">        if(person == null){</span>
-<span class="fc" id="L54">            log.warn(&quot;Fetching Person Aborted: {} {} not found&quot;, firstName, lastName);</span>
-<span class="fc" id="L55">            return ResponseEntity.notFound().build();</span>
+<span class="fc" id="L53">        Person person = personDAO.findByName(firstName, lastName);</span>
+<span class="fc bfc" id="L54" title="All 2 branches covered.">        if(person == null){</span>
+<span class="fc" id="L55">            log.warn(&quot;Fetching Person Aborted: {} {} not found&quot;, firstName, lastName);</span>
+<span class="fc" id="L56">            return ResponseEntity.notFound().build();</span>
         }
 
-<span class="fc" id="L58">        return new ResponseEntity&lt;Person&gt;(person, HttpStatus.OK);</span>
+<span class="fc" id="L59">        return new ResponseEntity&lt;Person&gt;(person, HttpStatus.OK);</span>
     }
 
     @PostMapping(value = &quot;/&quot;)
     public ResponseEntity&lt;?&gt; createPerson(@RequestBody Person person) {
-<span class="fc" id="L63">        log.info(&quot;Creating Person : {}&quot;, person);</span>
+<span class="fc" id="L64">        log.info(&quot;Creating Person : {}&quot;, person);</span>
 
-<span class="fc" id="L65">        Person result = personDAO.save(person);</span>
+<span class="fc" id="L66">        Person result = personDAO.save(person);</span>
 
-<span class="fc bfc" id="L67" title="All 2 branches covered.">        if (result == null){</span>
-<span class="fc" id="L68">            log.warn(&quot;Creating Person Aborted: {} {} already exist&quot;, person.getFirstName(), person.getLastName());</span>
-<span class="fc" id="L69">            return ResponseEntity.status(HttpStatus.CONFLICT).build();</span>
+<span class="fc bfc" id="L68" title="All 2 branches covered.">        if (result == null){</span>
+<span class="fc" id="L69">            log.warn(&quot;Creating Person Aborted: {} {} already exist&quot;, person.getFirstName(), person.getLastName());</span>
+<span class="fc" id="L70">            return ResponseEntity.status(HttpStatus.CONFLICT).build();</span>
         }
 
         //HttpHeaders headers = new HttpHeaders();
@@ -74,38 +75,40 @@ import java.util.List;
         //headers.setLocation(ucBuilder.path(&quot;/person/{firstName}&amp;{lastName}&quot;).buildAndExpand(person.getFirstName(), person.getLastName()).toUri());
         //return new ResponseEntity&lt;String&gt;(headers, HttpStatus.CREATED);
         URI location = ServletUriComponentsBuilder
-<span class="fc" id="L77">                .fromCurrentRequest()</span>
-<span class="fc" id="L78">                .path(&quot;/{firstName}&amp;{lastName}&quot;)</span>
-<span class="fc" id="L79">                .buildAndExpand(person.getFirstName(), person.getLastName())</span>
-<span class="fc" id="L80">                .toUri();</span>
-<span class="fc" id="L81">        return ResponseEntity.created(location).build();</span>
+<span class="fc" id="L78">                .fromCurrentRequest()</span>
+<span class="fc" id="L79">                .path(&quot;/{firstName}&amp;{lastName}&quot;)</span>
+<span class="fc" id="L80">                .buildAndExpand(person.getFirstName(), person.getLastName())</span>
+<span class="fc" id="L81">                .toUri();</span>
+<span class="fc" id="L82">        return ResponseEntity.created(location).build();</span>
     }
 
-    @PutMapping(value = &quot;/&quot;)
-    public ResponseEntity&lt;?&gt; updatePerson(@RequestBody Person person) {
-<span class="fc" id="L86">        log.info(&quot;Updating Person with first Name '{}' and last Name '{}'&quot;, person.getFirstName(), person.getLastName());</span>
+    @PutMapping(value = &quot;/&quot;,
+            produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity&lt;Person&gt; updatePerson(@RequestBody Person person) {
+<span class="fc" id="L88">        log.info(&quot;Updating Person with first Name '{}' and last Name '{}'&quot;, person.getFirstName(), person.getLastName());</span>
 
-<span class="fc" id="L88">        Person result = personDAO.update(person);</span>
+<span class="fc" id="L90">        Person result = personDAO.update(person);</span>
 
-<span class="fc bfc" id="L90" title="All 2 branches covered.">        if (result == null){</span>
-<span class="fc" id="L91">            log.warn(&quot;Updating Person Aborted: {} {} not found&quot;, person.getFirstName(), person.getLastName());</span>
-<span class="fc" id="L92">            return ResponseEntity.notFound().build();</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">        if (result == null){</span>
+<span class="fc" id="L93">            log.warn(&quot;Updating Person Aborted: {} {} not found&quot;, person.getFirstName(), person.getLastName());</span>
+<span class="fc" id="L94">            return ResponseEntity.notFound().build();</span>
         }
 
-<span class="fc" id="L95">        return new ResponseEntity&lt;Person&gt;(person, HttpStatus.OK);</span>
+<span class="fc" id="L97">        return new ResponseEntity&lt;Person&gt;(person, HttpStatus.OK);</span>
     }
 
-    @DeleteMapping(value = &quot;/{firstName}&amp;{lastName}&quot;)
-    public ResponseEntity&lt;?&gt; deletePerson(@PathVariable(&quot;firstName&quot;) String firstName, @PathVariable(&quot;lastName&quot;) String lastName) {
-<span class="fc" id="L100">        log.info(&quot;Fetching &amp; Deleting User with first Name '{}' and last Name '{}'&quot;, firstName, lastName );</span>
+    @DeleteMapping(value = &quot;/{firstName}&amp;{lastName}&quot;,
+            produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity&lt;Person&gt; deletePerson(@PathVariable(&quot;firstName&quot;) String firstName, @PathVariable(&quot;lastName&quot;) String lastName) {
+<span class="fc" id="L103">        log.info(&quot;Fetching &amp; Deleting User with first Name '{}' and last Name '{}'&quot;, firstName, lastName );</span>
 
-<span class="fc" id="L102">        Person person = personDAO.findByName(firstName, lastName);</span>
-<span class="fc bfc" id="L103" title="All 2 branches covered.">        if(person == null){</span>
-<span class="fc" id="L104">            log.warn(&quot;Deleting Person Aborted: {} {} not found&quot;, firstName, lastName);</span>
-<span class="fc" id="L105">            return ResponseEntity.notFound().build();</span>
+<span class="fc" id="L105">        Person person = personDAO.findByName(firstName, lastName);</span>
+<span class="fc bfc" id="L106" title="All 2 branches covered.">        if(person == null){</span>
+<span class="fc" id="L107">            log.warn(&quot;Deleting Person Aborted: {} {} not found&quot;, firstName, lastName);</span>
+<span class="fc" id="L108">            return ResponseEntity.notFound().build();</span>
         }
-<span class="fc" id="L107">        personDAO.delete(person);</span>
-<span class="fc" id="L108">        return new ResponseEntity&lt;Person&gt;(HttpStatus.OK);</span>
+<span class="fc" id="L110">        personDAO.delete(person);</span>
+<span class="fc" id="L111">        return new ResponseEntity&lt;Person&gt;(HttpStatus.OK);</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

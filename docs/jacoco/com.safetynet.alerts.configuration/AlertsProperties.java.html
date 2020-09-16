@@ -15,12 +15,30 @@ import org.springframework.context.annotation.Configuration;
 
     /**
      * Json File Path
-     * App need a file to load all Data at start
+     * App needs a file to load all Data at start
      * application.properties can overcome this value
      */
 <span class="fc" id="L21">    @Setter</span>
 <span class="fc" id="L22">    @Getter</span>
     private String jsonFilePath = &quot;src/main/resources/data.json&quot;;
+
+    /**
+     * Test Json File Path
+     * App Test need a file to load all Data
+     * application.properties can overcome this value
+     */
+<span class="fc" id="L30">    @Setter</span>
+<span class="nc" id="L31">    @Getter</span>
+    private String testJsonFilePath = &quot;src/test/resources/testData.json&quot;;
+
+    /**
+     * Test Server URL
+     * App need a server to launch execute End To End Tests
+     * application.properties can overcome this value
+     */
+<span class="fc" id="L39">    @Setter</span>
+<span class="nc" id="L40">    @Getter</span>
+    private String testServerUrlWithoutPort = &quot;https://localhost:&quot;;
 }
 
 

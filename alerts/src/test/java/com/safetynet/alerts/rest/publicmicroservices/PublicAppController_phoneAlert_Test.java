@@ -3,6 +3,8 @@ package com.safetynet.alerts.rest.publicmicroservices;
 import com.safetynet.alerts.service.PhoneAlertService;
 import com.safetynet.alerts.service.rto_models.PersonInfoRTO;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.skyscreamer.jsonassert.JSONAssert;
@@ -14,8 +16,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.web.util.UriUtils;
 
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -59,6 +63,25 @@ class PublicAppController_phoneAlert_Test {
     }
 
     @Order(1)
+    @ParameterizedTest
+    @CsvSource({"3"})
+    void redirectGetPhoneAlert(String firestation) throws Exception {
+        //GIVEN
+        String urlTemplate = String.format("%s%s",
+                "/phoneAlert?",
+                "firestation="+ UriUtils.encode(firestation, StandardCharsets.UTF_8));
+        //URLEncoder.encode(city, StandardCharsets.UTF_8));
+        String expectedUrl = String.format("%s%s",
+                "/phonealert/",
+                UriUtils.encode(firestation, StandardCharsets.UTF_8));
+        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get(urlTemplate);
+        //WHEN
+        mockMvc.perform(builder)//.andDo(print());
+                .andExpect(status().isFound())
+                .andExpect(redirectedUrl(expectedUrl));
+    }
+
+    @Order(2)
     @Test
     void getPhoneAlert_Ok() throws Exception {
         when(phoneAlertService.getPhoneAlert(anyString())).thenReturn(List.of("123456789", "987654321"));
@@ -97,7 +120,7 @@ class PublicAppController_phoneAlert_Test {
                 getPhoneAlert(anyString());
     }
 
-    @Order(2)
+    @Order(3)
     @Test
     void getPhoneAlert_EmptyList() throws Exception {
         when(phoneAlertService.getPhoneAlert(anyString())).thenReturn(Collections.emptyList());
